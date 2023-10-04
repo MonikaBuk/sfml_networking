@@ -3,11 +3,13 @@
 #define PLATFORMER_GAME_H
 
 #include <SFML/Graphics.hpp>
+#include "Client.h"
+#include "Server.h"
 
 class Game
 {
  public:
-  Game(sf::RenderWindow& window);
+  Game(sf::RenderWindow& window, bool server);
   ~Game();
   bool init();
   void update(float dt);
@@ -17,6 +19,9 @@ class Game
 
  private:
   sf::RenderWindow& window;
+  bool isServer = true;
+  std::unique_ptr<Client> client = nullptr;
+  std::unique_ptr<Server> server = nullptr;
 
 };
 

@@ -2,8 +2,8 @@
 #include "Game.h"
 #include <iostream>
 
-Game::Game(sf::RenderWindow& game_window)
-  : window(game_window)
+Game::Game(sf::RenderWindow& game_window, bool server)
+  : window(game_window), isServer(server)
 {
   srand(time(NULL));
 }
@@ -15,6 +15,18 @@ Game::~Game()
 
 bool Game::init()
 {
+  if(isServer)
+  {
+    server = std::make_unique<Server>();
+    server->init();
+    server->run();
+  }
+  else
+  {
+    client =  std::make_unique<Client>();
+    client -> connect();
+  }
+
   return true;
 }
 

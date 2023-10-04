@@ -13,7 +13,8 @@ int main()
   window.setFramerateLimit(60);
 
   //initialise an instance of the game class
-  Game game(window);
+  bool x = *std::getenv("doServer")== '1';
+  Game game(window, x);
 
   //run the init function of the game class and check it all initialises ok
   if (!game.init())
