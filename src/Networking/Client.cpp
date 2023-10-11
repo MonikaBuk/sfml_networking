@@ -12,7 +12,8 @@ void Client::connect()
   {
     std::cout << "You're Connected!" << std::endl;
     connected = true;
-    run();
+    std::thread run_thread ([&]{run();});
+    run_thread.detach();
 
   }
   else

@@ -3,8 +3,8 @@
 #define PLATFORMER_GAME_H
 
 #include <SFML/Graphics.hpp>
-#include "Client.h"
-#include "Server.h"
+#include "Networking/Client.h"
+#include "Networking/Server.h"
 
 class Game
 {
