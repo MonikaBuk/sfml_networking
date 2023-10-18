@@ -3,8 +3,12 @@
 #define PLATFORMER_GAME_H
 
 #include <SFML/Graphics.hpp>
+//#include <iimgctx.h>
 #include "Networking/Client.h"
 #include "Networking/Server.h"
+#include "Tmx/Tile.h"
+#include "tmxlite/Map.hpp"
+#include "tmxlite/TileLayer.hpp"
 
 class Game
 {
@@ -23,6 +27,12 @@ class Game
   std::unique_ptr<Client> client = nullptr;
   std::unique_ptr<Server> server = nullptr;
 
+  std::unique_ptr<sf::Texture> tileMap =  std::make_unique<sf::Texture>();
+  std::vector<std::vector<std::unique_ptr<Tile>>> TILE_MAP;
+
+  void SetTileWithID(
+    const unsigned int columns, const tmx::Vector2u& vector2,
+    const tmx::TileLayer::Tile& tile);
 };
 
 #endif // PLATFORMER_GAME_H

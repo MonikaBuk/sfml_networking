@@ -11,8 +11,14 @@ endif()
 # set(CMAKE_PREFIX_PATH C:/)
 find_package(SFML 2.5.1 COMPONENTS system window graphics network audio)
 
-set(SOURCE_FILES src/main.cpp src/Game.cpp src/Game.h src/Networking/Server.cpp src/Networking/Server.h src/Networking/Client.cpp src/Networking/Client.h)
+set(SOURCE_FILES src/main.cpp src/Game.cpp src/Game.h src/Networking/Server.cpp src/Networking/Server.h
+        src/Networking/Client.cpp src/Networking/Client.h  src/Tmx/FreeFuncs.cpp src/Tmx/ImageLayer.cpp
+        src/Tmx/LayerGroup.cpp src/Tmx/Map.cpp src/Tmx/miniz.c src/Tmx/miniz.h src/Tmx/Object.cpp src/Tmx/ObjectGroup.cpp
+        src/Tmx/ObjectTypes.cpp src/Tmx/Property.cpp src/Tmx/TileLayer.cpp src/Tmx/Tileset.cpp src/Tmx/Tile.cpp src/Tmx/Tile.h
+        src/Tmx/detail/pugiconfig.hpp src/Tmx/detail/pugixml.cpp src/Tmx/detail/pugixml.hpp)
 add_executable(SFMLGame ${SOURCE_FILES})
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake_modules")
 
