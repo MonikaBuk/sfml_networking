@@ -5,8 +5,21 @@
 #ifndef SFMLGAME_STATEHANDLER_H
 #define SFMLGAME_STATEHANDLER_H
 
+#include "GameState.h"
+
 class StateHandler
 {
+ public:
+  void setState(GameState* newState);
+  void init();
+  void update(float dt);
+  void render();
+  void mouseClicked(sf::Event event);
+  void keyPressed(sf::Event event);
+
+ private:
+  GameState* currentState;
 };
+
 
 #endif // SFMLGAME_STATEHANDLER_H

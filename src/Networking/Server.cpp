@@ -4,6 +4,7 @@
 
 #include "Server.h"
 
+
 void Server::init()
 {
   if (listener == nullptr) listener = std::make_unique<sf::TcpListener>();
@@ -62,10 +63,12 @@ void Server::listen(sf::TcpSocket& cSocket)
       continue_receiving = false; // disconnected
       std::cout << "Disconnected" << std::endl;
     }
+    sf::IpAddress IP = cSocket.getRemoteAddress();
+    portNum = cSocket.getRemotePort();
 
     if(received < 1028) { data[received] = '\0';}
     send(data);
-    std::cout <<reinterpret_cast<char*>(data) << '\n';
+    std::cout <<reinterpret_cast<char*>(data) << '\n' << IP.toString();
   }
   cSocket.disconnect();
 }
@@ -77,7 +80,10 @@ void Server::send(std::string buffer)
   std::lock_guard<std::mutex>lck(mutex);
   for (auto & connection : connections)
   {
-    connection->send(message, buffer.size());
+    if (connection->getRemotePort() != portNum)
+    {
+      connection->send(message, buffer.size());
+    }
   }
 }
 

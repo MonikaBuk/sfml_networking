@@ -3,12 +3,14 @@
 #define PLATFORMER_GAME_H
 
 #include <SFML/Graphics.hpp>
-//#include <iimgctx.h>
+
 #include "Networking/Client.h"
 #include "Networking/Server.h"
-#include "Tmx/Tile.h"
-#include "tmxlite/Map.hpp"
-#include "tmxlite/TileLayer.hpp"
+//#include "Tmx/Tile.h"
+//#include "tmxlite/Map.hpp"
+//#include "tmxlite/TileLayer.hpp"
+#include "GameStates/StateHandler.h"
+#include "GameStates/GamePlay.h"
 
 class Game
 {
@@ -21,18 +23,20 @@ class Game
   void mouseClicked(sf::Event event);
   void keyPressed(sf::Event event);
 
+
  private:
   sf::RenderWindow& window;
   bool isServer = true;
   std::unique_ptr<Client> client = nullptr;
   std::unique_ptr<Server> server = nullptr;
 
-  std::unique_ptr<sf::Texture> tileMap =  std::make_unique<sf::Texture>();
+  /*std::unique_ptr<sf::Texture> tileMap =  std::make_unique<sf::Texture>();
   std::vector<std::vector<std::unique_ptr<Tile>>> TILE_MAP;
 
   void SetTileWithID(
     const unsigned int columns, const tmx::Vector2u& vector2,
-    const tmx::TileLayer::Tile& tile);
+    const tmx::TileLayer::Tile& tile);*/
+  StateHandler stateHandler;
 };
 
 #endif // PLATFORMER_GAME_H

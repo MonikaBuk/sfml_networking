@@ -5,8 +5,11 @@
 #ifndef SFMLGAME_GAMEMENU_H
 #define SFMLGAME_GAMEMENU_H
 
-class GameMenu
+#include "GameState.h"
+
+class GameMenu: public GameState
 {
+
 };
 
 #endif // SFMLGAME_GAMEMENU_H

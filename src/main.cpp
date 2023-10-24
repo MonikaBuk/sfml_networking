@@ -1,6 +1,7 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "Game.h"
+#include "GameWindow.h"
 
 
 int main()
@@ -9,7 +10,7 @@ int main()
             << std::endl;
 
   // create window and set up
-  sf::RenderWindow window(sf::VideoMode(720, 200), "SFML Base Game");
+  sf::RenderWindow& window = GameWindow::getWindow();
   window.setFramerateLimit(60);
 
   //initialise an instance of the game class

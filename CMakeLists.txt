@@ -15,7 +15,7 @@ set(SOURCE_FILES src/main.cpp src/Game.cpp src/Game.h src/Networking/Server.cpp 
         src/Networking/Client.cpp src/Networking/Client.h  src/Tmx/FreeFuncs.cpp src/Tmx/ImageLayer.cpp
         src/Tmx/LayerGroup.cpp src/Tmx/Map.cpp src/Tmx/miniz.c src/Tmx/miniz.h src/Tmx/Object.cpp src/Tmx/ObjectGroup.cpp
         src/Tmx/ObjectTypes.cpp src/Tmx/Property.cpp src/Tmx/TileLayer.cpp src/Tmx/Tileset.cpp src/Tmx/Tile.cpp src/Tmx/Tile.h
-        src/Tmx/detail/pugiconfig.hpp src/Tmx/detail/pugixml.cpp src/Tmx/detail/pugixml.hpp)
+        src/Tmx/detail/pugiconfig.hpp src/Tmx/detail/pugixml.cpp src/Tmx/detail/pugixml.hpp src/GameStates/GameState.h src/GameStates/StateHandler.cpp src/GameStates/StateHandler.h src/GameStates/GameMenu.cpp src/GameStates/GameMenu.h src/GameStates/GamePlay.cpp src/GameStates/GamePlay.h src/GameWindow.h src/GameStates/GameLobby.cpp src/GameStates/GameLobby.h)
 add_executable(SFMLGame ${SOURCE_FILES})
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/)

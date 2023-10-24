@@ -28,6 +28,7 @@ class Server
   std::unique_ptr<sf::TcpSocket> socket;
   std::mutex mutex;
   bool  running = true;
+  int portNum;
 
 };
 
