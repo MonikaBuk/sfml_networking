@@ -29,13 +29,6 @@ class Game
   bool isServer = true;
   std::unique_ptr<Client> client = nullptr;
   std::unique_ptr<Server> server = nullptr;
-
-  /*std::unique_ptr<sf::Texture> tileMap =  std::make_unique<sf::Texture>();
-  std::vector<std::vector<std::unique_ptr<Tile>>> TILE_MAP;
-
-  void SetTileWithID(
-    const unsigned int columns, const tmx::Vector2u& vector2,
-    const tmx::TileLayer::Tile& tile);*/
   StateHandler stateHandler;
 };
 

@@ -5,8 +5,16 @@
 #ifndef SFMLGAME_GAMELOBBY_H
 #define SFMLGAME_GAMELOBBY_H
 
-class GameLobby
+#include "GameState.h"
+
+class GameLobby: GameState
 {
+  GameLobby(sf::RenderWindow& window);
+  bool init()override;
+  void update(float dt)override;
+  void render() override;
+  void mouseClicked(sf::Event event) override;
+  void keyPressed(sf::Event event) override;
 };
 
 #endif // SFMLGAME_GAMELOBBY_H
