@@ -9,13 +9,14 @@
 class GameState
 {
  public:
-  explicit GameState(sf::RenderWindow& window) : window(window) { }
+  GameState(sf::RenderWindow& window) : window(window) { }
   virtual ~GameState() = default;
   virtual bool init() = 0;
   virtual void update(float dt) = 0;
   virtual void render() = 0;
   virtual void mouseClicked(sf::Event event) = 0;
   virtual void keyPressed(sf::Event event) = 0;
+  virtual void textEntered(sf::Event event)=0;
 
  protected:
   sf::RenderWindow& window;

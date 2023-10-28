@@ -9,6 +9,12 @@
 #include <iostream>
 #include <atomic>
 #include <thread>
+#include <vector>
+
+struct ChatMessage {
+  std::string text;
+  std::string sender;
+};
 
 
 class Client

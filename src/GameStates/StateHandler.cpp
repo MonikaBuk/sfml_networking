@@ -35,3 +35,6 @@ void StateHandler::init()
 {
   currentState->init();
 }
+void StateHandler::textEntered(sf::Event event) {
+  currentState->textEntered(event);
+}

@@ -16,6 +16,7 @@ class StateHandler
   void render();
   void mouseClicked(sf::Event event);
   void keyPressed(sf::Event event);
+  void textEntered(sf::Event event);
 
  private:
   GameState* currentState;

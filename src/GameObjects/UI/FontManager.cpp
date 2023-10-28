@@ -3,3 +3,21 @@
 //
 
 #include "FontManager.h"
+
+FontManager::FontManager()
+{
+  font = std::make_unique<sf::Font>();
+}
+
+
+FontManager::FontManager(const std::string& fontFilePath) : FontManager()
+{
+  font = std::make_shared<sf::Font>();
+  if (!font->loadFromFile(fontFilePath)) {
+    // Handle font loading error
+  }
+}
+std::shared_ptr<sf::Font> FontManager::GetFont()
+{
+  return font;
+}

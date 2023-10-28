@@ -11,7 +11,7 @@
 //#include "tmxlite/TileLayer.hpp"
 #include "GameStates/StateHandler.h"
 #include "GameStates/GamePlay.h"
-
+#include "GameStates/GameMenu.h"
 class Game
 {
  public:
@@ -22,6 +22,7 @@ class Game
   void render();
   void mouseClicked(sf::Event event);
   void keyPressed(sf::Event event);
+  void textEntered(sf::Event event);
 
 
  private:
