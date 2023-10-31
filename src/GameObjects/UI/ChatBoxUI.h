@@ -10,26 +10,32 @@
 
 #include <vector>
 
-// Forward declaration of ChatMessage
-struct ChatMessage;
-
+#include "../../Networking/Client.h"
 #include "UIElement.h"
 
 class ChatBoxUI : public UIElement {
  public:
-  ChatBoxUI();
-  void innitElemets();
+  explicit ChatBoxUI(Client& client);;
+  ~ChatBoxUI();
+  void innitElements(sf::Font& font, const sf::String& buttonFilePa);
+  void handleEvent(sf::Event event);
+  void draw();
+  void sendChatMessage(const std::string& message);
+
 
   // Other functions for managing chat messages
 
  private:
-  InputFieldUI messageInput;
-  ButtonUI sendButton;
+  Client& client;
+  std::unique_ptr<InputFieldUI> messageInput;
+  std::unique_ptr<ButtonUI> sendButton;
   sf::RectangleShape chatBox;
   std::vector<ChatMessage> chatMessages;
-  unsigned int visibleMessageCount;
-  unsigned int firstVisibleMessage;
+  unsigned int visibleMessageCount =0;
+  unsigned int firstVisibleMessage= 0;
   // Other private members for scrolling and message management
+
+
 };
 
 

@@ -16,7 +16,8 @@ class InputFieldUI :public UIElement
   void handleEvent(sf::Event event);
   void draw();
   const std::string& getInputText() const { return inputText; }
-
+  float getWidth();
+  void clearInput();
 
  private:
   sf::RenderWindow& window;
@@ -29,6 +30,7 @@ class InputFieldUI :public UIElement
   sf::RectangleShape inputBox;
   sf::Text text;
   std::string inputText;
+
 
 };
 

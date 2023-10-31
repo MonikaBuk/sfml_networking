@@ -12,10 +12,9 @@
 #include <vector>
 
 struct ChatMessage {
-  std::string text;
-  std::string sender;
+  std::string text= "asd";
+  //std::string sender = "idk";
 };
-
 
 class Client
 {
@@ -23,6 +22,7 @@ class Client
   void connect();
   void input(sf::TcpSocket& iSocket) const;
   void run();
+  void sendChatMessage(const ChatMessage& message);
   std::atomic<bool> running = false;
   std::atomic<bool> connected = false;
 

@@ -22,11 +22,15 @@ class UIElement: public GameObject
 
   bool isSelected() const { return selected; }
   void setSelected(bool selected) { this->selected = selected; }
+  bool isClicked();
+
+
 
  private:
   // Member variables to store the state of the UI element
-  bool isEnabled;
+  bool isEnabled = true;
   bool selected;
+
 };
 
 #endif // SFMLGAME_UIELEMENT_H

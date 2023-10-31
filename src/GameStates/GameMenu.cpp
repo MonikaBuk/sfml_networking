@@ -3,18 +3,27 @@
 //
 
 #include "GameMenu.h"
-GameMenu::GameMenu(sf::RenderWindow& window) : GameState(window) {}
 
+GameMenu::GameMenu(sf::RenderWindow& window, Client* client) : GameState(window), client(client)
+{
+}
 void GameMenu::createUserNameInput()
 {
-  userNameInput = std::make_unique<InputFieldUI>(window, font, 12, sf::Color::Green, sf::Color::White, sf::Vector2f(25, 45), sf::Vector2f(50, 10));
-  userNameInput->setIsEnabled(true);
-std::cout << userNameInput->getIsEnabled();
+ // userNameInput = std::make_unique<InputFieldUI>(window, font, 12, sf::Color::Green, sf::Color::White, sf::Vector2f(25, 45), sf::Vector2f(50, 10));
+  //userNameInput->setIsEnabled(true);
 }
 bool GameMenu::init()
 {
-  if(!font.loadFromFile("Data/Fonts/OpenSans-Bold.ttf")){}
+  chatBox = std::make_unique<ChatBoxUI>(*client);
+
+  if(!font.loadFromFile("Data/Fonts/OpenSans-Bold.ttf")){std::cerr << "Failed to load font.";}
   createUserNameInput();
+  if (chatBox) {
+    chatBox->innitElements(font, "Data/Images/dark brown panel.png");
+  } else {
+    std::cerr << "chatBox is NULL." << std::endl;
+  }
+
   return true;
 }
 void GameMenu::update(float dt)
@@ -23,17 +32,20 @@ void GameMenu::update(float dt)
 }
 void GameMenu::render()
 {
-  userNameInput->draw();
+  //userNameInput->draw();
+  chatBox->draw();
 
 
 }
 void GameMenu::mouseClicked(sf::Event event) {}
-void GameMenu::keyPressed(sf::Event event) {}
+void GameMenu::keyPressed(sf::Event event) {
+
+}
 
 void GameMenu::textEntered(sf::Event event)
 {
-  userNameInput->handleEvent(event);
-  test.setString(userNameInput->getInputText());
-
+  // userNameInput->handleEvent(event);
+  // test.setString(userNameInput->getInputText());
+  chatBox->handleEvent(event);
 }
 

@@ -7,7 +7,7 @@ Game::Game(sf::RenderWindow& game_window, bool server)
   : window(game_window), isServer(server)
 {
   srand(time(NULL));
-  stateHandler.setState(new GameMenu(window));
+  stateHandler.setState(new GameMenu(window, client.get()));
 }
 
 Game::~Game()
@@ -58,4 +58,8 @@ void Game::keyPressed(sf::Event event)
 }
 void Game::textEntered(sf::Event event) {
   stateHandler.textEntered(event);
+}
+const std::unique_ptr<Client>& Game::getClient() const
+{
+  return client;
 }

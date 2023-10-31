@@ -43,7 +43,8 @@ void Client::run()
         socket ->disconnect();
         break;
       }
-      else{
+      else
+      {
         if(received < 1028) static_buffer[received] = '\0';
         std::cout <<static_buffer << '\n';
       }
@@ -64,3 +65,15 @@ void Client::input(sf::TcpSocket& iSocket) const
     }
   }
 }
+void Client::sendChatMessage(const ChatMessage& message) {
+  if (connected && socket) {
+    sf::Packet packet;
+    packet << message.text; // << message.sender;
+    if (socket->send(packet) != sf::Socket::Done) {
+      std::cerr << "Failed to send chat message" << std::endl;
+    }
+  } else {
+    std::cerr << "Failed to send chat message" << std::endl;
+  }
+}
+

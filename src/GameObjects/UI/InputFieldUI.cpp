@@ -32,14 +32,16 @@ InputFieldUI::InputFieldUI(sf::RenderWindow& window, sf::Font& font, int fontSiz
             inputText += static_cast<char>(event.text.unicode);
           }
           text.setString(inputText);
-          text.setPosition(position.x + 10, position.y + 10);
+
+
+          sf::Vector2f boxPos = inputBox.getPosition();
+          float posY = boxPos.x +(inputBox.getGlobalBounds().height/2) - text.getGlobalBounds().height/2;
+          text.setPosition(boxPos.x + 10, posY);
         }
       }
     }
 
   }
-
-
   void InputFieldUI::draw()
   {
     if (getIsEnabled())
@@ -48,4 +50,13 @@ InputFieldUI::InputFieldUI(sf::RenderWindow& window, sf::Font& font, int fontSiz
       window.draw(text);
     }
   }
-
+  float InputFieldUI::getWidth()
+  {
+    sf::FloatRect inputBoxBounds = inputBox.getGlobalBounds();
+    float inputBoxWidth = inputBoxBounds.width;
+    return  inputBoxWidth;
+  }
+  void InputFieldUI::clearInput() {
+    inputText.clear();
+    text.setString(inputText);
+  }

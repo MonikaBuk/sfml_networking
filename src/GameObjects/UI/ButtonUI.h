@@ -13,8 +13,7 @@ class ButtonUI: public UIElement
   ~ButtonUI() = default;
   void handleEvent(sf::Event event);
   void draw();
-
-
+  float getWidth();
 
  private:
   //sf::RenderWindow& window;
@@ -28,6 +27,7 @@ class ButtonUI: public UIElement
   sf::Text text;
   std::string buttonText;
   std::string buttonFilePath;
+
 };
 
 #endif // SFMLGAME_BUTTONUI_H

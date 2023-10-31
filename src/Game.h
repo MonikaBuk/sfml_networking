@@ -29,6 +29,11 @@ class Game
   sf::RenderWindow& window;
   bool isServer = true;
   std::unique_ptr<Client> client = nullptr;
+
+ public:
+  const std::unique_ptr<Client>& getClient() const;
+
+ private:
   std::unique_ptr<Server> server = nullptr;
   StateHandler stateHandler;
 };

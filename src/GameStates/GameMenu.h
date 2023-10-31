@@ -8,13 +8,14 @@
 #include "../GameObjects/UI/InputFieldUI.h"
 #include "GameState.h"
 
+#include "../GameObjects/UI/ChatBoxUI.h"
 #include "../GameObjects/UI/FontManager.h"
-
+#include "../Networking/Client.h"
 
 class GameMenu: public GameState
 {
  public:
-  GameMenu(sf::RenderWindow& window);
+  GameMenu(sf::RenderWindow& window, Client* client);
   bool init()override;
   void update(float dt)override;
   void render() override;
@@ -25,9 +26,11 @@ class GameMenu: public GameState
   void createUserNameInput();
 
  private:
+  Client* client;
   std::unique_ptr<InputFieldUI> userNameInput;
   sf::Text test;
   sf::Font font;
+  std::unique_ptr<ChatBoxUI> chatBox;
   std::shared_ptr<FontManager> fontManager;
 
 };
