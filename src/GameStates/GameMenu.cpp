@@ -17,7 +17,7 @@ bool GameMenu::init()
   chatBox = std::make_unique<ChatBoxUI>(*client);
 
   if(!font.loadFromFile("Data/Fonts/OpenSans-Bold.ttf")){std::cerr << "Failed to load font.";}
-  createUserNameInput();
+ // createUserNameInput();
   if (chatBox) {
     chatBox->innitElements(font, "Data/Images/dark brown panel.png");
   } else {
@@ -28,6 +28,7 @@ bool GameMenu::init()
 }
 void GameMenu::update(float dt)
 {
+  chatBox->updateLatestChatMessage();
 
 }
 void GameMenu::render()

@@ -52,8 +52,8 @@ void Server::run()
 void Server::listen(sf::TcpSocket& cSocket)
 {
   bool continue_receiving = true;
-  char data[1028];
-  std::size_t received;
+  //char data[1028];
+ // std::size_t received;
   while (continue_receiving)
   {
     sf::Packet receivedPacket;
@@ -67,25 +67,21 @@ void Server::listen(sf::TcpSocket& cSocket)
     }
     sf::IpAddress IP = cSocket.getRemoteAddress();
     portNum = cSocket.getRemotePort();
-    cSocket.send(receivedPacket);
+    send(receivedPacket);
+    std::cout << "Received from " << IP.toString() << std::endl;
 
-    if(received < 1028) { data[received] = '\0';}
-    send(data);
-    std::cout <<reinterpret_cast<char*>(data) << '\n' << IP.toString();
   }
   cSocket.disconnect();
 }
 
-void Server::send(std::string buffer)
-{
+void Server::send(sf::Packet& packet) {
+  std::lock_guard<std::mutex> lck(mutex);
 
-  auto message =  reinterpret_cast<char*>(buffer.data());
-  std::lock_guard<std::mutex>lck(mutex);
-  for (auto & connection : connections)
-  {
-    if (connection->getRemotePort() != portNum)
-    {
-      connection->send(message, buffer.size());
+  for (auto& connection : connections) {
+    if (connection->getRemotePort() != portNum) {
+      if (connection->send(packet) != sf::Socket::Done) {
+        std::cerr << "Failed to send packet to a client" << std::endl;
+      }
     }
   }
 }

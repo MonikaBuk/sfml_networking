@@ -11,13 +11,6 @@ struct ChatMessage {
   std::string text= "asd";
   std::string sender = "idk";
 };
-sf::Packet& operator <<(sf::Packet& packet, const ChatMessage& message)
-{
-  return packet << message.text << message.sender;
-}
-
-sf::Packet& operator >>(sf::Packet& packet, ChatMessage& message)
-{
-  return packet >> message.text >> message.sender;
-}
+sf::Packet& operator <<(sf::Packet& packet, const ChatMessage& message);
+sf::Packet& operator >>(sf::Packet& packet, ChatMessage& message);
 #endif // SFMLGAME_CHATMESSAGE_H

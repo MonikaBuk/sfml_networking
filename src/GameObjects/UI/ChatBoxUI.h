@@ -20,8 +20,8 @@ class ChatBoxUI : public UIElement {
   void handleEvent(sf::Event event);
   void draw();
   void sendChatMessage(const std::string& message);
-  void receiveChatMessage(ChatMessage& message);
-
+  void addMessage(ChatMessage& message);
+  void updateLatestChatMessage();
 
   // Other functions for managing chat messages
 
@@ -30,10 +30,11 @@ class ChatBoxUI : public UIElement {
   std::unique_ptr<InputFieldUI> messageInput;
   std::unique_ptr<ButtonUI> sendButton;
   sf::RectangleShape chatBox;
-  std::vector<Message> chatMessages;
+  std::vector<ChatMessage> chatMessages;
   unsigned int visibleMessageCount =0;
   unsigned int firstVisibleMessage= 0;
-
+  sf::Font m_font;
+  sf::Text m_text;
 
 
 };

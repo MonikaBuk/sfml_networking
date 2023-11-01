@@ -5,7 +5,6 @@
 #ifndef SFMLGAME_CLIENT_H
 #define SFMLGAME_CLIENT_H
 
-#include "../GameObjects/UI/Message.h"
 #include <Sfml/Network.hpp>
 #include <atomic>
 #include <iostream>
@@ -20,13 +19,19 @@ class Client
   void input(sf::TcpSocket& iSocket) const;
   void run();
   void sendChatMessage(const ChatMessage& message);
-  void recieveChatMessage(sf::Packet& messagePacket);
+   void receiveChatMessage(ChatMessage& message);
   std::atomic<bool> running = false;
   std::atomic<bool> connected = false;
-  sf::Packet messagePacket;
+  bool isMessageReceived() const;
+  void setMessageReceived(bool messageReceived);
+  const ChatMessage& getLastMessage() const;
+  void setLastMessage(const ChatMessage& lastMessage);
 
  private:
   std::unique_ptr<sf::TcpSocket> socket;
+  bool messageReceived;
+  ChatMessage lastMessage;
+
 
 };
 

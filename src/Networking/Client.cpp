@@ -26,15 +26,14 @@ void Client::connect()
 void Client::run()
 {
   running = true;
-  std::thread input_thread([&]{input(*socket);});
-  input_thread.detach();
+ // std::thread input_thread([&]{input(*socket);});
+  //input_thread.detach();
   while (running && connected)
   {
-    char  static_buffer[1028];
     while(connected)
     {
-      std::size_t received;
-      auto status = socket->receive(static_buffer, 1028, received);
+      sf::Packet receivedPacket;
+      auto status = socket->receive(receivedPacket);
 
       if (status ==sf::Socket::Status::Disconnected)
       {
@@ -45,30 +44,26 @@ void Client::run()
       }
       else
       {
-        if(received < 1028) static_buffer[received] = '\0';
-        std::cout <<static_buffer << '\n';
+        ChatMessage chatMessage;
+        if (receivedPacket >> chatMessage)
+        {
+          setLastMessage(chatMessage);
+          setMessageReceived(true);
+          std::cout << "Received: " << chatMessage.text << " from " << chatMessage.sender << std::endl;
+        }
+        else
+        {
+          std::cerr << "Failed to extract chat message from received packet." << std::endl;
+        }
       }
     }
   }
 }
 
-void Client::input(sf::TcpSocket& iSocket) const
-{
-  while(running)
-  {
-    std::string  str;
-    std::getline(std::cin, str);
-    std::cin.clear();
-    if(connected)
-    {
-      iSocket.send(reinterpret_cast<char*>(str.data()), str.length());
-    }
-  }
-}
 void Client::sendChatMessage(const ChatMessage& message) {
   if (connected && socket) {
-
-    messagePacket << message.text << message.sender;
+    sf::Packet messagePacket;
+    messagePacket << message;
     if (socket->send(messagePacket) != sf::Socket::Done) {
       std::cerr << "Failed to send chat message" << std::endl;
     }
@@ -79,15 +74,33 @@ void Client::sendChatMessage(const ChatMessage& message) {
   }
 }
 
-void Client::recieveChatMessage(const ChatMessage& message) {
+void Client::receiveChatMessage(ChatMessage& message) {
   if (connected && socket) {
+    sf::Packet messagePacket;
 
     if (socket->receive(messagePacket) != sf::Socket::Done) {
-      std::cerr << "Failed to reveive chat message" << std::endl;
+      std::cerr << "Failed to receive chat message" << std::endl;
+    } else {
+      // Extract the chat message from the received packet
+      messagePacket >> message; // Uses the operator>> overload
     }
   } else {
-    std::cerr << "Failed to receive chat message" << std::endl;
+    std::cerr << "Failed to receive chat message. Socket not connected or invalid." << std::endl;
   }
-  //messagePacket >> message.text >> message.sender;
 }
-
+bool Client::isMessageReceived() const
+{
+  return messageReceived;
+}
+void Client::setMessageReceived(bool messageReceived)
+{
+  Client::messageReceived = messageReceived;
+}
+const ChatMessage& Client::getLastMessage() const
+{
+  return lastMessage;
+}
+void Client::setLastMessage(const ChatMessage& message)
+{
+ lastMessage = message;
+}

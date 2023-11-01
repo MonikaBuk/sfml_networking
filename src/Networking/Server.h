@@ -18,7 +18,7 @@ class Server
   void init();
   void run();
   void listen(sf::TcpSocket& cSocket);
-  void send(std::string buffer);
+  void send(sf::Packet& packet);
 
  private:
   std::vector<std::thread> workers;
