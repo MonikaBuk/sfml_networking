@@ -41,14 +41,14 @@ void ChatBoxUI::handleEvent(sf::Event event) {
       if (event.type == sf::Event::TextEntered)
       {
         if (event.text.unicode == 13)
-        { // Enter key pressed
-          // Send the message from the input field
+        {
           std::string message = messageInput->getInputText();
-          // Make sure the message is not empty before sending
+
           if (!message.empty())
           {
-            //std::string sender = "SenderName";
+            std::string sender = "SenderName";
             sendChatMessage(message);
+            //receiveChatMessage(message);
             messageInput->clearInput();
           }
         }
@@ -62,8 +62,15 @@ ChatBoxUI::~ChatBoxUI() = default;
 void ChatBoxUI::sendChatMessage(const std::string& message) {
   ChatMessage chatMessage;
   chatMessage.text = message;
-  //chatMessage.sender = sender;
+  chatMessage.sender = "sender";
 
   client.sendChatMessage(chatMessage);
 }
 
+void ChatBoxUI::receiveChatMessage(sf::Packet& messagePacket)
+{
+ // client.recieveChatMessage(message);
+//  ChatMessage newMessage;
+ // message >> newMessage;
+ // std::cout << message.text;
+}

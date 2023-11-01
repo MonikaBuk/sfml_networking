@@ -4,9 +4,20 @@
 
 #ifndef SFMLGAME_CHATMESSAGE_H
 #define SFMLGAME_CHATMESSAGE_H
+#include <iostream>
+#include <Sfml/Network.hpp>
 
-class ChatMessage
-{
+struct ChatMessage {
+  std::string text= "asd";
+  std::string sender = "idk";
 };
+sf::Packet& operator <<(sf::Packet& packet, const ChatMessage& message)
+{
+  return packet << message.text << message.sender;
+}
 
+sf::Packet& operator >>(sf::Packet& packet, ChatMessage& message)
+{
+  return packet >> message.text >> message.sender;
+}
 #endif // SFMLGAME_CHATMESSAGE_H

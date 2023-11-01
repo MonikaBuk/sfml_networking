@@ -56,7 +56,9 @@ void Server::listen(sf::TcpSocket& cSocket)
   std::size_t received;
   while (continue_receiving)
   {
-    auto status = cSocket.receive(data, 1028, received);
+    sf::Packet receivedPacket;
+    //auto status = cSocket.receive(data, 1028, received);
+    auto status = cSocket.receive(receivedPacket);
 
     if(status == sf::Socket::Status::Disconnected)
     {
@@ -65,6 +67,7 @@ void Server::listen(sf::TcpSocket& cSocket)
     }
     sf::IpAddress IP = cSocket.getRemoteAddress();
     portNum = cSocket.getRemotePort();
+    cSocket.send(receivedPacket);
 
     if(received < 1028) { data[received] = '\0';}
     send(data);

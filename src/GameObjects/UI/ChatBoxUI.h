@@ -5,13 +5,12 @@
 #ifndef SFMLGAME_CHATBOXUI_H
 #define SFMLGAME_CHATBOXUI_H
 
-#include "ButtonUI.h"
-#include "InputFieldUI.h"
 
 #include <vector>
-
 #include "../../Networking/Client.h"
 #include "UIElement.h"
+#include "ButtonUI.h"
+#include "InputFieldUI.h"
 
 class ChatBoxUI : public UIElement {
  public:
@@ -21,6 +20,7 @@ class ChatBoxUI : public UIElement {
   void handleEvent(sf::Event event);
   void draw();
   void sendChatMessage(const std::string& message);
+  void receiveChatMessage(ChatMessage& message);
 
 
   // Other functions for managing chat messages

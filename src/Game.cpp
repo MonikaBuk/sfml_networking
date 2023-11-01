@@ -7,7 +7,6 @@ Game::Game(sf::RenderWindow& game_window, bool server)
   : window(game_window), isServer(server)
 {
   srand(time(NULL));
-  stateHandler.setState(new GameMenu(window, client.get()));
 }
 
 Game::~Game()
@@ -29,6 +28,7 @@ bool Game::init()
     client =  std::make_unique<Client>();
     client -> connect();
   }
+  stateHandler.setState(new GameMenu(window, client.get()));
   stateHandler.init();
   return true;
 }
@@ -45,7 +45,6 @@ void Game::render()
 
 void Game::mouseClicked(sf::Event event)
 {
-  std::cout<<"fuck this shit";
   //get the click position
   sf::Vector2i click = sf::Mouse::getPosition(window);
 }

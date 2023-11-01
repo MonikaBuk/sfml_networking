@@ -67,13 +67,25 @@ void Client::input(sf::TcpSocket& iSocket) const
 }
 void Client::sendChatMessage(const ChatMessage& message) {
   if (connected && socket) {
-    sf::Packet packet;
-    packet << message.text; // << message.sender;
-    if (socket->send(packet) != sf::Socket::Done) {
+
+    messagePacket << message.text << message.sender;
+    if (socket->send(messagePacket) != sf::Socket::Done) {
       std::cerr << "Failed to send chat message" << std::endl;
     }
   } else {
     std::cerr << "Failed to send chat message" << std::endl;
   }
+}
+
+void Client::recieveChatMessage(const ChatMessage& message) {
+  if (connected && socket) {
+
+    if (socket->receive(messagePacket) != sf::Socket::Done) {
+      std::cerr << "Failed to reveive chat message" << std::endl;
+    }
+  } else {
+    std::cerr << "Failed to receive chat message" << std::endl;
+  }
+  //messagePacket >> message.text >> message.sender;
 }
 
