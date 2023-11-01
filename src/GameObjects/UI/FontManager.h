@@ -6,6 +6,7 @@
 #define SFMLGAME_FONTMANAGER_H
 #include <memory>
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
 class FontManager
 {

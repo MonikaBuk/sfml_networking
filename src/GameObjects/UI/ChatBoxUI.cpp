@@ -60,7 +60,7 @@ void ChatBoxUI::handleEvent(sf::Event event) {
 ChatBoxUI::~ChatBoxUI() = default;
 
 void ChatBoxUI::sendChatMessage(const std::string& message) {
-  ChatMessage chatMessage;
+  Message chatMessage;
   chatMessage.text = message;
   chatMessage.sender = "sender";
 

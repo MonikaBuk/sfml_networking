@@ -72,8 +72,10 @@ void Client::sendChatMessage(const ChatMessage& message) {
     if (socket->send(messagePacket) != sf::Socket::Done) {
       std::cerr << "Failed to send chat message" << std::endl;
     }
-  } else {
-    std::cerr << "Failed to send chat message" << std::endl;
+  }
+  else
+  {
+    std::cerr << "Failed to send chat message. Socket not connected or invalid." << std::endl;
   }
 }
 

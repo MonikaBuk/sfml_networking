@@ -5,9 +5,10 @@
 #ifndef SFMLGAME_CLIENT_H
 #define SFMLGAME_CLIENT_H
 
+#include "../GameObjects/UI/Message.h"
 #include <Sfml/Network.hpp>
-#include <iostream>
 #include <atomic>
+#include <iostream>
 #include <thread>
 #include <vector>
 #include "../ChatMessage.h"

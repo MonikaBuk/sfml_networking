@@ -14,7 +14,7 @@ FontManager::FontManager(const std::string& fontFilePath) : FontManager()
 {
   font = std::make_shared<sf::Font>();
   if (!font->loadFromFile(fontFilePath)) {
-    // Handle font loading error
+    std::cout << "font did not load";
   }
 }
 std::shared_ptr<sf::Font> FontManager::GetFont()

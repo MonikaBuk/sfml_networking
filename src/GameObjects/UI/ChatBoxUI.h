@@ -30,10 +30,10 @@ class ChatBoxUI : public UIElement {
   std::unique_ptr<InputFieldUI> messageInput;
   std::unique_ptr<ButtonUI> sendButton;
   sf::RectangleShape chatBox;
-  std::vector<ChatMessage> chatMessages;
+  std::vector<Message> chatMessages;
   unsigned int visibleMessageCount =0;
   unsigned int firstVisibleMessage= 0;
-  // Other private members for scrolling and message management
+
 
 
 };
