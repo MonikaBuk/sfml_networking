@@ -1,0 +1,8 @@
+//
+// Created by monik on 02/11/2023.
+//
+
+#ifndef SFMLGAME_CUSTOMCOLOURS_H
+#define SFMLGAME_CUSTOMCOLOURS_H
+
+#endif // SFMLGAME_CUSTOMCOLOURS_H
