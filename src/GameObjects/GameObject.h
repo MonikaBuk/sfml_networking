@@ -8,6 +8,7 @@
 #include <SFML/Graphics.hpp>
 # include "GameObjectFunctions/Collider.h"
 #include "GameObjectFunctions/Animation.h"
+#include <iostream>
 
 class GameObject
 {
@@ -15,12 +16,16 @@ class GameObject
   GameObject();
   GameObject(const int& ID, const sf::Texture& texture);
   ~GameObject() = default;
-  std::unique_ptr<sf::Sprite>& GetSprite();
+  const std::unique_ptr<sf::Sprite>& GetSprite() const;
   Collider getCollider(){return Collider(*GetSprite());};
   Animation animation;
 
  private:
   std::unique_ptr<sf::Sprite> objectSprite;
+
+
+ public:
+  bool isInside(sf::Vector2i pos) const;
 };
 
 #endif // SFMLGAME_GAMEOBJECT_H

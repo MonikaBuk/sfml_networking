@@ -23,7 +23,7 @@ class Game
   void mouseClicked(sf::Event event);
   void keyPressed(sf::Event event);
   void textEntered(sf::Event event);
-
+ // const std::unique_ptr<Client>& getClient() const;
 
  private:
   sf::RenderWindow& window;
@@ -31,7 +31,7 @@ class Game
   std::unique_ptr<Client> client = nullptr;
 
  public:
-  const std::unique_ptr<Client>& getClient() const;
+
 
  private:
   std::unique_ptr<Server> server = nullptr;

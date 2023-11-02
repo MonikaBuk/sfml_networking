@@ -9,7 +9,6 @@ FontManager::FontManager()
   font = std::make_unique<sf::Font>();
 }
 
-
 FontManager::FontManager(const std::string& fontFilePath) : FontManager()
 {
   font = std::make_shared<sf::Font>();

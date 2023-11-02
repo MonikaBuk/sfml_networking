@@ -38,8 +38,12 @@ void GameMenu::render()
 
 
 }
-void GameMenu::mouseClicked(sf::Event event) {}
+void GameMenu::mouseClicked(sf::Event event) {
+  std::cout << "click";
+  chatBox->onClickSend(event);
+}
 void GameMenu::keyPressed(sf::Event event) {
+  chatBox->handleStatus(event);
 
 }
 

@@ -44,9 +44,10 @@ int main()
         window.close();
       if (event.type == sf::Event::KeyPressed)
         game.keyPressed(event);
-
       if (event.type == sf::Event::TextEntered)
         game.textEntered(event);
+      if (event.type == sf::Event::MouseButtonPressed)
+        game.mouseClicked(event);
     }
 
 

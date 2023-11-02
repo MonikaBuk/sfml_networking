@@ -5,11 +5,9 @@
 #ifndef SFMLGAME_GAMEMENU_H
 #define SFMLGAME_GAMEMENU_H
 #include <memory>
-#include "../GameObjects/UI/InputFieldUI.h"
 #include "GameState.h"
-
+#include "../GameObjects/UI/InputFieldUI.h"
 #include "../GameObjects/UI/ChatBoxUI.h"
-#include "../GameObjects/UI/FontManager.h"
 #include "../Networking/Client.h"
 
 class GameMenu: public GameState
@@ -31,7 +29,6 @@ class GameMenu: public GameState
   sf::Text test;
   sf::Font font;
   std::unique_ptr<ChatBoxUI> chatBox;
-  std::shared_ptr<FontManager> fontManager;
 
 };
 

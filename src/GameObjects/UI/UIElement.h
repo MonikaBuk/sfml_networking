@@ -8,7 +8,7 @@
 #include <SFML/Graphics.hpp>
 #include "../GameObject.h"
 #include "../../GameWindow.h"
-
+#include "CustomColours.h"
 class UIElement: public GameObject
 {
  public:
@@ -26,10 +26,12 @@ class UIElement: public GameObject
 
 
 
+
  private:
   // Member variables to store the state of the UI element
   bool isEnabled = true;
   bool selected;
+
 
 };
 

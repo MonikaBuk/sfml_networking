@@ -14,6 +14,7 @@ class ButtonUI: public UIElement
   void handleEvent(sf::Event event);
   void draw();
   float getWidth();
+  sf::Vector2<float> getPosition();
 
  private:
   //sf::RenderWindow& window;
@@ -23,11 +24,14 @@ class ButtonUI: public UIElement
   sf::Vector2f position;
   sf::Vector2f scale;
   sf::Texture buttonTexture;
-  sf::Sprite buttonBox;
+  GameObject buttonBox;
   sf::Text text;
   std::string buttonText;
   std::string buttonFilePath;
 
+
+ public:
+  bool isInside(sf::Vector2f point) const;
 };
 
 #endif // SFMLGAME_BUTTONUI_H

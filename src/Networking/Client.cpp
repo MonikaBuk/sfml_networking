@@ -104,3 +104,11 @@ void Client::setLastMessage(const ChatMessage& message)
 {
  lastMessage = message;
 }
+const std::string& Client::getUserName() const
+{
+  return userName;
+}
+void Client::setUserName(const std::string& userName)
+{
+  Client::userName = userName;
+}

@@ -15,15 +15,3 @@ sf::Vector2f UIElement::getPercentage(const sf::Vector2f& newPosition) const {
 
   return percentage;
 }
-bool UIElement::isClicked() {
-  if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && isEnabled) {
-    sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
-
-    // Check if the mouse click is within the UI element's collider
-    Collider collider = getCollider();  // Assuming you have a getCollider() method
-    sf::Vector2f mousePosFloat = static_cast<sf::Vector2f>(mousePosition);
-
-    return collider.checkCollision(Collider(*GetSprite()), mousePosFloat, true, true);
-  }
-  return false;
-}

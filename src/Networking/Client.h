@@ -26,12 +26,16 @@ class Client
   void setMessageReceived(bool messageReceived);
   const ChatMessage& getLastMessage() const;
   void setLastMessage(const ChatMessage& lastMessage);
+  const std::string& getUserName() const;
+  void setUserName(const std::string& userName);
 
  private:
   std::unique_ptr<sf::TcpSocket> socket;
   bool messageReceived;
   ChatMessage lastMessage;
+  std::string  userName = "testName";
 
+ public:
 
 };
 

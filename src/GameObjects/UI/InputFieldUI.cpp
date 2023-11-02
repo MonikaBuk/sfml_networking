@@ -3,8 +3,8 @@
 //
 
 #include "InputFieldUI.h"
-InputFieldUI::InputFieldUI(sf::RenderWindow& window, sf::Font& font, int fontSize, sf::Color textColor, sf::Color fillColor, sf::Vector2f position, sf::Vector2f size)
-  : window(window), font(font), fontSize(fontSize), textColor(textColor), fillColor(fillColor), position(position), size(size)
+InputFieldUI::InputFieldUI(sf::RenderWindow& window, sf::Font& font, int fontSize, sf::Color textColor, sf::Color fillColor, sf::Vector2f position, sf::Vector2f size, int limit)
+  : window(window), font(font), fontSize(fontSize), textColor(textColor), fillColor(fillColor), position(position), size(size), limit(limit)
 {
   text.setFont(font);
   text.setCharacterSize(fontSize);
@@ -27,20 +27,22 @@ InputFieldUI::InputFieldUI(sf::RenderWindow& window, sf::Font& font, int fontSiz
           {
             inputText.pop_back();
           }
-          else if (event.text.unicode != '\b')
+          else if (inputText.length() < limit)
           {
-            inputText += static_cast<char>(event.text.unicode);
+            if (event.text.unicode != '\b' && event.text.unicode != 13)
+            {
+              inputText += static_cast<char>(event.text.unicode);
+            }
           }
           text.setString(inputText);
 
-
           sf::Vector2f boxPos = inputBox.getPosition();
-          float posY = boxPos.x +(inputBox.getGlobalBounds().height/2) - text.getGlobalBounds().height/2;
+          float posY = boxPos.y + (inputBox.getGlobalBounds().height / 2) -
+                       text.getGlobalBounds().height / 2;
           text.setPosition(boxPos.x + 10, posY);
         }
       }
     }
-
   }
   void InputFieldUI::draw()
   {
@@ -59,4 +61,9 @@ InputFieldUI::InputFieldUI(sf::RenderWindow& window, sf::Font& font, int fontSiz
   void InputFieldUI::clearInput() {
     inputText.clear();
     text.setString(inputText);
+  }
+  const sf::Vector2f& InputFieldUI::getPos()
+  {
+    boxPos = inputBox.getPosition();
+    return boxPos;
   }

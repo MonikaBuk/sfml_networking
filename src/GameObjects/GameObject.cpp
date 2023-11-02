@@ -10,11 +10,8 @@ GameObject::GameObject()
 }
 
 
-GameObject::GameObject(const int& ID, const sf::Texture& texture) : GameObject()
-{
-  objectSprite->setTexture(texture);
-}
-std::unique_ptr<sf::Sprite>& GameObject::GetSprite()
+const std::unique_ptr<sf::Sprite>& GameObject::GetSprite() const
 {
   return objectSprite;
 }
+

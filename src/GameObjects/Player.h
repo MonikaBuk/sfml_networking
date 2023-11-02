@@ -11,6 +11,7 @@ class Player
  private:
   Character playerCharacter;
   void movingPlayer();
+  std::string userName;
 };
 
 #endif // SFMLGAME_PLAYER_H

@@ -11,13 +11,14 @@
 class InputFieldUI :public UIElement
 {
  public:
-  InputFieldUI(sf::RenderWindow& window, sf::Font& font, int fontSize, sf::Color textColor, sf::Color fillColor, sf::Vector2f position, sf::Vector2f size);
+  InputFieldUI(sf::RenderWindow& window, sf::Font& font, int fontSize, sf::Color textColor, sf::Color fillColor, sf::Vector2f position, sf::Vector2f size, int limit);
   ~InputFieldUI() = default;
   void handleEvent(sf::Event event);
   void draw();
   const std::string& getInputText() const { return inputText; }
   float getWidth();
   void clearInput();
+  const sf::Vector2f& getPos();
 
  private:
   sf::RenderWindow& window;
@@ -30,6 +31,8 @@ class InputFieldUI :public UIElement
   sf::RectangleShape inputBox;
   sf::Text text;
   std::string inputText;
+  sf::Vector2f boxPos;
+  int limit;
 
 
 };

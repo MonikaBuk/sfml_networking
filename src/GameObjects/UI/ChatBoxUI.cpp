@@ -10,16 +10,19 @@ ChatBoxUI::ChatBoxUI(Client& client) : client(client){}
 void ChatBoxUI::innitElements(sf::Font& font, const sf::String& buttonFilePath)
 {
   sendButton = std::make_unique<ButtonUI>(
-    font, 10, sf::Color::Green, buttonFilePath,
-    "send", sf::Vector2f(30, 0), sf::Vector2f(0.05, 0.05));
-  messageInput = std::make_unique<InputFieldUI>(window,font, 10, sf::Color::Black, sf::Color::White, sf::Vector2f (0,0), sf::Vector2f (30,3));
+    font, 10, CustomColors::TxtBlue , buttonFilePath,
+    "send", sf::Vector2f(30, 95), sf::Vector2f(0.035, 0.035));
+  messageInput = std::make_unique<InputFieldUI>(window,font, 10, CustomColors::TxtBlue, CustomColors::BcktBlue, sf::Vector2f (0,95), sf::Vector2f (30,5), 25);
   float combinedWidth = messageInput->getWidth() + sendButton->getWidth();
-  chatBox.setSize(sf::Vector2f (combinedWidth, 80));
-  chatBox.setPosition(0, 0);
-  chatBox.setFillColor(sf::Color::Blue);
-  m_text.setFont(font);      // Assuming you have a font object
-  m_text.setCharacterSize(12); // Adjust the character size as needed
-  m_text.setFillColor(sf::Color::White);
+  sf::Vector2f oneThird = getPercentage(sf::Vector2f(33,33));
+  chatBox.setSize(sf::Vector2f (combinedWidth, oneThird.y));
+  chatBox.setPosition(0, window.getSize().y - chatBox.getSize().y);
+  chatBox.setFillColor(CustomColors::BckGreen);
+  chatBox.setOutlineThickness(3);
+  chatBox.setOutlineColor(CustomColors::BrdGreen);
+  m_text.setFont(font);
+  m_text.setCharacterSize(11);
+  m_text.setFillColor(CustomColors::TxtBlue);
   setIsEnabled(true);
 }
 void ChatBoxUI::draw()
@@ -29,74 +32,103 @@ void ChatBoxUI::draw()
     window.draw(chatBox);
     messageInput->draw();
     sendButton->draw();
-    float y = 40; // Adjust this value to set the initial vertical position
+    float y = messageInput->getPos().y - 15;
     for (const auto& message : chatMessages)
     {
-      // Render each received message on the chat box
-
-      // Set text color
-      m_text.setString(message.sender + ": " + message.text);
-      m_text.setPosition(40, y);
+      std::string messageText = message.sender + ": " + message.text;
+      m_text.setStyle(sf::Text::Regular);
+      m_text.setString(messageText);
+      m_text.setPosition(15, y);
       window.draw(m_text);
-      y += 20;
+      y -= 15;
     }
   }
 }
-void ChatBoxUI::handleEvent(sf::Event event) {
+void ChatBoxUI::handleEvent(sf::Event event)
+{
   if (getIsEnabled())
   {
-    // Handle events for the chat box
-    // ...
-
-    // Delegate input handling to the input field
     if (messageInput)
     {
       messageInput->handleEvent(event);
-      if (event.type == sf::Event::TextEntered)
+    }
+  }
+}
+
+void ChatBoxUI::handleStatus(sf::Event event)
+{
+  if (event.type == sf::Event::KeyPressed)
+  {
+    if (event.key.code == sf::Keyboard::Enter)
+    {
+      if (!getIsEnabled())
       {
-        if (event.text.unicode == 13)
-        {
-          std::string message = messageInput->getInputText();
-
-          if (!message.empty())
-          {
-            std::string sender = "SenderName";
-            sendChatMessage(message);
-
-            //receiveChatMessage(message);
-            messageInput->clearInput();
-          }
-        }
+        setIsEnabled(true);
       }
+      else
+      {
+        sendChatMessage();
+      }
+    }
+    else if (event.key.code == sf::Keyboard::Escape && getIsEnabled())
+    {
+      setIsEnabled(false);
     }
   }
 }
 
 ChatBoxUI::~ChatBoxUI() = default;
 
-void ChatBoxUI::sendChatMessage(const std::string& message) {
-  ChatMessage chatMessage;
-  chatMessage.text = message;
-  chatMessage.sender = "sender";
-  addMessage(chatMessage);
-  client.sendChatMessage(chatMessage);
+void ChatBoxUI::sendChatMessage() {
+  std::string messageString = messageInput->getInputText();
+
+  if (!messageString.empty())
+  {
+    ChatMessage chatMessage;
+    chatMessage.text   = messageString;
+    chatMessage.sender = client.getUserName();
+    client.sendChatMessage(chatMessage);
+    chatMessage.sender = "You";
+    addMessage(chatMessage);
+  }
+  messageInput->clearInput();
 }
 void ChatBoxUI::addMessage(ChatMessage& sentMessage)
 {
-  chatMessages.push_back(sentMessage);
-
+  chatMessages.insert(chatMessages.begin(),sentMessage);
+  if (chatMessages.size() >10)
+  {
+    chatMessages.pop_back();
+  }
 }
 
 void ChatBoxUI:: updateLatestChatMessage() {
   if (client.isMessageReceived())
   {
     ChatMessage receivedMessage = client.getLastMessage();
-    chatMessages.push_back(receivedMessage);
-    std::cout <<"it gets here";
+   addMessage(receivedMessage);
     if (!receivedMessage.text.empty())
     {
-
       client.setMessageReceived(false);
     }
   }
 }
+
+
+void ChatBoxUI::onClickSend(sf::Event event)
+{
+  if (event.type ==  sf::Event::MouseButtonPressed)
+  {
+    if (event.mouseButton.button == sf::Mouse::Left)
+    {
+      sf::Vector2i click = sf::Mouse::getPosition(window);
+      if(sendButton->isInside(static_cast<sf::Vector2f>(click)))
+      {
+        std::cout << "shit";
+        sendChatMessage();
+      }
+    }
+  }
+}
+
+

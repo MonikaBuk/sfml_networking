@@ -3,3 +3,4 @@
 //
 
 #include "Player.h"
+void Player::movingPlayer() {}
