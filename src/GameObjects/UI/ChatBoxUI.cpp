@@ -12,7 +12,7 @@ void ChatBoxUI::innitElements(sf::Font& font, const sf::String& buttonFilePath)
   sendButton = std::make_unique<ButtonUI>(
     font, 10, CustomColors::TxtBlue , buttonFilePath,
     "send", sf::Vector2f(30, 95), sf::Vector2f(0.035, 0.035));
-  messageInput = std::make_unique<InputFieldUI>(window,font, 10, CustomColors::TxtBlue, CustomColors::BcktBlue, sf::Vector2f (0,95), sf::Vector2f (30,5), 25);
+  messageInput = std::make_unique<InputFieldUI>(window,font, 10, CustomColors::TxtBlue, CustomColors::BcktBlue, sf::Vector2f (0,95), sf::Vector2f (30,5), 50);
   float combinedWidth = messageInput->getWidth() + sendButton->getWidth();
   sf::Vector2f oneThird = getPercentage(sf::Vector2f(33,33));
   chatBox.setSize(sf::Vector2f (combinedWidth, oneThird.y));
@@ -34,8 +34,35 @@ void ChatBoxUI::draw()
     sendButton->draw();
     float y = messageInput->getPos().y - 15;
     for (const auto& message : chatMessages)
-    {
-      std::string messageText = message.sender + ": " + message.text;
+    {  std::string senderString  = message.sender + ": ";
+      std::string tempMessageText = senderString + message.text;
+      std::string  messageText;
+      if (tempMessageText.length() > 33)
+      {
+        int emptySpaceInSender = senderString.length() -1;
+        std::string t1;
+        std::string t2;
+
+
+        int lastEmptySpace;
+        lastEmptySpace = tempMessageText.find_last_of(" ", 40);
+
+        if (lastEmptySpace != emptySpaceInSender)
+        {
+          t1          = tempMessageText.substr(0, lastEmptySpace);
+          t2          = tempMessageText.substr(lastEmptySpace);
+        }
+        else{
+          t1 = tempMessageText.substr(0, 33);
+          t2          = tempMessageText.substr(33);
+        }
+        y -= 15;
+        messageText = t1 + "\n" + t2;
+      }
+      else
+      {
+        messageText = tempMessageText;
+      }
       m_text.setStyle(sf::Text::Regular);
       m_text.setString(messageText);
       m_text.setPosition(15, y);
