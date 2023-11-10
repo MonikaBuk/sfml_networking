@@ -38,3 +38,4 @@ void StateHandler::init()
 void StateHandler::textEntered(sf::Event event) {
   currentState->textEntered(event);
 }
+void StateHandler::onWheelScrolled(sf::Event event) {  currentState->mouseWheelScrolled(event);}

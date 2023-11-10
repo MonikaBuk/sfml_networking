@@ -24,6 +24,8 @@ class ChatBoxUI : public UIElement {
   void updateLatestChatMessage();
   void handleStatus(sf::Event event);
   void onClickSend(sf::Event event);
+  void OnScroll(sf::Event event);
+
 
  private:
   Client& client;
@@ -33,6 +35,12 @@ class ChatBoxUI : public UIElement {
   std::vector<ChatMessage> chatMessages;
   sf::Font m_font;
   sf::Text m_text;
+  int y;
+  bool newMessageAdded = false;
+  float deltaY;
+  float deltaYScroll = 0;
+  int spacing;
+
 
 };
 

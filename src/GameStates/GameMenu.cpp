@@ -53,4 +53,6 @@ void GameMenu::textEntered(sf::Event event)
   // test.setString(userNameInput->getInputText());
   chatBox->handleEvent(event);
 }
-
+void GameMenu::mouseWheelScrolled(sf::Event event) {
+  chatBox->OnScroll(event);
+}

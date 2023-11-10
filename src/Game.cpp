@@ -56,3 +56,6 @@ void Game::keyPressed(sf::Event event)
 void Game::textEntered(sf::Event event) {
   stateHandler.textEntered(event);
 }
+void Game::mouseWheelScrolled(sf::Event event) {
+  stateHandler.onWheelScrolled(event);
+}

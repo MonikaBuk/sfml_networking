@@ -3,6 +3,7 @@
 //
 
 #include "ChatBoxUI.h"
+#include <algorithm>
 
 
 ChatBoxUI::ChatBoxUI(Client& client) : client(client){}
@@ -10,9 +11,9 @@ ChatBoxUI::ChatBoxUI(Client& client) : client(client){}
 void ChatBoxUI::innitElements(sf::Font& font, const sf::String& buttonFilePath)
 {
   sendButton = std::make_unique<ButtonUI>(
-    font, 10, CustomColors::TxtBlue , buttonFilePath,
-    "send", sf::Vector2f(30, 95), sf::Vector2f(0.035, 0.035));
-  messageInput = std::make_unique<InputFieldUI>(window,font, 10, CustomColors::TxtBlue, CustomColors::BcktBlue, sf::Vector2f (0,95), sf::Vector2f (30,5), 50);
+    font, 15, CustomColors::TxtBlue , buttonFilePath,
+    "send", sf::Vector2f(25, 95), sf::Vector2f(0.1, 0.045));
+  messageInput = std::make_unique<InputFieldUI>(window,font, 15, CustomColors::TxtBlue, CustomColors::BcktBlue, sf::Vector2f (0,95), sf::Vector2f (25,5), 55);
   float combinedWidth = messageInput->getWidth() + sendButton->getWidth();
   sf::Vector2f oneThird = getPercentage(sf::Vector2f(33,33));
   chatBox.setSize(sf::Vector2f (combinedWidth, oneThird.y));
@@ -21,8 +22,9 @@ void ChatBoxUI::innitElements(sf::Font& font, const sf::String& buttonFilePath)
   chatBox.setOutlineThickness(3);
   chatBox.setOutlineColor(CustomColors::BrdGreen);
   m_text.setFont(font);
-  m_text.setCharacterSize(11);
+  m_text.setCharacterSize(15);
   m_text.setFillColor(CustomColors::TxtBlue);
+  spacing = (m_text.getLineSpacing()*2) + m_text.getCharacterSize() + 3;
   setIsEnabled(true);
 }
 void ChatBoxUI::draw()
@@ -32,32 +34,22 @@ void ChatBoxUI::draw()
     window.draw(chatBox);
     messageInput->draw();
     sendButton->draw();
-    float y = messageInput->getPos().y - 15;
+    int characterLimit;
+    int y = messageInput->getPos().y - 24;
     for (const auto& message : chatMessages)
-    {  std::string senderString  = message.sender + ": ";
+    {
+      std::string senderString    = message.sender + ": ";
       std::string tempMessageText = senderString + message.text;
-      std::string  messageText;
-      if (tempMessageText.length() > 33)
+      std::string messageText;
+      m_text.setString(tempMessageText);
+      characterLimit = GetCharacterLimit(m_text, chatBox.getGlobalBounds(), 1);
+
+      int emptySpaceToIgnore = senderString.length() - 1;
+
+      if (tempMessageText.length() > characterLimit)
       {
-        int emptySpaceInSender = senderString.length() -1;
-        std::string t1;
-        std::string t2;
-
-
-        int lastEmptySpace;
-        lastEmptySpace = tempMessageText.find_last_of(" ", 40);
-
-        if (lastEmptySpace != emptySpaceInSender)
-        {
-          t1          = tempMessageText.substr(0, lastEmptySpace);
-          t2          = tempMessageText.substr(lastEmptySpace);
-        }
-        else{
-          t1 = tempMessageText.substr(0, 33);
-          t2          = tempMessageText.substr(33);
-        }
-        y -= 15;
-        messageText = t1 + "\n" + t2;
+        messageText = TextWarp(
+          tempMessageText, emptySpaceToIgnore, characterLimit, y, spacing);
       }
       else
       {
@@ -65,9 +57,17 @@ void ChatBoxUI::draw()
       }
       m_text.setStyle(sf::Text::Regular);
       m_text.setString(messageText);
-      m_text.setPosition(15, y);
-      window.draw(m_text);
-      y -= 15;
+      m_text.setPosition(15, y + deltaYScroll);
+      sf::FloatRect boxWithOffset = chatBox.getGlobalBounds();
+      boxWithOffset.top           = boxWithOffset.top + 30;
+      boxWithOffset.height        = boxWithOffset.height - 83;
+      if (
+        isInsideRect(boxWithOffset, m_text.getGlobalBounds()) &&
+        !isInsideRect(messageInput->GetBounds(), m_text.getGlobalBounds()))
+      {
+        window.draw(m_text);
+      }
+      y -= spacing;
     }
   }
 }
@@ -123,7 +123,7 @@ void ChatBoxUI::sendChatMessage() {
 void ChatBoxUI::addMessage(ChatMessage& sentMessage)
 {
   chatMessages.insert(chatMessages.begin(),sentMessage);
-  if (chatMessages.size() >10)
+  if (chatMessages.size() >20)
   {
     chatMessages.pop_back();
   }
@@ -141,7 +141,6 @@ void ChatBoxUI:: updateLatestChatMessage() {
   }
 }
 
-
 void ChatBoxUI::onClickSend(sf::Event event)
 {
   if (event.type ==  sf::Event::MouseButtonPressed)
@@ -149,13 +148,61 @@ void ChatBoxUI::onClickSend(sf::Event event)
     if (event.mouseButton.button == sf::Mouse::Left)
     {
       sf::Vector2i click = sf::Mouse::getPosition(window);
-      if(sendButton->isInside(static_cast<sf::Vector2f>(click)))
+      if(sendButton->isInsidePoint(static_cast<sf::Vector2f>(click)))
       {
-        std::cout << "shit";
         sendChatMessage();
       }
     }
   }
 }
+void ChatBoxUI::OnScroll(sf::Event event)
+{
+  if (event.type == sf::Event::MouseWheelScrolled)
+  {
+    if (event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel)
+    {
+      if (!chatMessages.empty())
+
+      {
+        deltaY = event.mouseWheelScroll.delta;
+        deltaY = -deltaY * 4;
+
+        int maxScroll     = 0;
+        int minScroll     = 0;
+        int totalHeight   = 0;
+        int messageHeight = m_text.getGlobalBounds().height;
+
+        if (!chatMessages.empty())
+        {
+          for (const auto& message : chatMessages)
+          {
+            sf::FloatRect bounds = m_text.getLocalBounds();
+            messageHeight = bounds.height;
+            totalHeight += messageHeight;
+          }
+          maxScroll = totalHeight;
+
+          minScroll = 0;
+        }
+        deltaYScroll += deltaY;
+        if (deltaYScroll > maxScroll)
+        {
+          deltaYScroll = maxScroll;
+        }
+        else if (deltaYScroll < minScroll)
+        {
+          deltaYScroll = minScroll;
+        }
+      }
+    }
+  }
+}
+
+
+
+
+
+
+
 
 

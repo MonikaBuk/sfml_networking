@@ -48,6 +48,8 @@ int main()
         game.textEntered(event);
       if (event.type == sf::Event::MouseButtonPressed)
         game.mouseClicked(event);
+      if (event.type == sf::Event::MouseWheelScrolled)
+        game.mouseWheelScrolled(event);
     }
 
 

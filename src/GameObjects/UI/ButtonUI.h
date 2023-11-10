@@ -31,7 +31,7 @@ class ButtonUI: public UIElement
 
 
  public:
-  bool isInside(sf::Vector2f point) const;
+  bool isInsidePoint(sf::Vector2f point) const;
 };
 
 #endif // SFMLGAME_BUTTONUI_H

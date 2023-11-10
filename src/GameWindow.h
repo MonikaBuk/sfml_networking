@@ -11,7 +11,7 @@ class GameWindow
 {
  public:
   static sf::RenderWindow& getWindow() {
-    static sf::RenderWindow window(sf::VideoMode(800, 600), "SFML Game");
+    static sf::RenderWindow window(sf::VideoMode(1360, 768), "BomberGame", sf::Style::Default);
     return window;
   }
 };

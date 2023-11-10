@@ -14,26 +14,28 @@
 class UIElement: public GameObject
 {
  public:
-
   sf::RenderWindow& window = GameWindow::getWindow();
   sf::Vector2u windowSize = window.getSize();
   sf::Vector2f getPercentage(const sf::Vector2f& newPosition) const;
+  std::string
+  TextWarp(const std::string& text, int firstEmptySpace, int limit, int& y, int& space);
 
   bool getIsEnabled() const { return isEnabled; }
   void setIsEnabled(bool isEnabled) { this->isEnabled = isEnabled; }
 
   bool isSelected() const { return selected; }
   void setSelected(bool selected) { this->selected = selected; }
-  bool isClicked();
 
-
-
+  int GetCharacterLimit(const sf::Text& tempText, sf::FloatRect boxRect, float offset);
+  bool isInsideRect(sf::FloatRect rect1, sf::FloatRect rect2);
 
  private:
   // Member variables to store the state of the UI element
   bool isEnabled = true;
   bool selected;
+  bool InsideRect;
 
+ public:
 
 };
 

@@ -15,10 +15,12 @@ class InputFieldUI :public UIElement
   ~InputFieldUI() = default;
   void handleEvent(sf::Event event);
   void draw();
-  const std::string& getInputText() const { return inputText; }
   float getWidth();
+  float getHeight();
   void clearInput();
   const sf::Vector2f& getPos();
+  const std::string& getInputText();
+  sf::FloatRect GetBounds();
 
  private:
   sf::RenderWindow& window;
@@ -33,6 +35,10 @@ class InputFieldUI :public UIElement
   std::string inputText;
   sf::Vector2f boxPos;
   int limit;
+  int posY;
+  bool wasWarped = false;
+  bool limitationSet = false;
+  int prevlim;
 
 
 };

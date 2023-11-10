@@ -17,6 +17,7 @@ class GameState
   virtual void mouseClicked(sf::Event event) = 0;
   virtual void keyPressed(sf::Event event) = 0;
   virtual void textEntered(sf::Event event)=0;
+  virtual void mouseWheelScrolled(sf::Event event)=0;
 
  protected:
   sf::RenderWindow& window;

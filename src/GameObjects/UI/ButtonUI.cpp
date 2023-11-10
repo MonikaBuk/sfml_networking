@@ -49,10 +49,9 @@ sf::Vector2<float> ButtonUI::getPosition()
   return buttonBoxPosition;
 }
 
-bool ButtonUI::isInside(sf::Vector2f point) const
+bool ButtonUI::isInsidePoint(sf::Vector2f point) const
 {
   sf::FloatRect rect = buttonBox.GetSprite()->getGlobalBounds();
-  std::cout << point.x << "\n" << point.y;
   return (
     (point.x+position.x >= rect.left && point.x <= rect.left + rect.width &&
      point.y +position.y >= rect.top && point.y <= rect.top + rect.height));

@@ -20,6 +20,7 @@ class GameMenu: public GameState
   void mouseClicked(sf::Event event) override;
   void keyPressed(sf::Event event) override;
   void textEntered(sf::Event event) override;
+  void mouseWheelScrolled(sf::Event event) override;
 
   void createUserNameInput();
 

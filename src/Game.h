@@ -23,6 +23,7 @@ class Game
   void mouseClicked(sf::Event event);
   void keyPressed(sf::Event event);
   void textEntered(sf::Event event);
+  void mouseWheelScrolled(sf::Event event);
  // const std::unique_ptr<Client>& getClient() const;
 
  private:
