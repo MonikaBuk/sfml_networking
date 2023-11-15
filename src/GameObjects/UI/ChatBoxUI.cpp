@@ -32,8 +32,7 @@ void ChatBoxUI::draw()
   if (getIsEnabled())
   {
     window.draw(chatBox);
-    messageInput->draw();
-    sendButton->draw();
+
     int characterLimit;
     int y = messageInput->getPos().y - 24;
     for (const auto& message : chatMessages)
@@ -62,13 +61,14 @@ void ChatBoxUI::draw()
       boxWithOffset.top           = boxWithOffset.top + 30;
       boxWithOffset.height        = boxWithOffset.height - 83;
       if (
-        isInsideRect(boxWithOffset, m_text.getGlobalBounds()) &&
-        !isInsideRect(messageInput->GetBounds(), m_text.getGlobalBounds()))
+        isInsideRect(boxWithOffset, m_text.getGlobalBounds()))
       {
         window.draw(m_text);
       }
       y -= spacing;
     }
+    messageInput->draw();
+    sendButton->draw();
   }
 }
 void ChatBoxUI::handleEvent(sf::Event event)
@@ -167,10 +167,10 @@ void ChatBoxUI::OnScroll(sf::Event event)
         deltaY = event.mouseWheelScroll.delta;
         deltaY = -deltaY * 4;
 
-        int maxScroll     = 0;
-        int minScroll     = 0;
-        int totalHeight   = 0;
-        int messageHeight = m_text.getGlobalBounds().height;
+        int maxScroll;
+        int minScroll;
+        int totalHeight;
+        int messageHeight;
 
         if (!chatMessages.empty())
         {

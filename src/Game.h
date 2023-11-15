@@ -12,6 +12,7 @@
 #include "GameStates/StateHandler.h"
 #include "GameStates/GamePlay.h"
 #include "GameStates/GameMenu.h"
+#include "GameStates/GameLobby.h"
 class Game
 {
  public:
@@ -24,6 +25,7 @@ class Game
   void keyPressed(sf::Event event);
   void textEntered(sf::Event event);
   void mouseWheelScrolled(sf::Event event);
+  void mouseMoved(sf::Event event);
  // const std::unique_ptr<Client>& getClient() const;
 
  private:

@@ -23,8 +23,6 @@ class UIElement: public GameObject
   bool getIsEnabled() const { return isEnabled; }
   void setIsEnabled(bool isEnabled) { this->isEnabled = isEnabled; }
 
-  bool isSelected() const { return selected; }
-  void setSelected(bool selected) { this->selected = selected; }
 
   int GetCharacterLimit(const sf::Text& tempText, sf::FloatRect boxRect, float offset);
   bool isInsideRect(sf::FloatRect rect1, sf::FloatRect rect2);

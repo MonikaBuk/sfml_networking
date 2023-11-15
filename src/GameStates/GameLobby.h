@@ -6,15 +6,25 @@
 #define SFMLGAME_GAMELOBBY_H
 
 #include "GameState.h"
+#include "../GameObjects/UI/ChatBoxUI.h"
 
-class GameLobby: GameState
+class GameLobby: public GameState
 {
-  GameLobby(sf::RenderWindow& window);
+ public:
+  GameLobby(sf::RenderWindow& window, Client* client);
   bool init()override;
   void update(float dt)override;
   void render() override;
   void mouseClicked(sf::Event event) override;
   void keyPressed(sf::Event event) override;
+  void textEntered(sf::Event event) override;
+  void mouseWheelScrolled(sf::Event event) override;
+  void mouseMoved(sf::Event event) override;
+
+ private: Client* client;
+  std::unique_ptr<ChatBoxUI> chatBox;
+  sf::Text test;
+  sf::Font font;
 };
 
 #endif // SFMLGAME_GAMELOBBY_H

@@ -5,6 +5,7 @@
 #ifndef SFMLGAME_GAMESTATE_H
 #define SFMLGAME_GAMESTATE_H
 #include <SFML/Graphics.hpp>
+#include "../Networking/Client.h"
 
 class GameState
 {
@@ -18,6 +19,7 @@ class GameState
   virtual void keyPressed(sf::Event event) = 0;
   virtual void textEntered(sf::Event event)=0;
   virtual void mouseWheelScrolled(sf::Event event)=0;
+  virtual void mouseMoved(sf::Event event)=0;
 
  protected:
   sf::RenderWindow& window;

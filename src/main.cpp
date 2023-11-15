@@ -50,6 +50,8 @@ int main()
         game.mouseClicked(event);
       if (event.type == sf::Event::MouseWheelScrolled)
         game.mouseWheelScrolled(event);
+      if (event.type == sf::Event::MouseMoved)
+        game.mouseMoved(event);
     }
 
 

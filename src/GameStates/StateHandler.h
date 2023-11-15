@@ -18,6 +18,7 @@ class StateHandler
   void keyPressed(sf::Event event);
   void textEntered(sf::Event event);
   void onWheelScrolled(sf::Event event);
+  void mouseMoved(sf::Event event);
 
  private:
   GameState* currentState;

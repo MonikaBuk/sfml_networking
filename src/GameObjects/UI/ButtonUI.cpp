@@ -14,9 +14,10 @@ ButtonUI::ButtonUI(
   text.setFillColor(textColor);
   text.setString(buttonText);
   buttonTexture.loadFromFile(buttonFilePath);
+  buttonBox.GetSprite()->setScale(scale);
   buttonBox.GetSprite()->setTexture(buttonTexture);
   buttonBox.GetSprite()->setPosition(getPercentage(position));
-  buttonBox.GetSprite()->setScale(scale);
+
   sf::FloatRect textBounds = text.getLocalBounds();
   sf::FloatRect buttonBounds = buttonBox.GetSprite()->getGlobalBounds();
 
@@ -56,3 +57,28 @@ bool ButtonUI::isInsidePoint(sf::Vector2f point) const
     (point.x+position.x >= rect.left && point.x <= rect.left + rect.width &&
      point.y +position.y >= rect.top && point.y <= rect.top + rect.height));
 }
+
+void ButtonUI::onSelected(sf::Event event)
+{
+  if (event.type == sf::Event::MouseMoved)
+  {
+    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+    if (!selected)
+    {
+      if (isInsidePoint(static_cast<sf::Vector2f>(mousePos)))
+      {
+        buttonBox.GetSprite()->setColor(sf::Color(0,255,0));
+        selected = true;
+      }
+    }
+    else if (selected)
+    {
+      if (!isInsidePoint(static_cast<sf::Vector2f>(mousePos)))
+      {
+        buttonBox.GetSprite()->setColor(sf::Color(255,255,255));
+        selected = false;
+      }
+    }
+  }
+}
+

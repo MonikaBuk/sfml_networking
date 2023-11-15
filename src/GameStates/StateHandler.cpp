@@ -39,3 +39,7 @@ void StateHandler::textEntered(sf::Event event) {
   currentState->textEntered(event);
 }
 void StateHandler::onWheelScrolled(sf::Event event) {  currentState->mouseWheelScrolled(event);}
+
+void StateHandler::mouseMoved(sf::Event event)
+{
+  currentState->mouseMoved(event);}

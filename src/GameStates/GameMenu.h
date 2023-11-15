@@ -8,7 +8,7 @@
 #include "GameState.h"
 #include "../GameObjects/UI/InputFieldUI.h"
 #include "../GameObjects/UI/ChatBoxUI.h"
-#include "../Networking/Client.h"
+
 
 class GameMenu: public GameState
 {
@@ -21,15 +21,19 @@ class GameMenu: public GameState
   void keyPressed(sf::Event event) override;
   void textEntered(sf::Event event) override;
   void mouseWheelScrolled(sf::Event event) override;
+  void mouseMoved(sf::Event event) override;
 
   void createUserNameInput();
 
  private:
   Client* client;
   std::unique_ptr<InputFieldUI> userNameInput;
-  sf::Text test;
+  std::unique_ptr<ButtonUI> hostButton;
+  std::unique_ptr<ButtonUI> joinButton;
+
+  sf::Text textInputTittle;
   sf::Font font;
-  std::unique_ptr<ChatBoxUI> chatBox;
+
 
 };
 

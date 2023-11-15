@@ -3,7 +3,7 @@
 //
 
 #include "Server.h"
-
+#include "../ChatMessage.h"
 
 void Server::init()
 {
@@ -20,8 +20,6 @@ void Server::run()
   {
     sf::TcpSocket& cSock =
       connections.emplace_back(std::make_unique<sf::TcpSocket>()).operator*();
-    // getting new connection
-    // if invalid return
     if (listener->accept(cSock) != sf::Socket::Done)
     {
       connections.pop_back();
@@ -45,20 +43,20 @@ void Server::run()
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
 
-  // add pointer for new_connection and get reference to it
 }
 
 
 void Server::listen(sf::TcpSocket& cSocket)
 {
   bool continue_receiving = true;
-  //char data[1028];
- // std::size_t received;
+
   while (continue_receiving)
   {
     sf::Packet receivedPacket;
-    //auto status = cSocket.receive(data, 1028, received);
     auto status = cSocket.receive(receivedPacket);
+
+    ChatMessage msg;
+    receivedPacket >> msg;
 
     if(status == sf::Socket::Status::Disconnected)
     {

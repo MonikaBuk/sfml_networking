@@ -9,50 +9,54 @@ GameMenu::GameMenu(sf::RenderWindow& window, Client* client) : GameState(window)
 }
 void GameMenu::createUserNameInput()
 {
- // userNameInput = std::make_unique<InputFieldUI>(window, font, 12, sf::Color::Green, sf::Color::White, sf::Vector2f(25, 45), sf::Vector2f(50, 10));
-  //userNameInput->setIsEnabled(true);
+ userNameInput = std::make_unique<InputFieldUI>(window, font, 25, CustomColors::TxtBlue, sf::Color::White, sf::Vector2f(25, 45), sf::Vector2f(50, 10), 10);
+ textInputTittle.setFont(font);
+ textInputTittle.setPosition((userNameInput->getPos().x),userNameInput->getPos().y - 50);
+ textInputTittle.setString("Please enter your name:");
+
 }
 bool GameMenu::init()
 {
-  chatBox = std::make_unique<ChatBoxUI>(*client);
-
   if(!font.loadFromFile("Data/Fonts/OpenSans-Bold.ttf")){std::cerr << "Failed to load font.";}
- // createUserNameInput();
-  if (chatBox) {
-    chatBox->innitElements(font, "Data/Images/dark brown panel.png");
-  } else {
-    std::cerr << "chatBox is NULL." << std::endl;
-  }
+  createUserNameInput();
+  joinButton = std::make_unique<ButtonUI>(
+    font, 20, CustomColors::TxtBlue , "Data/Images/dark brown panel.png",
+    "Join Game", sf::Vector2f(55, 35), sf::Vector2f(0.3, 0.15));
+  hostButton = std::make_unique<ButtonUI>(
+    font, 20, CustomColors::TxtBlue , "Data/Images/dark brown panel.png",
+    "Host Game", sf::Vector2f(25, 35), sf::Vector2f(0.3, 0.15));
+  hostButton->setIsEnabled(false);
+  joinButton->setIsEnabled(false);
 
   return true;
 }
 void GameMenu::update(float dt)
 {
-  chatBox->updateLatestChatMessage();
-
 }
 void GameMenu::render()
 {
-  //userNameInput->draw();
-  chatBox->draw();
-
-
+  userNameInput->draw();
+  hostButton->draw();
+  joinButton->draw();
+  window.draw(textInputTittle);
 }
 void GameMenu::mouseClicked(sf::Event event) {
-  std::cout << "click";
-  chatBox->onClickSend(event);
 }
 void GameMenu::keyPressed(sf::Event event) {
-  chatBox->handleStatus(event);
+
 
 }
 
 void GameMenu::textEntered(sf::Event event)
 {
-  // userNameInput->handleEvent(event);
-  // test.setString(userNameInput->getInputText());
-  chatBox->handleEvent(event);
+  userNameInput->handleEvent(event);
 }
 void GameMenu::mouseWheelScrolled(sf::Event event) {
-  chatBox->OnScroll(event);
+
+}
+void GameMenu::mouseMoved(sf::Event event) {
+  sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+  hostButton->onSelected(event);
+  joinButton->onSelected(event);
+
 }
