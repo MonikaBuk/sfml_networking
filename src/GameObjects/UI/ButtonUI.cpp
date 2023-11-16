@@ -9,15 +9,29 @@ ButtonUI::ButtonUI(
   const sf::String& buttonText, sf::Vector2f position, sf::Vector2f scale)
   : font(font), fontSize(fontSize), textColor(textColor), buttonFilePath(buttonFilePath), buttonText(buttonText), position(position), scale(scale)
 {
+  // Load button texture
+  buttonTexture.loadFromFile(buttonFilePath);
+
+  // Set up button sprite
+  buttonBox.GetSprite()->setTexture(buttonTexture);
+
+  // Calculate desired size based on scale
+  float targetWidth = scale.x;
+  float targetHeight = scale.y;
+
+  // Set the size of the sprite
+  buttonBox.GetSprite()->setScale(getPercentage(sf::Vector2f (targetWidth / buttonBox.GetSprite()->getLocalBounds().width, targetHeight / buttonBox.GetSprite()->getLocalBounds().height)));
+
+  // Set position (scaled)
+  buttonBox.GetSprite()->setPosition(getPercentage(position));
+
+  // Set up text
   text.setFont(font);
   text.setCharacterSize(fontSize);
   text.setFillColor(textColor);
   text.setString(buttonText);
-  buttonTexture.loadFromFile(buttonFilePath);
-  buttonBox.GetSprite()->setScale(scale);
-  buttonBox.GetSprite()->setTexture(buttonTexture);
-  buttonBox.GetSprite()->setPosition(getPercentage(position));
 
+  // Center the text within the button
   sf::FloatRect textBounds = text.getLocalBounds();
   sf::FloatRect buttonBounds = buttonBox.GetSprite()->getGlobalBounds();
 
@@ -26,7 +40,6 @@ ButtonUI::ButtonUI(
 
   text.setPosition(buttonBox.GetSprite()->getPosition().x + offsetX, buttonBox.GetSprite()->getPosition().y + offsetY);
 }
-
 void ButtonUI::draw()
 {
   if (getIsEnabled())
@@ -81,4 +94,7 @@ void ButtonUI::onSelected(sf::Event event)
     }
   }
 }
-
+bool ButtonUI::isSelected() const
+{
+  return selected;
+}

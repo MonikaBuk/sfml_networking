@@ -7,11 +7,12 @@
 
 #include "GameState.h"
 #include "../GameObjects/UI/ChatBoxUI.h"
+#include "StateHandler.h"
 
 class GameLobby: public GameState
 {
  public:
-  GameLobby(sf::RenderWindow& window, Client* client);
+  GameLobby(sf::RenderWindow& window, Client* client, StateHandler& handler);
   bool init()override;
   void update(float dt)override;
   void render() override;
@@ -25,6 +26,7 @@ class GameLobby: public GameState
   std::unique_ptr<ChatBoxUI> chatBox;
   sf::Text test;
   sf::Font font;
+  StateHandler&  stateHandler;
 };
 
 #endif // SFMLGAME_GAMELOBBY_H

@@ -28,8 +28,8 @@ bool Game::init()
     client =  std::make_unique<Client>();
     client -> connect();
   }
-  stateHandler.setState(new GameMenu(window, client.get()));
-  stateHandler.init();
+  stateHandler.setState(new GameMenu(window, client.get(), stateHandler));
+  //stateHandler.init();
   return true;
 }
 

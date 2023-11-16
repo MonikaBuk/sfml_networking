@@ -10,6 +10,7 @@
 class StateHandler
 {
  public:
+  StateHandler() : currentState(nullptr) {}
   void setState(GameState* newState);
   void init();
   void update(float dt);

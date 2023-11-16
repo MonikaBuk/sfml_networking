@@ -6,14 +6,26 @@
 
 
 
-void StateHandler::setState(GameState* newState)
-{
+void StateHandler::setState(GameState* newState) {
+  std::cout << "Changing state..." << std::endl;
+
+  // Release resources of the current state (assuming ownership)
+  delete currentState;
+
+  // Set the new state
   currentState = newState;
+
+  // Initialize the new state
+  if (currentState) {
+    currentState->init();
+  }
+  std::cout << "State transition: " << typeid(*currentState).name() << std::endl;
 }
 void StateHandler::update(float dt)
 {
   if (currentState)
     currentState->update(dt);
+  std::cout << "State transition: " << typeid(*currentState).name() << std::endl;
 }
 void StateHandler::render()
 {
@@ -33,7 +45,7 @@ void StateHandler::keyPressed(sf::Event event)
 }
 void StateHandler::init()
 {
-  currentState->init();
+  //currentState->init();
 }
 void StateHandler::textEntered(sf::Event event) {
   currentState->textEntered(event);

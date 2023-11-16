@@ -11,8 +11,6 @@ class ButtonUI: public UIElement
  public:
   ButtonUI(sf::Font& font, int fontSize, sf::Color textColor, const sf::String& buttonFilePath, const sf::String& buttonText, sf::Vector2f position, sf::Vector2f size);
   ~ButtonUI() = default;
-  bool IsSelected(sf::Vector2f point);
-
   void draw();
   float getWidth();
   sf::Vector2<float> getPosition();
@@ -33,6 +31,8 @@ class ButtonUI: public UIElement
   std::string buttonFilePath;
   bool selected;
 
+ public:
+  bool isSelected() const;
 };
 
 #endif // SFMLGAME_BUTTONUI_H

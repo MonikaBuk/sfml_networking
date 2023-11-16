@@ -12,7 +12,7 @@ void ChatBoxUI::innitElements(sf::Font& font, const sf::String& buttonFilePath)
 {
   sendButton = std::make_unique<ButtonUI>(
     font, 15, CustomColors::TxtBlue , buttonFilePath,
-    "send", sf::Vector2f(25, 95), sf::Vector2f(0.1, 0.045));
+    "send", sf::Vector2f(25, 95), sf::Vector2f(6, 5));
   messageInput = std::make_unique<InputFieldUI>(window,font, 15, CustomColors::TxtBlue, CustomColors::BcktBlue, sf::Vector2f (0,95), sf::Vector2f (25,5), 55);
   float combinedWidth = messageInput->getWidth() + sendButton->getWidth();
   sf::Vector2f oneThird = getPercentage(sf::Vector2f(33,33));
@@ -140,7 +140,6 @@ void ChatBoxUI:: updateLatestChatMessage() {
     }
   }
 }
-
 void ChatBoxUI::onClickSend(sf::Event event)
 {
   if (event.type ==  sf::Event::MouseButtonPressed)
@@ -180,7 +179,8 @@ void ChatBoxUI::OnScroll(sf::Event event)
             messageHeight = bounds.height;
             totalHeight += messageHeight;
           }
-          maxScroll = totalHeight;
+          maxScroll = totalHeight - chatBox.getGlobalBounds().height;
+         // maxScroll = totalHeight;
 
           minScroll = 0;
         }
