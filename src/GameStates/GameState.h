@@ -6,6 +6,7 @@
 #define SFMLGAME_GAMESTATE_H
 #include <SFML/Graphics.hpp>
 #include "../Networking/Client.h"
+#include "../Networking/Network.h"
 
 class GameState
 {
@@ -13,7 +14,7 @@ class GameState
   GameState(sf::RenderWindow& window) : window(window) { }
   virtual ~GameState() = default;
   virtual bool init() = 0;
-  virtual void update(float dt) = 0;
+  virtual void update(float dt){};
   virtual void render() = 0;
   virtual void mouseClicked(sf::Event event) = 0;
   virtual void keyPressed(sf::Event event) = 0;

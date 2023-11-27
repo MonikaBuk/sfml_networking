@@ -4,7 +4,7 @@
 
 #include "GameMenu.h"
 
-GameMenu::GameMenu(sf::RenderWindow& window, Client* client, StateHandler& handler) : GameState(window), client(client), stateHandler(handler)
+GameMenu::GameMenu(sf::RenderWindow& window, Network* network, StateHandler& handler) : GameState(window), network(network), stateHandler(handler)
 {
 }
 void GameMenu::createUserNameInput()
@@ -32,7 +32,9 @@ bool GameMenu::init()
 }
 void GameMenu::update(float dt)
 {
+
 }
+
 void GameMenu::render()
 {
   userNameInput->draw();
@@ -48,12 +50,20 @@ void GameMenu::render()
 void GameMenu::mouseClicked(sf::Event event) {
   if (joinButton->isSelected() && joinButton->getIsEnabled())
   {
-
+    if (network->clientConnect())
+    {
+      stateHandler.setState(new GameLobby(window, network, stateHandler));
+    }
+    return ;
   }
-  if (hostButton->isSelected() && hostButton->getIsEnabled())
+ if (hostButton->isSelected() && hostButton->getIsEnabled())
   {
-    std::cout << "asd";
-    stateHandler.setState(new GameLobby(window, client, stateHandler));
+    network->createServer();
+    if (network->clientConnect())
+    {
+      stateHandler.setState(new GameLobby(window, network, stateHandler));
+    }
+    return ;
   }
 }
 void GameMenu::keyPressed(sf::Event event)
@@ -68,7 +78,7 @@ void GameMenu::keyPressed(sf::Event event)
         newName = userNameInput->getInputText();
         if (!newName.empty())
         {
-          client->setUserName(newName);
+          network->getClient()->setUserName(newName);
           userNameInput->setIsEnabled(false);
           hostButton->setIsEnabled(true);
           joinButton->setIsEnabled(true);
@@ -91,4 +101,3 @@ void GameMenu::mouseMoved(sf::Event event) {
   joinButton->onSelected(event);
 
 }
-

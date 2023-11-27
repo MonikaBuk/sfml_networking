@@ -12,7 +12,7 @@
 class GameLobby: public GameState
 {
  public:
-  GameLobby(sf::RenderWindow& window, Client* client, StateHandler& handler);
+  GameLobby(sf::RenderWindow& window,Network* network, StateHandler& handler);;
   bool init()override;
   void update(float dt)override;
   void render() override;
@@ -22,7 +22,8 @@ class GameLobby: public GameState
   void mouseWheelScrolled(sf::Event event) override;
   void mouseMoved(sf::Event event) override;
 
- private: Client* client;
+ private:
+  Network* network;
   std::unique_ptr<ChatBoxUI> chatBox;
   sf::Text test;
   sf::Font font;

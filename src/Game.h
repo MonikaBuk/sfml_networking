@@ -6,6 +6,7 @@
 
 #include "Networking/Client.h"
 #include "Networking/Server.h"
+#include "Networking/Network.h"
 //#include "Tmx/Tile.h"
 //#include "tmxlite/Map.hpp"
 //#include "tmxlite/TileLayer.hpp"
@@ -16,9 +17,8 @@
 class Game
 {
  public:
-  Game(sf::RenderWindow& window, bool server);
+  Game(sf::RenderWindow& window);
   ~Game();
-  bool init();
   void update(float dt);
   void render();
   void mouseClicked(sf::Event event);
@@ -30,15 +30,12 @@ class Game
 
  private:
   sf::RenderWindow& window;
-  bool isServer = true;
-  std::unique_ptr<Client> client = nullptr;
 
- public:
-
-
- private:
-  std::unique_ptr<Server> server = nullptr;
+ // std::unique_ptr<Client> client = nullptr;
+ // std::unique_ptr<Server> server = nullptr;
   StateHandler stateHandler;
+  Network network;
+  bool runServer;
 };
 
 #endif // PLATFORMER_GAME_H

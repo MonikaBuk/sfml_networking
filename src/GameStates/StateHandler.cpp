@@ -7,7 +7,7 @@
 
 
 void StateHandler::setState(GameState* newState) {
-  std::cout << "Changing state..." << std::endl;
+
 
   // Release resources of the current state (assuming ownership)
   delete currentState;
@@ -19,13 +19,11 @@ void StateHandler::setState(GameState* newState) {
   if (currentState) {
     currentState->init();
   }
-  std::cout << "State transition: " << typeid(*currentState).name() << std::endl;
 }
 void StateHandler::update(float dt)
 {
   if (currentState)
     currentState->update(dt);
-  std::cout << "State transition: " << typeid(*currentState).name() << std::endl;
 }
 void StateHandler::render()
 {

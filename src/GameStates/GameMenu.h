@@ -14,7 +14,7 @@
 class GameMenu: public GameState
 {
  public:
-  GameMenu(sf::RenderWindow& window, Client* client, StateHandler& handler);
+  GameMenu(sf::RenderWindow& window,Network* network, StateHandler& handler);
   bool init()override;
   void update(float dt)override;
   void render() override;
@@ -27,13 +27,14 @@ class GameMenu: public GameState
   void createUserNameInput();
 
  private:
-  Client* client;
+  Network* network;
   std::unique_ptr<InputFieldUI> userNameInput;
   std::unique_ptr<ButtonUI> hostButton;
   std::unique_ptr<ButtonUI> joinButton;
   sf::Text textInputTittle;
   sf::Font font;
   StateHandler&  stateHandler;
+  bool joining = false;
 
 
 };

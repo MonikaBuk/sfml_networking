@@ -4,13 +4,12 @@
 
 #include "GameLobby.h"
 
-GameLobby::GameLobby(sf::RenderWindow& window, Client* client, StateHandler& handler) : GameState(window), client(client), stateHandler(handler)
+GameLobby::GameLobby(sf::RenderWindow& window, Network* network, StateHandler& handler) : GameState(window), network(network), stateHandler(handler)
 {
 }
 bool GameLobby::init()
 {
-
-  chatBox = std::make_unique<ChatBoxUI>(*client);
+  chatBox = std::make_unique<ChatBoxUI>(*network->getClient());
 
   if (!font.loadFromFile("Data/Fonts/OpenSans-Bold.ttf"))
   {
@@ -22,11 +21,12 @@ bool GameLobby::init()
   }
   else
   {
-
+    return false;
   }
+  return true;
 }
 void GameLobby::update(float dt) {  chatBox->updateLatestChatMessage();
-  std::cerr << "chatBox is NULL." << std::endl;}
+}
 void GameLobby::render() { chatBox->draw();}
 void GameLobby::mouseClicked(sf::Event event) {  chatBox->onClickSend(event);
 }

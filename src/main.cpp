@@ -14,14 +14,7 @@ int main()
   window.setFramerateLimit(60);
 
   //initialise an instance of the game class
-  bool x = *std::getenv("doServer")== '1';
-  Game game(window, x);
-
-  //run the init function of the game class and check it all initialises ok
-  if (!game.init())
-  {
-    return 0;
-  }
+  Game game(window);
 
   // A Clock starts counting as soon as it's created
   sf::Clock clock;
@@ -53,7 +46,6 @@ int main()
       if (event.type == sf::Event::MouseMoved)
         game.mouseMoved(event);
     }
-
 
     //'update' element of the game loop
     game.update(dt);
