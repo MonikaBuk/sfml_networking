@@ -13,9 +13,10 @@ class Network
  public:
   Network();
   ~Network() = default;
-  bool clientConnect();
+  bool clientConnect(sf::IpAddress& ipToConnect);
   const std::unique_ptr<Client>& getClient() const;
   void  createServer();
+  sf::IpAddress localIP = sf::IpAddress::getLocalAddress();
 
 
  private:

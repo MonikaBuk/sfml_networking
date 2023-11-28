@@ -114,6 +114,7 @@ void ChatBoxUI::sendChatMessage() {
     ChatMessage chatMessage;
     chatMessage.text   = messageString;
     chatMessage.sender = client.getUserName();
+    chatMessage.type = MessageType::CHAT;
     client.sendChatMessage(chatMessage);
     chatMessage.sender = "You";
     addMessage(chatMessage);
@@ -197,12 +198,7 @@ void ChatBoxUI::OnScroll(sf::Event event)
     }
   }
 }
-
-
-
-
-
-
-
-
-
+const std::unique_ptr<ButtonUI>& ChatBoxUI::getSendButton() const
+{
+  return sendButton;
+}

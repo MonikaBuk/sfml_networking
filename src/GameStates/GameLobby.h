@@ -8,6 +8,8 @@
 #include "GameState.h"
 #include "../GameObjects/UI/ChatBoxUI.h"
 #include "StateHandler.h"
+#include "../GameObjects/UI/CustomText.h"
+#include "../GameObjects/UI/ButtonUI.h"
 
 class GameLobby: public GameState
 {
@@ -25,9 +27,10 @@ class GameLobby: public GameState
  private:
   Network* network;
   std::unique_ptr<ChatBoxUI> chatBox;
-  sf::Text test;
+  std::unique_ptr<CustomText> ipToConnectText;
   sf::Font font;
   StateHandler&  stateHandler;
+  std::unique_ptr<ButtonUI> startButton;
 };
 
 #endif // SFMLGAME_GAMELOBBY_H

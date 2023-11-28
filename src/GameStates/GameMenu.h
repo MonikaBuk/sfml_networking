@@ -23,18 +23,18 @@ class GameMenu: public GameState
   void textEntered(sf::Event event) override;
   void mouseWheelScrolled(sf::Event event) override;
   void mouseMoved(sf::Event event) override;
-
   void createUserNameInput();
 
  private:
   Network* network;
   std::unique_ptr<InputFieldUI> userNameInput;
+  std::unique_ptr<InputFieldUI> ipInput;
   std::unique_ptr<ButtonUI> hostButton;
   std::unique_ptr<ButtonUI> joinButton;
   sf::Text textInputTittle;
+  sf::Text textInputIP;
   sf::Font font;
   StateHandler&  stateHandler;
-  bool joining = false;
 
 
 };

@@ -6,8 +6,9 @@
 
 #include <iostream>
 
-GamePlay::GamePlay(sf::RenderWindow& window) : GameState(window) {}
-
+GamePlay::GamePlay(sf::RenderWindow& window, Network* network, StateHandler& handler) : GameState(window), network(network), stateHandler(handler)
+{
+}
 void GamePlay::SetTileWithID(
   const unsigned int MAP_COLUMNS, const tmx::Vector2u& tile_size,
   const tmx::TileLayer::Tile& tile)
@@ -85,4 +86,6 @@ void GamePlay::render()
     }
   }
 }
-
+void GamePlay::textEntered(sf::Event event) {}
+void GamePlay::mouseWheelScrolled(sf::Event event) {}
+void GamePlay::mouseMoved(sf::Event event) {}

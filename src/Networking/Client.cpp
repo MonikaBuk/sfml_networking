@@ -4,18 +4,16 @@
 
 #include "Client.h"
 
-void Client::connect()
+void Client::connect(sf::IpAddress& ipToConnect)
 {
-  sf::IpAddress ipAddress = sf::IpAddress::getLocalAddress();
   if (socket == nullptr)
     socket = std::make_unique<sf::TcpSocket>();
-  if (socket->connect(ipAddress, 53000) == sf::Socket::Status::Done)
+  if (socket->connect(ipToConnect, 53000) == sf::Socket::Status::Done)
   {
     std::cout << "You're Connected!" << std::endl;
     connected = true;
     std::thread run_thread ([&]{run();});
     run_thread.detach();
-
   }
   else
   {
@@ -26,8 +24,6 @@ void Client::connect()
 void Client::run()
 {
   running = true;
- // std::thread input_thread([&]{input(*socket);});
-  //input_thread.detach();
   while (running && connected)
   {
     while(connected)
@@ -42,21 +38,73 @@ void Client::run()
         socket ->disconnect();
         break;
       }
-      else
+      else if (status == sf::Socket::Status::Done)
       {
-        ChatMessage chatMessage;
-        if (receivedPacket >> chatMessage)
+        int messageType;
+        receivedPacket >> messageType;
+
+        switch (static_cast<MessageType>(messageType))
         {
-          setLastMessage(chatMessage);
-          setMessageReceived(true);
-          std::cout << "Received: " << chatMessage.text << " from " << chatMessage.sender << std::endl;
-        }
-        else
-        {
-          std::cerr << "Failed to extract chat message from received packet." << std::endl;
+          case MessageType::CHAT:
+            std::cout << "Received CHAT message" << std::endl;
+            handleChatMessage(receivedPacket);
+            break;
+          case MessageType::STATE:
+            std::cout << "Received STATE message" << std::endl;
+            handleStateMessage(receivedPacket);
+            break;
+          default:
+            std::cerr << "Received an unknown message type: " << messageType << std::endl;
+            // Handle unexpected message type
+            break;
         }
       }
+      else
+      {
+        // Handle other receive status if needed
+        std::cerr << "Failed to receive packet. Status: " << status << std::endl;
+      }
     }
+  }
+}
+
+void Client::handleChatMessage(sf::Packet& packet)
+{
+  ChatMessage chatMessage;
+  if (packet >> chatMessage)
+  {
+    setLastMessage(chatMessage);
+    setMessageReceived(true);
+    std::cout << "Received: " << chatMessage.text << " from " << chatMessage.sender << std::endl;
+  }
+  else
+  {
+    std::cerr << "Failed to extract chat message from received packet." << std::endl;
+  }
+}
+void Client::handleStateMessage(sf::Packet& packet)
+{
+  StateMessage stateMessage;
+  packet >> stateMessage;
+
+  // Handle state change
+  int newState = stateMessage.state;
+
+  switch (newState)
+  {
+    case 1: // StateType::Lobby
+      //switchToLobbyState();
+      break;
+    case 2: // StateType::InGame
+      //();
+      break;
+    case 3: // StateType::GameOver
+      //switchToGameOverState();
+      break;
+    default:
+      std::cerr << "Received an unknown state: " << newState << std::endl;
+      // Handle unexpected state
+      break;
   }
 }
 
@@ -73,21 +121,20 @@ void Client::sendChatMessage(const ChatMessage& message) {
     std::cerr << "Failed to send chat message. Socket not connected or invalid." << std::endl;
   }
 }
-
-void Client::receiveChatMessage(ChatMessage& message) {
+void Client::sendSateMessage(const StateMessage& message) {
   if (connected && socket) {
     sf::Packet messagePacket;
-
-    if (socket->receive(messagePacket) != sf::Socket::Done) {
-      std::cerr << "Failed to receive chat message" << std::endl;
-    } else {
-      // Extract the chat message from the received packet
-      messagePacket >> message; // Uses the operator>> overload
+    messagePacket << message;
+    if (socket->send(messagePacket) != sf::Socket::Done) {
+      std::cerr << "Failed to send state message" << std::endl;
     }
-  } else {
-    std::cerr << "Failed to receive chat message. Socket not connected or invalid." << std::endl;
+  }
+  else
+  {
+    std::cerr << "Failed to send state message. Socket not connected or invalid." << std::endl;
   }
 }
+
 bool Client::isMessageReceived() const
 {
   return messageReceived;
@@ -112,3 +159,9 @@ void Client::setUserName(const std::string& userName)
 {
   Client::userName = userName;
 }
+
+const sf::IpAddress& Client::getIpAddress() const
+{
+  return sf::IpAddress::getPublicAddress();
+}
+

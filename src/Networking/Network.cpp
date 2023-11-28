@@ -6,9 +6,9 @@
 
 Network::Network(): client(std::make_unique<Client>()) {}
 
-bool Network::clientConnect()
+bool Network::clientConnect(sf::IpAddress& ipToConnect)
 {
-  client->connect();
+  client->connect( ipToConnect);
   return client->connected;
 }
 const std::unique_ptr<Client>& Network::getClient() const

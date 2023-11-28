@@ -9,8 +9,9 @@
 void StateHandler::setState(GameState* newState) {
 
 
-  // Release resources of the current state (assuming ownership)
+  // Release resources of the current state
   delete currentState;
+  currentState = nullptr;
 
   // Set the new state
   currentState = newState;

@@ -3,13 +3,14 @@
 //
 
 #include "GameMenu.h"
+//#include "GamePlay.h"
 
 GameMenu::GameMenu(sf::RenderWindow& window, Network* network, StateHandler& handler) : GameState(window), network(network), stateHandler(handler)
 {
 }
 void GameMenu::createUserNameInput()
 {
- userNameInput = std::make_unique<InputFieldUI>(window, font, 25, CustomColors::TxtBlue, sf::Color::White, sf::Vector2f(25, 45), sf::Vector2f(50, 10), 10);
+ userNameInput = std::make_unique<InputFieldUI>(window, font, 25, CustomColors::TxtBlue, CustomColors::BcktBlue, sf::Vector2f(35, 45), sf::Vector2f(30, 8), 10);
  textInputTittle.setFont(font);
  textInputTittle.setPosition((userNameInput->getPos().x),userNameInput->getPos().y - 50);
  textInputTittle.setString("Please enter your name:");
@@ -17,15 +18,15 @@ void GameMenu::createUserNameInput()
 
 bool GameMenu::init()
 {
-  std::string buttonFilePath = "Data/Images/dark brown panel.png";
-  if(!font.loadFromFile("Data/Fonts/OpenSans-Bold.ttf")){std::cerr << "Failed to load font.";}
+  std::string buttonFilePath = "Data/Images/ui/blue_button05.png";
+  if(!font.loadFromFile("Data/Fonts/Font/kenvector_future.ttf")){std::cerr << "Failed to load font.";}
   createUserNameInput();
   joinButton = std::make_unique<ButtonUI>(
     font, 20, CustomColors::TxtBlue , buttonFilePath,
-    "Join Game", sf::Vector2f(55, 35), sf::Vector2f(20, 10));
+    "Join Game", sf::Vector2f(55, 45), sf::Vector2f(25, 10));
   hostButton = std::make_unique<ButtonUI>(
     font, 20, CustomColors::TxtBlue , buttonFilePath,
-    "Host Game", sf::Vector2f(25, 35), sf::Vector2f(20, 10));
+    "Host Game", sf::Vector2f(20, 45), sf::Vector2f(25, 10));
   hostButton->setIsEnabled(false);
   joinButton->setIsEnabled(false);
   return true;
@@ -48,18 +49,23 @@ void GameMenu::render()
   }
 }
 void GameMenu::mouseClicked(sf::Event event) {
+  // just a local IP as for public IP I would have to connect to a website which,
+  // and request the information, but it might not work on school computer
+  // or for other security reasons
+  sf::IpAddress localAddress = network->localIP;
   if (joinButton->isSelected() && joinButton->getIsEnabled())
   {
-    if (network->clientConnect())
+    if (network->clientConnect(localAddress))
     {
       stateHandler.setState(new GameLobby(window, network, stateHandler));
     }
-    return ;
+    return;
   }
  if (hostButton->isSelected() && hostButton->getIsEnabled())
   {
+
     network->createServer();
-    if (network->clientConnect())
+    if (network->clientConnect(localAddress))
     {
       stateHandler.setState(new GameLobby(window, network, stateHandler));
     }

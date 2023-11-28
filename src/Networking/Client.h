@@ -15,11 +15,9 @@
 class Client
 {
  public:
-  void connect();
-  void input(sf::TcpSocket& iSocket) const;
+  void connect(sf::IpAddress& ipToConnect);
   void run();
   void sendChatMessage(const ChatMessage& message);
-   void receiveChatMessage(ChatMessage& message);
   std::atomic<bool> running = false;
   std::atomic<bool> connected = false;
   bool isMessageReceived() const;
@@ -28,15 +26,26 @@ class Client
   void setLastMessage(const ChatMessage& lastMessage);
   const std::string& getUserName() const;
   void setUserName(const std::string& userName);
+  const sf::IpAddress& getIpAddress() const;
+
+
 
  private:
   std::unique_ptr<sf::TcpSocket> socket;
   bool messageReceived;
   ChatMessage lastMessage;
   std::string  userName = "testName";
+  sf::IpAddress ipAddress;
+  bool joinedClient= false;
+  enum class GameStateType {
+    Lobby,
+    InGame,
+    GameOver,
+  };
 
- public:
-
+  void handleStateMessage(sf::Packet& packet);
+  void handleChatMessage(sf::Packet& packet);
+  void sendSateMessage(const StateMessage& message);
 };
 
 #endif // SFMLGAME_CLIENT_H

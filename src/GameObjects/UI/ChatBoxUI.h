@@ -25,6 +25,7 @@ class ChatBoxUI : public UIElement {
   void handleStatus(sf::Event event);
   void onClickSend(sf::Event event);
   void OnScroll(sf::Event event);
+  const std::unique_ptr<ButtonUI>& getSendButton() const;
 
 
  private:
