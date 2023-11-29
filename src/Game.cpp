@@ -32,8 +32,30 @@ bool Game::init()
 void Game::update(float dt)
 {
   stateHandler.update(dt);
-}
+  if (network.getClient()->isStateChanged())
+  {
+    int newState = network.getClient()->getNewState();
 
+      switch (newState)
+      {
+        case 1: // StateType::Lobby
+          stateHandler.setState(new GameLobby(window, &network, stateHandler));
+          break;
+        case 2: // StateType::InGame
+          stateHandler.setState(new GamePlay(window, &network, stateHandler));
+          network.getClient()->setStateChanged(false);
+          network.getServer()->setGameIsRunning(true);
+          break;
+        case 3: // StateType::GameOver
+
+          break;
+        default:
+          std::cerr << "Received an unknown state: " << newState << std::endl;
+          // Handle unexpected state
+          break;
+      }
+  }
+}
 void Game::render()
 {
   stateHandler.render();

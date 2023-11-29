@@ -27,7 +27,12 @@ class Client
   const std::string& getUserName() const;
   void setUserName(const std::string& userName);
   const sf::IpAddress& getIpAddress() const;
-
+  void handleStateMessage(sf::Packet& packet);
+  void handleChatMessage(sf::Packet& packet);
+  void sendSateMessage(const StateMessage& message);
+  int getNewState() const;
+  bool isStateChanged() const;
+  void setStateChanged(bool stateChanged);
 
 
  private:
@@ -37,15 +42,10 @@ class Client
   std::string  userName = "testName";
   sf::IpAddress ipAddress;
   bool joinedClient= false;
-  enum class GameStateType {
-    Lobby,
-    InGame,
-    GameOver,
-  };
+  int newState;
+  bool stateChanged= false;
 
-  void handleStateMessage(sf::Packet& packet);
-  void handleChatMessage(sf::Packet& packet);
-  void sendSateMessage(const StateMessage& message);
+
 };
 
 #endif // SFMLGAME_CLIENT_H

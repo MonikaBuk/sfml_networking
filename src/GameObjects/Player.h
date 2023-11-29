@@ -10,8 +10,12 @@ class Player
 {
  private:
   Character playerCharacter;
-  void movingPlayer();
-  std::string userName;
+  sf::Vector2f velocity;
+
+
+ public:
+  void onCollision(sf::Vector2f direction);
+  void movePlayer(const float& dt);
 };
 
 #endif // SFMLGAME_PLAYER_H

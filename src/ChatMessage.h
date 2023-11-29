@@ -7,21 +7,22 @@
 #include <iostream>
 #include <Sfml/Network.hpp>
 
-enum class MessageType : int {
+enum  MessageType
+{
   CHAT = 1,
   STATE = 2,
 };
 
-struct ChatMessage {
-  MessageType type;
+struct ChatMessage
+{
   std::string text;
   std::string sender;
 };
 sf::Packet& operator <<(sf::Packet& packet, const ChatMessage& message);
 sf::Packet& operator >>(sf::Packet& packet, ChatMessage& message);
 
-struct StateMessage {
-  MessageType type;
+struct StateMessage
+{
   int state;
 };
 sf::Packet& operator <<(sf::Packet& packet, const StateMessage& message);

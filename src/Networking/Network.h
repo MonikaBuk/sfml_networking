@@ -15,14 +15,20 @@ class Network
   ~Network() = default;
   bool clientConnect(sf::IpAddress& ipToConnect);
   const std::unique_ptr<Client>& getClient() const;
+  const std::unique_ptr<Server>& getServer() const;
   void  createServer();
   sf::IpAddress localIP = sf::IpAddress::getLocalAddress();
+
 
 
  private:
   std::unique_ptr<Client> client = nullptr;
   std::unique_ptr<Server> server = nullptr;
   void runServer();
+
+
+ public:
+
 };
 
 #endif // SFMLGAME_NETWORK_H

@@ -11,6 +11,10 @@ class Character : public GameObject
 {
  private:
   int health;
+  float speed = 100;
+
+ public:
+  float getSpeed() const;
 
  public:
   int getHealth() const;

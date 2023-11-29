@@ -3,6 +3,8 @@
 //
 
 #include "Client.h"
+#include "../GameStates/GamePlay.h"
+
 
 void Client::connect(sf::IpAddress& ipToConnect)
 {
@@ -88,24 +90,26 @@ void Client::handleStateMessage(sf::Packet& packet)
   packet >> stateMessage;
 
   // Handle state change
-  int newState = stateMessage.state;
+   newState = stateMessage.state;
+   stateChanged = true;
 
   switch (newState)
   {
     case 1: // StateType::Lobby
-      //switchToLobbyState();
+
       break;
     case 2: // StateType::InGame
-      //();
+
       break;
     case 3: // StateType::GameOver
-      //switchToGameOverState();
+
       break;
     default:
       std::cerr << "Received an unknown state: " << newState << std::endl;
       // Handle unexpected state
       break;
   }
+
 }
 
 void Client::sendChatMessage(const ChatMessage& message) {
@@ -164,4 +168,15 @@ const sf::IpAddress& Client::getIpAddress() const
 {
   return sf::IpAddress::getPublicAddress();
 }
-
+int Client::getNewState() const
+{
+  return newState;
+}
+void Client::setStateChanged(bool stateChanged)
+{
+  Client::stateChanged = stateChanged;
+}
+bool Client::isStateChanged() const
+{
+  return stateChanged;
+}

@@ -20,6 +20,7 @@ class Server
   void listen(sf::TcpSocket& cSocket);
   void send(sf::Packet& packet);
 
+
  private:
   std::vector<std::thread> workers;
   std::vector<std::unique_ptr<sf::TcpSocket>> connections;
@@ -29,7 +30,11 @@ class Server
   std::mutex mutex;
   bool  running = true;
   int portNum;
+  bool gameIsRunning = false;
 
+ public:
+  bool isGameIsRunning() const;
+  void setGameIsRunning(bool gameIsRunning);
 };
 
 #endif // SFMLGAME_SERVER_H

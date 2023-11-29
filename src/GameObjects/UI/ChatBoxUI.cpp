@@ -114,7 +114,6 @@ void ChatBoxUI::sendChatMessage() {
     ChatMessage chatMessage;
     chatMessage.text   = messageString;
     chatMessage.sender = client.getUserName();
-    chatMessage.type = MessageType::CHAT;
     client.sendChatMessage(chatMessage);
     chatMessage.sender = "You";
     addMessage(chatMessage);

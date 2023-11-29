@@ -83,4 +83,11 @@ void Server::send(sf::Packet& packet) {
     }
   }
 }
-
+bool Server::isGameIsRunning() const
+{
+  return gameIsRunning;
+}
+void Server::setGameIsRunning(bool gameIsRunning)
+{
+  Server::gameIsRunning = gameIsRunning;
+}

@@ -20,7 +20,7 @@ bool GameLobby::init()
     "Start", sf::Vector2f(37.5, 45), sf::Vector2f(25, 10));
   chatBox = std::make_unique<ChatBoxUI>(*network->getClient());
   std::string ipAddressString = network->localIP.toString();
-  ipToConnectText = std::make_unique<CustomText>(font, 20, CustomColors::TxtBlue, "IP TO CONNECT: "+ ipAddressString);
+  ipToConnectText = std::make_unique<CustomText>(font, 20, CustomColors::TxtBlue, " IP TO CONNECT: "+ ipAddressString);
 
   if (chatBox)
   {
@@ -46,8 +46,20 @@ void GameLobby::mouseClicked(sf::Event event)
   chatBox->onClickSend(event);
   if (startButton->isSelected() && startButton->getIsEnabled())
   {
+    if (network->getServer()->isGameIsRunning())
+    {
+      ipToConnectText->setString("game is running");
+    }
+    else if(!network->getServer()->isGameIsRunning())
+    {
+      StateMessage newSate;
+      newSate.state = 2;
+      network->getClient()->sendSateMessage(newSate);
       stateHandler.setState(new GamePlay(window, network, stateHandler));
-    return;
+      return;
+    }
+    else
+      return;
   }
 }
 void GameLobby::keyPressed(sf::Event event)

@@ -11,3 +11,7 @@ void Character::setHealth(int health)
 {
   Character::health = health;
 }
+float Character::getSpeed() const
+{
+  return speed;
+}
