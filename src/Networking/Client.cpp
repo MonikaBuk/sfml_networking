@@ -14,6 +14,10 @@ void Client::connect(sf::IpAddress& ipToConnect)
   {
     std::cout << "You're Connected!" << std::endl;
     connected = true;
+    ChatMessage newConnection;
+    newConnection.text = "Is Connected. Say Hi!";
+    newConnection.sender = userName;
+    sendChatMessage(newConnection);
     std::thread run_thread ([&]{run();});
     run_thread.detach();
   }
@@ -55,10 +59,15 @@ void Client::run()
             std::cout << "Received STATE message" << std::endl;
             handleStateMessage(receivedPacket);
             break;
+          case MessageType::CONNECTION:
+            std::cout << "Received CONNECTION message" << std::endl;
+            handleConnectionMessage(receivedPacket);
+            break;
           default:
             std::cerr << "Received an unknown message type: " << messageType << std::endl;
             // Handle unexpected message type
             break;
+
         }
       }
       else
@@ -112,6 +121,20 @@ void Client::handleStateMessage(sf::Packet& packet)
 
 }
 
+void Client::handleConnectionMessage(sf::Packet& packet)
+{
+  ConnectionMessage connectionMessage;
+  if (packet >> connectionMessage)
+  {
+    gameIsRunning = connectionMessage.gameRunning;
+    std::cerr << gameIsRunning << std::endl;
+  }
+  else
+  {
+    std::cerr << "Failed to extract chat message from received packet." << std::endl;
+  }
+}
+
 void Client::sendChatMessage(const ChatMessage& message) {
   if (connected && socket) {
     sf::Packet messagePacket;
@@ -136,6 +159,19 @@ void Client::sendSateMessage(const StateMessage& message) {
   else
   {
     std::cerr << "Failed to send state message. Socket not connected or invalid." << std::endl;
+  }
+}
+void Client::sendConnectionMessage(const ConnectionMessage& message) {
+  if (connected && socket) {
+    sf::Packet connectionPacket;
+    connectionPacket << message;
+    if (socket->send(connectionPacket) != sf::Socket::Done) {
+      std::cerr << "Failed to send connection message" << std::endl;
+    }
+  }
+  else
+  {
+    std::cerr << "Failed to send connection message. Socket not connected or invalid." << std::endl;
   }
 }
 
@@ -179,4 +215,16 @@ void Client::setStateChanged(bool stateChanged)
 bool Client::isStateChanged() const
 {
   return stateChanged;
+}
+bool Client::isServerHost() const
+{
+  return serverHost;
+}
+void Client::setServerHost(bool serverHost)
+{
+  Client::serverHost = serverHost;
+}
+bool Client::isGameIsRunning() const
+{
+  return gameIsRunning;
 }

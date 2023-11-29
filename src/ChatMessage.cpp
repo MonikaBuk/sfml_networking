@@ -23,3 +23,14 @@ sf::Packet& operator >>(sf::Packet& packet, StateMessage& message)
   packet  >> message.state;
   return packet;
 }
+
+sf::Packet& operator <<(sf::Packet& packet, const ConnectionMessage& message)
+{
+  return packet << CONNECTION << message.gameRunning;
+}
+
+sf::Packet& operator >>(sf::Packet& packet, ConnectionMessage& message)
+{
+  packet  >> message.gameRunning;
+  return packet;
+}

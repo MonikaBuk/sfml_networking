@@ -15,5 +15,8 @@ CustomText::CustomText(const sf::Font& font, unsigned int characterSize, const s
 }
 void CustomText::draw()
 {
-  window.draw(*this);
+  if (getIsEnabled())
+  {
+    window.draw(*this);
+  }
 }

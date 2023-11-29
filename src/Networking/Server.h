@@ -24,6 +24,7 @@ class Server
  private:
   std::vector<std::thread> workers;
   std::vector<std::unique_ptr<sf::TcpSocket>> connections;
+  bool connectionMessageSent = false;
 
   std::unique_ptr<sf::TcpListener>listener;
   std::unique_ptr<sf::TcpSocket> socket;

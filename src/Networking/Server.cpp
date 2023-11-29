@@ -39,7 +39,6 @@ void Server::run()
           break;
         }
       });
-
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
 
@@ -49,6 +48,12 @@ void Server::run()
 void Server::listen(sf::TcpSocket& cSocket)
 {
   bool continue_receiving = true;
+  sf::Packet connectionPacket;
+  ConnectionMessage newConnection;
+  newConnection.gameRunning = isGameIsRunning();
+  connectionPacket << newConnection;
+
+  send(connectionPacket);
 
   while (continue_receiving)
   {
@@ -67,7 +72,6 @@ void Server::listen(sf::TcpSocket& cSocket)
     portNum = cSocket.getRemotePort();
     send(receivedPacket);
     std::cout << "Received from " << IP.toString() << std::endl;
-
   }
   cSocket.disconnect();
 }

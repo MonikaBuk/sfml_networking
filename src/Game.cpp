@@ -44,7 +44,7 @@ void Game::update(float dt)
         case 2: // StateType::InGame
           stateHandler.setState(new GamePlay(window, &network, stateHandler));
           network.getClient()->setStateChanged(false);
-          network.getServer()->setGameIsRunning(true);
+
           break;
         case 3: // StateType::GameOver
 

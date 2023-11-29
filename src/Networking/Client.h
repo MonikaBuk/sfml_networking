@@ -33,6 +33,7 @@ class Client
   int getNewState() const;
   bool isStateChanged() const;
   void setStateChanged(bool stateChanged);
+  void sendConnectionMessage(const ConnectionMessage& message);
 
 
  private:
@@ -41,11 +42,21 @@ class Client
   ChatMessage lastMessage;
   std::string  userName = "testName";
   sf::IpAddress ipAddress;
-  bool joinedClient= false;
+  bool serverHost= false;
+  bool gameIsRunning = false;
+
+ public:
+  bool isGameIsRunning() const;
+
+ public:
+  bool isServerHost() const;
+  void setServerHost(bool serverHost);
+
+ private:
   int newState;
   bool stateChanged= false;
 
-
+  void handleConnectionMessage(sf::Packet& packet);
 };
 
 #endif // SFMLGAME_CLIENT_H

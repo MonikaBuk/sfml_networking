@@ -5,11 +5,12 @@
 #ifndef SFMLGAME_GAMELOBBY_H
 #define SFMLGAME_GAMELOBBY_H
 
-#include "GameState.h"
-#include "../GameObjects/UI/ChatBoxUI.h"
-#include "StateHandler.h"
-#include "../GameObjects/UI/CustomText.h"
+#include "../GameObjects/UI/BackgroundImage.h"
 #include "../GameObjects/UI/ButtonUI.h"
+#include "../GameObjects/UI/ChatBoxUI.h"
+#include "../GameObjects/UI/CustomText.h"
+#include "GameState.h"
+#include "StateHandler.h"
 
 class GameLobby: public GameState
 {
@@ -28,6 +29,8 @@ class GameLobby: public GameState
   Network* network;
   std::unique_ptr<ChatBoxUI> chatBox;
   std::unique_ptr<CustomText> ipToConnectText;
+  std::unique_ptr<CustomText> waitText;
+  std::unique_ptr<BackgroundImage> bckImage;
   sf::Font font;
   StateHandler&  stateHandler;
   std::unique_ptr<ButtonUI> startButton;

@@ -5,8 +5,19 @@
 #ifndef SFMLGAME_BACKGROUNDIMAGE_H
 #define SFMLGAME_BACKGROUNDIMAGE_H
 
-class BackgroundImage
+#include "UIElement.h"
+class BackgroundImage: public UIElement
 {
+ public:
+  BackgroundImage(const sf::String& imgPath);
+  virtual ~BackgroundImage();
+  void draw();
+
+ private:
+  sf::Sprite bckgSprite;
+  sf::Texture bckgImg;
+  std::string imgPath;
+
 };
 
 #endif // SFMLGAME_BACKGROUNDIMAGE_H

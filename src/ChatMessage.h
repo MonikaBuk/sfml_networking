@@ -11,6 +11,7 @@ enum  MessageType
 {
   CHAT = 1,
   STATE = 2,
+  CONNECTION = 3
 };
 
 struct ChatMessage
@@ -27,4 +28,12 @@ struct StateMessage
 };
 sf::Packet& operator <<(sf::Packet& packet, const StateMessage& message);
 sf::Packet& operator >>(sf::Packet& packet, StateMessage& message);
+
+struct ConnectionMessage
+{
+  std::string userName;
+  bool gameRunning;
+};
+sf::Packet& operator <<(sf::Packet& packet, const ConnectionMessage& message);
+sf::Packet& operator >>(sf::Packet& packet, ConnectionMessage& message);
 #endif // SFMLGAME_CHATMESSAGE_H
