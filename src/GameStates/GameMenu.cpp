@@ -66,9 +66,13 @@ void GameMenu::mouseClicked(sf::Event event)
     if (!network->serverCreate)
     {
       network->createServer();
+      network->clientConnect(localAddress);
+
+      network->getClient()->setServerHost(true);
+      stateHandler.setState(new GameLobby(window, network, stateHandler));
     }
 
-    if (network->clientConnect(localAddress))
+    if (network->serverCreate && network->clientConnect(localAddress))
     {
       network->getClient()->setServerHost(true);
       stateHandler.setState(new GameLobby(window, network, stateHandler));

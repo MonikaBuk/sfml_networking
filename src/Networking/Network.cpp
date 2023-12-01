@@ -26,6 +26,7 @@ void Network::createServer()
 {
   std::thread run_server([&] { runServer(); });
   run_server.detach();
+
 }
 const std::unique_ptr<Server>& Network::getServer() const
 {
