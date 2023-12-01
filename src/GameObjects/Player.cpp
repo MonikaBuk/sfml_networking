@@ -9,27 +9,32 @@
 void Player::movePlayer(const float& dt)
 {
   velocity.x = 0.0f;
-  if (sf::Keyboard::isKeyPressed((sf::Keyboard::A)))
+  velocity.y = 0.0f;
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
   {
-    velocity.x -= playerCharacter.getSpeed();
-    playerCharacter.LEFT;
+    velocity.x -= playerCharacter->getSpeed();
+    playerCharacter->direction = Character::LEFT;
   }
 
-  if (sf::Keyboard::isKeyPressed((sf::Keyboard::D)))
+  else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
   {
-    velocity.x += playerCharacter.getSpeed();
-    playerCharacter.RIGHT;
+    velocity.x += playerCharacter->getSpeed();
+    playerCharacter->direction = Character::RIGHT;
   }
-  if (sf::Keyboard::isKeyPressed((sf::Keyboard::W)))
+
+  else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
   {
-    velocity.y -= playerCharacter.getSpeed();
-    playerCharacter.UP;
+    velocity.y -= playerCharacter->getSpeed();
+    playerCharacter->direction = Character::UP;
   }
-  if (sf::Keyboard::isKeyPressed((sf::Keyboard::S)))
+
+  else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
   {
-    velocity.y += playerCharacter.getSpeed();
-    playerCharacter.DOWN;
+    velocity.y += playerCharacter->getSpeed();
+    playerCharacter->direction = Character::DOWN;
   }
+
+  playerCharacter->GetSprite()->move(velocity * dt);
 }
 
 void Player::onCollision(sf::Vector2f direction) {
@@ -45,11 +50,20 @@ void Player::onCollision(sf::Vector2f direction) {
   if(direction.y < 0.0f)
   {
     velocity.y = 0.0f;
+
   }
   else if(direction.y > 0.0f)
   {
     velocity.y = 0.0f;
   }
 
-
+  if (direction.y > 0.0f) {
+    velocity.y = 0.0f;
+  }
+}
+void Player::assignCharacter(std::unique_ptr<Character> character) {
+  playerCharacter = std::move(character);}
+const std::unique_ptr<Character>& Player::getPlayerCharacter() const
+{
+  return playerCharacter;
 }

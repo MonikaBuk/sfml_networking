@@ -8,9 +8,10 @@
 
 void Client::connect(sf::IpAddress& ipToConnect)
 {
+  ipAddress = sf::IpAddress::getLocalAddress();
   if (socket == nullptr)
     socket = std::make_unique<sf::TcpSocket>();
-  if (socket->connect(ipToConnect, 53000) == sf::Socket::Status::Done)
+  if (socket->connect(ipAddress, 53000) == sf::Socket::Status::Done)
   {
     std::cout << "You're Connected!" << std::endl;
     connected = true;

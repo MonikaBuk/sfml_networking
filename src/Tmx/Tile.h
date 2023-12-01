@@ -4,10 +4,12 @@
 
 #ifndef SFMLGAME_TILE_H
 #define SFMLGAME_TILE_H
+
+#include "../GameObjects/GameObject.h"
 #include <SFML/Graphics.hpp>
 #include <memory>
 
-class Tile
+class Tile: public GameObject
 {
  public:
   Tile();
@@ -15,6 +17,7 @@ class Tile
   ~Tile() = default;
   std::unique_ptr<sf::Sprite>& GetSpite();
   int GetID() const;
+  Collider getCollider(){return Collider(*GetSprite());};
 
  private:
   int tileID = 0;

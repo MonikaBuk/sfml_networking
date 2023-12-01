@@ -6,16 +6,24 @@
 #define SFMLGAME_PLAYER_H
 #include "Character.h"
 
-class Player
+class Player : public GameObject
 {
  private:
-  Character playerCharacter;
+  std::unique_ptr<Character> playerCharacter;
+
+ public:
+  const std::unique_ptr<Character>& getPlayerCharacter() const;
+
+ private:
   sf::Vector2f velocity;
 
 
  public:
   void onCollision(sf::Vector2f direction);
   void movePlayer(const float& dt);
+  void assignCharacter(std::unique_ptr<Character> character);
+  void Draw();
+
 };
 
 #endif // SFMLGAME_PLAYER_H

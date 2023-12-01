@@ -14,20 +14,8 @@ Game::Game(sf::RenderWindow& game_window)
 Game::~Game()
 {
 }
- /*
-bool Game::init()
-{
 
-    server = std::make_unique<Server>();
-    server->init();
-    server->run();
 
-    client =  std::make_unique<Client>();
-    client -> connect();
-
-  stateHandler.setState(new GameMenu(window, client.get(), stateHandler));
-}
-*/
 
 void Game::update(float dt)
 {

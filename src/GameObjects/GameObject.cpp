@@ -9,9 +9,11 @@ GameObject::GameObject()
   objectSprite = std::make_unique<sf::Sprite>();
 }
 
-
 const std::unique_ptr<sf::Sprite>& GameObject::GetSprite() const
 {
   return objectSprite;
 }
-
+void GameObject::drawObject()
+{
+  window.draw(*objectSprite);
+}

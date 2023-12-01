@@ -5,9 +5,10 @@
 #ifndef SFMLGAME_GAMEOBJECT_H
 #define SFMLGAME_GAMEOBJECT_H
 
-#include <SFML/Graphics.hpp>
-# include "GameObjectFunctions/Collider.h"
+#include "../GameWindow.h"
 #include "GameObjectFunctions/Animation.h"
+#include "GameObjectFunctions/Collider.h"
+#include <SFML/Graphics.hpp>
 #include <iostream>
 
 class GameObject
@@ -18,7 +19,11 @@ class GameObject
   ~GameObject() = default;
   const std::unique_ptr<sf::Sprite>& GetSprite() const;
   Collider getCollider(){return Collider(*GetSprite());};
+  sf::RenderWindow& window = GameWindow::getWindow();
+  sf::Vector2u windowSize = window.getSize();
   Animation animation;
+  void drawObject();
+  sf::Vector2f direction{0,0};
 
  private:
   std::unique_ptr<sf::Sprite> objectSprite;

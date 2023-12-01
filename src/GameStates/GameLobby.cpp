@@ -85,9 +85,10 @@ if(!network->getClient()->isGameIsRunning())
     {
       StateMessage newSate;
       newSate.state = 2;
+      network->getServer()->setGameIsRunning(true);
       network->getClient()->sendSateMessage(newSate);
       stateHandler.setState(new GamePlay(window, network, stateHandler));
-        network->getServer()->setGameIsRunning(true);
+
 
       return;
     }

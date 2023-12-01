@@ -4,39 +4,17 @@
 
 #include "GamePlay.h"
 
+#include <cmath>
 #include <iostream>
 
-GamePlay::GamePlay(sf::RenderWindow& window, Network* network, StateHandler& handler) : GameState(window), network(network), stateHandler(handler)
-{
-}
-void GamePlay::SetTileWithID(
-  const unsigned int MAP_COLUMNS, const tmx::Vector2u& tile_size,
-  const tmx::TileLayer::Tile& tile)
-{
-  auto& current =
-    *TILE_MAP.back().emplace_back(std::make_unique<Tile>(tile.ID, *tileMap));
-  if (current.GetID() == 0)
-  {
-    current.GetSpite()->setTextureRect(sf::IntRect(0, 0, 0, 0));
-  }
-  else
-  {
-    current.GetSpite()->setTextureRect(sf::IntRect(
-      (current.GetID() * tile_size.x) - tile_size.x,
-      0,
-      tile_size.x,
-      tile_size.y));
-  }
-  current.GetSpite()->setPosition((TILE_MAP.back().size() % MAP_COLUMNS) * tile_size.x, (TILE_MAP.back().size() / MAP_COLUMNS) * tile_size.y);
-}
-bool GamePlay::init()
+void GamePlay::Map_Loading(const std::string& tmxPath,const std::string& imgPath, std::unique_ptr<sf::Texture>& tileMap,   std::vector<std::vector<std::unique_ptr<Tile>>>& TILE_MAP)
 {
   tmx::Map map;
-  if (!tileMap->loadFromFile("Data/tilemap.png"))
+  if (!tileMap->loadFromFile(imgPath))
   {
     std::cout<<"FAILED TO LOAD SPRITESHEET" << std::endl;
   }
-  if (!map.load("Data/test_map.tmx"))
+  if (!map.load(tmxPath))
   {
     std::cout<<"FAILED TO LOAD MAP DATA" << std::endl;
   }
@@ -54,14 +32,78 @@ bool GamePlay::init()
     TILE_MAP.back().reserve(tiles.size());
     for (const auto& tile :tiles)
     {
-      SetTileWithID(MAP_COLUMNS, tile_size, tile);
+      SetTileWithID(tileMap, TILE_MAP, MAP_COLUMNS, MAP_ROWS, tile_size, tile, 3);
     }
-
   }
+}
+void GamePlay::SetTileWithID(std::unique_ptr<sf::Texture>& tileMap,   std::vector<std::vector<std::unique_ptr<Tile>>>& TILE_MAP,
+  const unsigned int MAP_COLUMNS, const unsigned int MAP_ROWS, const tmx::Vector2u& tile_size,
+  const tmx::TileLayer::Tile& tile,float scale)
+{
+  int tilemap_row = tileMap->getSize().x /24;
+
+  auto& current =
+    *TILE_MAP.back().emplace_back(std::make_unique<Tile>(tile.ID, *tileMap));
+  if (current.GetID() == 0)
+  {
+    current.GetSpite()->setTextureRect(sf::IntRect(0, 0, 0, 0));
+  }
+  else
+  {
+    int idWithOffset = current.GetID()-1;
+    current.GetSpite()->setTextureRect(
+      sf::IntRect(idWithOffset % tilemap_row * tile_size.x,
+                  (std::floor(idWithOffset /tilemap_row) * tile_size.y),
+                  tile_size.x, tile_size.y));
+  }
+  current.GetSpite()->setScale(scale, scale);
+  current.GetSpite()->setPosition(
+    (((TILE_MAP.back().size()) - 1) % MAP_COLUMNS) * (tile_size.x * scale),
+    (((TILE_MAP.back().size()) - 1) / MAP_ROWS) * tile_size.y *scale);
+}
+void GamePlay::DrawMap(std::vector<std::vector<std::unique_ptr<Tile>>>& TILE_MAP)
+{
+  for (const auto& layer: TILE_MAP)
+  {
+    for (const auto& tile: layer)
+    {
+      if(tile->GetID() != 0)
+      {
+        window.draw(*tile->GetSpite());
+      }
+    }
+  }
+}
+GamePlay::GamePlay(sf::RenderWindow& window, Network* network, StateHandler& handler) : GameState(window), network(network), stateHandler(handler)
+{
+}
+
+bool GamePlay::init()
+{
+  Map_Loading("Data/Images/floor_map.tmx", "Data/Images/Dungeon_24x24.png", tileMapFloor, TILE_MAP_FlOOR);
+  Map_Loading("Data/walls_gamemap.tmx", "Data/Images/Dungeon_24x24.png", tileMapWall, TILE_MAP_Wall);
+  cat = std::make_unique<Character>();
+  cat->innitCharacter("Data/Images/characters/BIRDSPRITESHEET.png", sf::Vector2f (40,40),Character::DOWN);
+  characters.push_back(std::move(cat));
+  playerCharacter = std::make_unique<Player>();
+  playerCharacter->assignCharacter(std::move(characters[0]));
   return true;
+
 }
 void GamePlay::update(float dt) {
+  for (const auto& layer : TILE_MAP_Wall) {
+    for (const auto& tile : layer) {
+      if (tile->GetID() != 0 && tile->GetID() &&tile->getCollider().checkCollision(
+                                  playerCharacter->getCollider(),
+                                  playerCharacter->direction)) {
+        playerCharacter->onCollision(playerCharacter->direction);
+        std::cout << tile->GetID() << "\n";
+      }
+    }
+  }
   // Implementation of the update function
+  playerCharacter->getPlayerCharacter()->handleAnim(dt);
+  playerCharacter->movePlayer(dt);
 }
 
 void GamePlay::mouseClicked(sf::Event event) {
@@ -75,16 +117,10 @@ void GamePlay::keyPressed(sf::Event event) {
 void GamePlay::render()
 {
   window.clear(sf::Color::Black);
-  for (const auto& layer: TILE_MAP)
-  {
-    for (const auto& tile: layer)
-    {
-      if(tile->GetID() != 0)
-      {
-        window.draw(*tile->GetSpite());
-      }
-    }
-  }
+  DrawMap(TILE_MAP_FlOOR);
+  DrawMap(TILE_MAP_Wall);
+  playerCharacter->getPlayerCharacter()->drawObject();
+
 }
 void GamePlay::textEntered(sf::Event event) {}
 void GamePlay::mouseWheelScrolled(sf::Event event) {}

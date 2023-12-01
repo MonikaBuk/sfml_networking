@@ -22,7 +22,7 @@ sf::Vector2f Collider::getHalfSize() const
 {
   return {body.getGlobalBounds().width / 2.0f , body.getGlobalBounds().height / 2.0f};
 }
-bool Collider::checkCollision(const Collider& other, sf::Vector2f& direction, const bool& visible, const bool& allowIntersect)
+bool Collider::checkCollision(const Collider& other, sf::Vector2f& direction)
 {
   sf::Vector2f otherPosition = other.getPosition();
   sf::Vector2f otherHalfSize = other.getHalfSize();
@@ -35,10 +35,9 @@ bool Collider::checkCollision(const Collider& other, sf::Vector2f& direction, co
   float intersect_x = abs(delta_x) - (otherHalfSize.x + thisHalfSize.x);
   float intersect_y = abs(delta_y) - (otherHalfSize.y + thisHalfSize.y);
 
-  if (intersect_x < 0.0f && intersect_y < 0.0f && visible)
+  if (intersect_x < 0.0f && intersect_y < 0.0f)
   {
-    if (!allowIntersect)
-    {
+
       if (intersect_x > intersect_y)
       {
         if (delta_x > 0.0f)
@@ -73,7 +72,7 @@ bool Collider::checkCollision(const Collider& other, sf::Vector2f& direction, co
           direction.y = -1.0;
         }
       }
-    }
+
     return true;
   }
   else

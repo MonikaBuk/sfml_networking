@@ -9,38 +9,40 @@
 
 class Character : public GameObject
 {
- private:
-  int health;
-  float speed = 100;
-
- public:
-  float getSpeed() const;
-
  public:
   int getHealth() const;
   void setHealth(int health);
-
- private:
-  Animation characterAnim;
-
- public:
-  void Spawn();
-  enum CharacterStates
-  {
-    HEALTHY = 1,
-    DAMAGED = 2,
-    DEAD = 3,
-  };
-
-  enum Direction
+  void handleAnim(float dt);
+  enum  Direction
   {
     UP = 1,
     DOWN = 2,
     RIGHT = 3,
     LEFT = 4,
     OTHER = 5,
+  }direction;
+  void innitCharacter(const std::string& characterText, sf::Vector2f spawn_position, Direction direction1);
+  float getSpeed() const;
+  sf::Vector2f spawn_pos{};
+
+  enum  CharacterStates
+  {
+    HEALTHY = 1,
+    DAMAGED = 2,
+    DEAD = 3,
   };
+  void draw();
+
+
+ private:
+  Animation characterAnim;
+  sf::Texture characterTexture;
+  int health;
+  float speed = 100;
+
 
 };
+
+
 
 #endif // SFMLGAME_CHARACTER_H

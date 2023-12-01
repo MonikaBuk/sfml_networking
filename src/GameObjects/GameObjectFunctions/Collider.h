@@ -14,7 +14,7 @@ class Collider
   ~Collider();
 
   void  move(float  dx, float  dy) const;
-  bool checkCollision(const Collider& other, sf::Vector2f& direction, const bool& visible, const bool& allowIntersect);
+  bool checkCollision(const Collider& other, sf::Vector2f& direction);
   sf::Vector2f getPosition() const;
   sf::Vector2f getHalfSize() const;
 

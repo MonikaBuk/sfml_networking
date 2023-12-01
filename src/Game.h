@@ -19,6 +19,7 @@ class Game
  public:
   Game(sf::RenderWindow& window);
   ~Game();
+ // bool init();
   void update(float dt);
   void render();
   void mouseClicked(sf::Event event);

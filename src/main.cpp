@@ -16,6 +16,7 @@ int main()
   //initialise an instance of the game class
   Game game(window);
 
+
   // A Clock starts counting as soon as it's created
   sf::Clock clock;
 
