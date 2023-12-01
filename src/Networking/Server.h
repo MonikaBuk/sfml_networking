@@ -6,11 +6,12 @@
 #define SFMLGAME_SERVER_H
 
 #include <SFML/Network.hpp>
-#include <thread>
-#include <list>
+#include <atomic>
 #include <iostream>
-#include <mutex>
+#include <list>
 #include <memory>
+#include <mutex>
+#include <thread>
 
 class Server
 {
@@ -19,13 +20,13 @@ class Server
   void run();
   void listen(sf::TcpSocket& cSocket);
   void send(sf::Packet& packet);
+  std::atomic<bool> created = false;
 
 
  private:
   std::vector<std::thread> workers;
   std::vector<std::unique_ptr<sf::TcpSocket>> connections;
   bool connectionMessageSent = false;
-
   std::unique_ptr<sf::TcpListener>listener;
   std::unique_ptr<sf::TcpSocket> socket;
   std::mutex mutex;

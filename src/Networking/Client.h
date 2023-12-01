@@ -26,7 +26,6 @@ class Client
   void setLastMessage(const ChatMessage& lastMessage);
   const std::string& getUserName() const;
   void setUserName(const std::string& userName);
-  const sf::IpAddress& getIpAddress() const;
   void handleStateMessage(sf::Packet& packet);
   void handleChatMessage(sf::Packet& packet);
   void sendSateMessage(const StateMessage& message);
@@ -34,6 +33,9 @@ class Client
   bool isStateChanged() const;
   void setStateChanged(bool stateChanged);
   void sendConnectionMessage(const ConnectionMessage& message);
+  bool isServerHost() const;
+  void setServerHost(bool serverHost);
+  bool isGameIsRunning() const;
 
 
  private:
@@ -45,17 +47,8 @@ class Client
   bool serverHost= false;
   bool gameIsRunning = false;
 
- public:
-  bool isGameIsRunning() const;
-
- public:
-  bool isServerHost() const;
-  void setServerHost(bool serverHost);
-
- private:
   int newState;
   bool stateChanged= false;
-
   void handleConnectionMessage(sf::Packet& packet);
 };
 

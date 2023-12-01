@@ -21,22 +21,23 @@ void Character::handleAnim(float dt)
   {
     case Character::UP:
       animation.Update(8,dt, false);
-      GetSprite()->setTextureRect(animation.rect);
+
+      GetObjSprite()->setTextureRect(animation.rect);
       break;
 
     case Character::DOWN:
       animation.Update(1,dt, false);
-      GetSprite()->setTextureRect(animation.rect);
+      GetObjSprite()->setTextureRect(animation.rect);
       break;
 
     case Character::RIGHT:
       animation.Update(4,dt, false);
-      GetSprite()->setTextureRect(animation.rect);
+      GetObjSprite()->setTextureRect(animation.rect);
       break;
 
     case Character::LEFT:
       animation.Update(6,dt, false);
-      GetSprite()->setTextureRect(animation.rect);
+      GetObjSprite()->setTextureRect(animation.rect);
       break;
 
     case Character::OTHER:
@@ -48,7 +49,7 @@ void Character::handleAnim(float dt)
       break;
   }
 }
-void Character::innitCharacter(const std::string & characterText, sf::Vector2f spawn_position, Direction direction1)
+void Character::innitCharacter(int id, const std::string & characterText, sf::Vector2f spawn_position, Direction direction1)
 {
   if (!characterTexture.loadFromFile(characterText))
   {
@@ -56,13 +57,16 @@ void Character::innitCharacter(const std::string & characterText, sf::Vector2f s
     std::cerr << "Failed to load texture: " << characterText << std::endl;
     return;
   }
-  GetSprite()->setTexture(characterTexture);
+  ID = id;
+  GetObjSprite()->setPosition(spawn_position);
+  GetObjSprite()->setTexture(characterTexture);
   animation.initAnim(&characterTexture, sf::Vector2u(4,9), 0.3);
-  GetSprite()->setPosition(spawn_position);
+
   direction = direction1;
+  GetObjSprite()->setScale(2.5,2.5);
 }
 
 void Character::draw()
 {
-  window.draw(*GetSprite());
+  window.draw(*GetObjSprite());
 }

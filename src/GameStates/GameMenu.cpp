@@ -48,10 +48,9 @@ void GameMenu::render()
     window.draw(textInputTittle);
   }
 }
-void GameMenu::mouseClicked(sf::Event event) {
-  // just a local IP as for public IP I would have to connect to a website which,
-  // and request the information, but it might not work on school computer
-  // or for other security reasons
+void GameMenu::mouseClicked(sf::Event event)
+{
+  // just a local IP as for public IP I would have to connect to a website which, and request the information, but it might not work on school computer or for other security reasons
   sf::IpAddress localAddress = network->localIP;
   if (joinButton->isSelected() && joinButton->getIsEnabled())
   {
@@ -62,15 +61,19 @@ void GameMenu::mouseClicked(sf::Event event) {
     }
     return;
   }
- if (hostButton->isSelected() && hostButton->getIsEnabled())
+  if (hostButton->isSelected() && hostButton->getIsEnabled())
   {
-    network->createServer();
+    if (!network->serverCreate)
+    {
+      network->createServer();
+    }
+
     if (network->clientConnect(localAddress))
     {
       network->getClient()->setServerHost(true);
       stateHandler.setState(new GameLobby(window, network, stateHandler));
     }
-    return ;
+    return;
   }
 }
 void GameMenu::keyPressed(sf::Event event)

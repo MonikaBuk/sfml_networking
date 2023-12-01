@@ -82,30 +82,54 @@ bool GamePlay::init()
 {
   Map_Loading("Data/Images/floor_map.tmx", "Data/Images/Dungeon_24x24.png", tileMapFloor, TILE_MAP_FlOOR);
   Map_Loading("Data/walls_gamemap.tmx", "Data/Images/Dungeon_24x24.png", tileMapWall, TILE_MAP_Wall);
+  bird = std::make_unique<Character>();
+  racoon = std::make_unique<Character>();
+  fox = std::make_unique<Character>();
   cat = std::make_unique<Character>();
-  cat->innitCharacter("Data/Images/characters/BIRDSPRITESHEET.png", sf::Vector2f (40,40),Character::DOWN);
+  bird->innitCharacter(1, "Data/Images/characters/BIRDSPRITESHEET.png", sf::Vector2f (300,300),Character::RIGHT);
+  racoon->innitCharacter(2, "Data/Images/characters/RACCOONSPRITESHEET.png", sf::Vector2f (window.getSize().x - 200,200),Character::LEFT);
+  fox->innitCharacter(3, "Data/Images/characters/FOXSPRITESHEET.png", sf::Vector2f (300,300),Character::LEFT);
+  cat->innitCharacter(4, "Data/Images/characters/CATSPRITESHEET.png", sf::Vector2f (300,300),Character::LEFT);
+  characters.push_back(std::move(bird));
+  characters.push_back(std::move(racoon));
+  characters.push_back(std::move(fox));
   characters.push_back(std::move(cat));
+
+  characters.push_back(std::move(racoon));
   playerCharacter = std::make_unique<Player>();
-  playerCharacter->assignCharacter(std::move(characters[0]));
+
+  playerCharacter->assignCharacter(std::move(characters[1]));
   return true;
 
 }
-void GamePlay::update(float dt) {
-  for (const auto& layer : TILE_MAP_Wall) {
-    for (const auto& tile : layer) {
-      if (tile->GetID() != 0 && tile->GetID() &&tile->getCollider().checkCollision(
-                                  playerCharacter->getCollider(),
-                                  playerCharacter->direction)) {
+void GamePlay::update(float dt)
+{
+  playerCharacter->movePlayer(dt);
+    playerCharacter->getPlayerCharacter()->handleAnim(dt);
+  for (const auto& layer : TILE_MAP_Wall)
+  {
+    for (const auto& tile : layer)
+    {
+      if (
+        tile->GetID() != 0 &&
+        tile->getCollider().checkCollision(
+          playerCharacter->getPlayerCharacter()->getCollider(),
+          playerCharacter->direction))
+      {
         playerCharacter->onCollision(playerCharacter->direction);
-        std::cout << tile->GetID() << "\n";
+        std::cout << "Collision with Tile ID: " << tile->GetID() << "\n";
+        std::cout
+          << "Player Position: "
+          << playerCharacter->getPlayerCharacter()->getCollider().getPosition().x
+          << ", "
+          << playerCharacter->getPlayerCharacter()->getCollider().getPosition().y
+          << "\n";
+        std::cout << "Tile Position: " << tile->getCollider().getPosition().x
+                  << ", " << tile->getCollider().getPosition().y << "\n";
       }
     }
   }
-  // Implementation of the update function
-  playerCharacter->getPlayerCharacter()->handleAnim(dt);
-  playerCharacter->movePlayer(dt);
 }
-
 void GamePlay::mouseClicked(sf::Event event) {
   // Implementation of the mouseClicked function
 }

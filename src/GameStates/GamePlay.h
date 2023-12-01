@@ -43,7 +43,7 @@ class GamePlay : public GameState
   std::unique_ptr<Character> bird;
   std::unique_ptr<Character> cat;
   std::unique_ptr<Character> fox;
-  std::unique_ptr<Character> dog;
+  std::unique_ptr<Character> racoon;
   std::unique_ptr<Player> playerCharacter;
 
 };

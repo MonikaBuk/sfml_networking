@@ -201,10 +201,6 @@ void Client::setUserName(const std::string& userName)
   Client::userName = userName;
 }
 
-const sf::IpAddress& Client::getIpAddress() const
-{
-  return sf::IpAddress::getPublicAddress();
-}
 int Client::getNewState() const
 {
   return newState;

@@ -10,12 +10,13 @@ void Server::init()
   if (listener == nullptr) listener = std::make_unique<sf::TcpListener>();
   if (listener->listen(53000) != sf::Socket::Done)
   {
-    // error
+    std::cerr << "Failed to bind and listen on port 53000" << std::endl;
   }
 }
 
 void Server::run()
 {
+
   while (running)
   {
     sf::TcpSocket& cSock =
@@ -95,3 +96,5 @@ void Server::setGameIsRunning(bool gameIsRunning)
 {
   Server::gameIsRunning = gameIsRunning;
 }
+
+

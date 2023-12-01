@@ -17,7 +17,7 @@ class Tile: public GameObject
   ~Tile() = default;
   std::unique_ptr<sf::Sprite>& GetSpite();
   int GetID() const;
-  Collider getCollider(){return Collider(*GetSprite());};
+  Collider getCollider(){return Collider(*tileSprite);};
 
  private:
   int tileID = 0;

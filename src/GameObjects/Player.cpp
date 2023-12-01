@@ -34,7 +34,7 @@ void Player::movePlayer(const float& dt)
     playerCharacter->direction = Character::DOWN;
   }
 
-  playerCharacter->GetSprite()->move(velocity * dt);
+  playerCharacter->GetObjSprite()->move(velocity * dt);
 }
 
 void Player::onCollision(sf::Vector2f direction) {

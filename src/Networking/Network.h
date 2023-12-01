@@ -18,6 +18,8 @@ class Network
   const std::unique_ptr<Server>& getServer() const;
   void  createServer();
   sf::IpAddress localIP = sf::IpAddress::getLocalAddress();
+  bool serverCreate = false;
+
 
 
 

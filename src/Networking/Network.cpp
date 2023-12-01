@@ -18,12 +18,14 @@ const std::unique_ptr<Client>& Network::getClient() const
 void Network::runServer() {
   server = std::make_unique<Server>();
   server->init();
+  serverCreate = server->created;
   server->run();
+
 }
 void Network::createServer()
 {
-   std::thread run_server([&]{runServer();});
-   run_server.detach();
+  std::thread run_server([&] { runServer(); });
+  run_server.detach();
 }
 const std::unique_ptr<Server>& Network::getServer() const
 {

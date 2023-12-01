@@ -15,22 +15,21 @@ class GameObject
 {
  public:
   GameObject();
-  GameObject(const int& ID, const sf::Texture& texture);
   ~GameObject() = default;
-  const std::unique_ptr<sf::Sprite>& GetSprite() const;
-  Collider getCollider(){return Collider(*GetSprite());};
+
+ Collider getCollider() const;
   sf::RenderWindow& window = GameWindow::getWindow();
   sf::Vector2u windowSize = window.getSize();
   Animation animation;
   void drawObject();
   sf::Vector2f direction{0,0};
+  const std::unique_ptr<sf::Sprite>& GetObjSprite() const;
+
 
  private:
   std::unique_ptr<sf::Sprite> objectSprite;
 
 
- public:
-  bool isInside(sf::Vector2i pos) const;
 };
 
 #endif // SFMLGAME_GAMEOBJECT_H

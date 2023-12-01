@@ -21,9 +21,9 @@ class Character : public GameObject
     LEFT = 4,
     OTHER = 5,
   }direction;
-  void innitCharacter(const std::string& characterText, sf::Vector2f spawn_position, Direction direction1);
+  void innitCharacter(int id, const std::string& characterText, sf::Vector2f spawn_position, Direction direction1);
   float getSpeed() const;
-  sf::Vector2f spawn_pos{};
+
 
   enum  CharacterStates
   {
@@ -39,6 +39,7 @@ class Character : public GameObject
   sf::Texture characterTexture;
   int health;
   float speed = 100;
+  int ID;
 
 
 };
