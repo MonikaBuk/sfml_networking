@@ -66,35 +66,49 @@ sf::Vector2<float> ButtonUI::getPosition()
 bool ButtonUI::isInsidePoint(sf::Vector2f point) const
 {
   sf::FloatRect rect = buttonBox.GetObjSprite()->getGlobalBounds();
-  return (
-    (point.x+position.x >= rect.left && point.x <= rect.left + rect.width &&
-     point.y +position.y >= rect.top && point.y <= rect.top + rect.height));
+  return(rect.contains(point));
 }
 
 void ButtonUI::onSelected(sf::Event event)
 {
   if (event.type == sf::Event::MouseMoved)
   {
-    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-    if (!selected)
+    if(available)
     {
-      if (isInsidePoint(static_cast<sf::Vector2f>(mousePos)))
+      sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+      if (!selected)
       {
-        buttonBox.GetObjSprite()->setColor(sf::Color(0,255,0));
-        selected = true;
+        if (isInsidePoint(static_cast<sf::Vector2f>(mousePos)))
+        {
+          buttonBox.GetObjSprite()->setColor(sf::Color(0, 255, 0));
+          selected = true;
+        }
+      }
+      else if (selected)
+      {
+        if (!isInsidePoint(static_cast<sf::Vector2f>(mousePos)))
+        {
+          buttonBox.GetObjSprite()->setColor(sf::Color(255, 255, 255));
+          selected = false;
+        }
       }
     }
-    else if (selected)
+    else if (!available)
     {
-      if (!isInsidePoint(static_cast<sf::Vector2f>(mousePos)))
-      {
-        buttonBox.GetObjSprite()->setColor(sf::Color(255,255,255));
+        buttonBox.GetObjSprite()->setColor(sf::Color(50,50,50));
         selected = false;
-      }
     }
   }
 }
 bool ButtonUI::isSelected() const
 {
   return selected;
+}
+bool ButtonUI::isAvailable() const
+{
+  return available;
+}
+void ButtonUI::setAvailable(bool available)
+{
+  ButtonUI::available = available;
 }

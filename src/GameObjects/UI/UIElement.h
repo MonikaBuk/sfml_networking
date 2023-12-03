@@ -26,8 +26,7 @@ class UIElement: public GameObject
  private:
   // Member variables to store the state of the UI element
   bool isEnabled = true;
-  bool selected;
-  bool InsideRect;
+
 
  public:
 

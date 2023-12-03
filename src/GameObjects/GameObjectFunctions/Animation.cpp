@@ -17,7 +17,6 @@ void Animation::initAnim(sf::Texture* texture, sf::Vector2u image_count, float s
   this->switch_time = switch_time;
   total_time = 0.0f;
   current_image.x = 0;
-
   rect.width = texture->getSize().x / float (image_count.x);
   rect.height = texture->getSize().y / float (image_count.y);
 }

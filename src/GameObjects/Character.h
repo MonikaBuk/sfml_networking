@@ -13,6 +13,7 @@ class Character : public GameObject
   int getHealth() const;
   void setHealth(int health);
   void handleAnim(float dt);
+  void changePosition(float dt, sf::Vector2f charPos);
   enum  Direction
   {
     UP = 1,
@@ -38,10 +39,14 @@ class Character : public GameObject
   Animation characterAnim;
   sf::Texture characterTexture;
   int health;
-  float speed = 100;
+  float speed = 100.0;
   int ID;
 
+ public:
+  int getId() const;
 
+ public:
+  Direction getDirection() const;
 };
 
 

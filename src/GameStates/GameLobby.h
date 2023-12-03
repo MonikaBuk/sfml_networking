@@ -29,11 +29,18 @@ class GameLobby: public GameState
   Network* network;
   std::unique_ptr<ChatBoxUI> chatBox;
   std::unique_ptr<CustomText> ipToConnectText;
-  std::unique_ptr<CustomText> waitText;
+  std::unique_ptr<CustomText> waitText ;
+  std::unique_ptr<CustomText> characterText ;
   std::unique_ptr<BackgroundImage> bckImage;
   sf::Font font;
   StateHandler&  stateHandler;
   std::unique_ptr<ButtonUI> startButton;
+  std::unique_ptr<ButtonUI> birdButton;
+  std::unique_ptr<ButtonUI> catButton;
+  std::unique_ptr<ButtonUI> foxButton;
+  std::unique_ptr<ButtonUI> racoonButton;
+  std::vector<std::unique_ptr<ButtonUI>> characterButtons;
+  std::vector<bool> availableCharacters;
 };
 
 #endif // SFMLGAME_GAMELOBBY_H

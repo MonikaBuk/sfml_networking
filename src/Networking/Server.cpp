@@ -16,7 +16,6 @@ void Server::init()
 
 void Server::run()
 {
-
   while (running)
   {
     sf::TcpSocket& cSock =
@@ -26,12 +25,15 @@ void Server::run()
       connections.pop_back();
       return;
     }
+    else
+    {
+      std::cout << "accept done \n";
+    }
     std::cout << "Client connected @ " << cSock.getRemotePort() << std::endl;
     workers.emplace_back(
       [&]
       {
         listen(cSock);
-        std::cout << "detected disconnect\n";
         std::lock_guard<std::mutex>lck(mutex);
         for (int i = 0; i < connections.size(); ++i)
         {
@@ -42,51 +44,112 @@ void Server::run()
       });
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
-
 }
-
 
 void Server::listen(sf::TcpSocket& cSocket)
 {
+  static short clientID = 0;
+  short currentClientID = ++clientID;
   bool continue_receiving = true;
-  sf::Packet connectionPacket;
-  ConnectionMessage newConnection;
-  newConnection.gameRunning = isGameIsRunning();
-  connectionPacket << newConnection;
-
-  send(connectionPacket);
 
   while (continue_receiving)
   {
     sf::Packet receivedPacket;
-    auto status = cSocket.receive(receivedPacket);
-
-    ChatMessage msg;
-    receivedPacket >> msg;
-
-    if(status == sf::Socket::Status::Disconnected)
+    auto status           = cSocket.receive(receivedPacket);
+    sf::Packet copyPacket = receivedPacket;
+    if (status == sf::Socket::Status::Disconnected)
     {
       continue_receiving = false; // disconnected
       std::cout << "Disconnected" << std::endl;
     }
+    int messageType;
+    copyPacket >> messageType;
     sf::IpAddress IP = cSocket.getRemoteAddress();
-    portNum = cSocket.getRemotePort();
-    send(receivedPacket);
+    portNum          = cSocket.getRemotePort();
+    if (static_cast<MessageType>(messageType) == 4)
+    {
+      int charID;
+      copyPacket >> charID;
+      ChatMessage message;
+      if (characterAvailableID[charID])
+      {
+        message.text                 = "Character Is available";
+        characterAvailableID[charID] = false;
+        characterChoosenID.push_back(charID);
+      }
+      else
+      {
+        message.text = "Character Is Unavialable";
+      }
+      message.sender = charID;
+      sf::Packet serverMsg;
+      serverMsg << message;
+      for (auto& connection : connections)
+      {
+        if (connection->getRemotePort() == portNum)
+        {
+          send(serverMsg, *connection);
+          send(receivedPacket, *connection);
+        }
+      }
+    }
+    else if (static_cast<MessageType>(messageType) == 2)
+    {
+      int state;
+      copyPacket >> state;
+      if (state == 2)
+      {
+        for (auto& id : characterChoosenID)
+        {
+          OtherCharacters newChars;
+          newChars.id = id;
+          sf::Packet charPacket;
+          charPacket << newChars;
+          for (auto& connection : connections)
+          {
+            send(charPacket, *connection);
+          }
+        }
+        for (auto& connection : connections)
+        {
+          send(receivedPacket, * connection);
+        }
+      }
+    }
+    else if(static_cast<MessageType>(messageType) == 7)
+    {
+      sf::Packet connectionPacket;
+      ConnectionMessage newConnection;
+      newConnection.gameRunning = isGameIsRunning();
+      newConnection.characterAvailability = characterAvailableID;
+      connectionPacket << newConnection;
+      for (auto& connection : connections)
+      {
+        if (connection->getRemotePort() == portNum)
+        {
+          send(connectionPacket, *connection);
+        }
+      }
+    }
+    else
+    {
+      for (auto& connection : connections)
+      {
+        if (connection->getRemotePort() != portNum)
+        {
+          send(receivedPacket, *connection);
+        }
+      }
+    }
     std::cout << "Received from " << IP.toString() << std::endl;
   }
   cSocket.disconnect();
 }
-
-void Server::send(sf::Packet& packet) {
+void Server::send(sf::Packet& packet, sf::TcpSocket& connection) {
   std::lock_guard<std::mutex> lck(mutex);
-
-  for (auto& connection : connections) {
-    if (connection->getRemotePort() != portNum) {
-      if (connection->send(packet) != sf::Socket::Done) {
+      if (connection.send(packet) != sf::Socket::Done) {
         std::cerr << "Failed to send packet to a client" << std::endl;
       }
-    }
-  }
 }
 bool Server::isGameIsRunning() const
 {

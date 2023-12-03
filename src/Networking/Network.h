@@ -20,9 +20,6 @@ class Network
   sf::IpAddress localIP = sf::IpAddress::getLocalAddress();
   bool serverCreate = false;
 
-
-
-
  private:
   std::unique_ptr<Client> client = nullptr;
   std::unique_ptr<Server> server = nullptr;

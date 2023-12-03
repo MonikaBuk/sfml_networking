@@ -36,7 +36,8 @@ class Client
   bool isServerHost() const;
   void setServerHost(bool serverHost);
   bool isGameIsRunning() const;
-
+  void sendCharChoiceMessage(const CharacterChoosing& message);
+  const std::vector<int>& getOtherPlayers() const;
 
  private:
   std::unique_ptr<sf::TcpSocket> socket;
@@ -46,10 +47,21 @@ class Client
   sf::IpAddress ipAddress;
   bool serverHost= false;
   bool gameIsRunning = false;
-
   int newState;
   bool stateChanged= false;
   void handleConnectionMessage(sf::Packet& packet);
+  int characterID;
+  std::vector<int> otherPlayers;
+  std::vector<bool> characterAvailablity;
+
+ public:
+  const std::vector<bool>& getCharacterAvailablity() const;
+
+  int getCharacterId() const;
+  void setCharacterId(int characterId);
+  void handleCharChooseMessage(sf::Packet& packet);
+  void handleOtherCharChooseMessage(sf::Packet& packet);
+  void sendConnectionRequest(const NewConnection& message);
 };
 
 #endif // SFMLGAME_CLIENT_H

@@ -24,6 +24,9 @@ class Player : public GameObject
   void assignCharacter(std::unique_ptr<Character> character);
   void Draw();
 
+
+
+
 };
 
 #endif // SFMLGAME_PLAYER_H

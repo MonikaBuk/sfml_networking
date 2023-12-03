@@ -8,10 +8,10 @@
 
 void Client::connect(sf::IpAddress& ipToConnect)
 {
-  ipAddress = sf::IpAddress::getLocalAddress();
+
   if (socket == nullptr)
     socket = std::make_unique<sf::TcpSocket>();
-  if (socket->connect(ipAddress, 53000) == sf::Socket::Status::Done)
+  if (socket->connect(ipToConnect, 53000) == sf::Socket::Status::Done)
   {
     std::cout << "You're Connected!" << std::endl;
     connected = true;
@@ -19,8 +19,11 @@ void Client::connect(sf::IpAddress& ipToConnect)
     newConnection.text = "Is Connected. Say Hi!";
     newConnection.sender = userName;
     sendChatMessage(newConnection);
+    NewConnection infoRequest;
+    sendConnectionRequest(infoRequest);
     std::thread run_thread ([&]{run();});
     run_thread.detach();
+
   }
   else
   {
@@ -37,7 +40,6 @@ void Client::run()
     {
       sf::Packet receivedPacket;
       auto status = socket->receive(receivedPacket);
-
       if (status ==sf::Socket::Status::Disconnected)
       {
         connected = false;
@@ -49,7 +51,6 @@ void Client::run()
       {
         int messageType;
         receivedPacket >> messageType;
-
         switch (static_cast<MessageType>(messageType))
         {
           case MessageType::CHAT:
@@ -64,11 +65,17 @@ void Client::run()
             std::cout << "Received CONNECTION message" << std::endl;
             handleConnectionMessage(receivedPacket);
             break;
+          case MessageType::CHAR_CHOICE:
+            std::cout << "Received Character message" << std::endl;
+            handleCharChooseMessage(receivedPacket);
+            break;
+          case MessageType::OTHER_CHAR:
+            std::cout << "Received Other Player message" << std::endl;
+            handleOtherCharChooseMessage(receivedPacket);
+            break;
           default:
             std::cerr << "Received an unknown message type: " << messageType << std::endl;
-            // Handle unexpected message type
             break;
-
         }
       }
       else
@@ -129,6 +136,31 @@ void Client::handleConnectionMessage(sf::Packet& packet)
   {
     gameIsRunning = connectionMessage.gameRunning;
     std::cerr << gameIsRunning << std::endl;
+    characterAvailablity = connectionMessage.characterAvailability;
+  }
+  else
+  {
+    std::cerr << "Failed to extract chat message from received packet." << std::endl;
+  }
+}
+void Client::handleCharChooseMessage(sf::Packet& packet)
+{
+  CharacterChoosing charMessage;
+  if (packet >> charMessage)
+  {
+    characterID = charMessage.id;
+  }
+  else
+  {
+    std::cerr << "Failed to extract chat message from received packet." << std::endl;
+  }
+}
+void Client::handleOtherCharChooseMessage(sf::Packet& packet)
+{
+  OtherCharacters charMessage;
+  if (packet >> charMessage)
+  {
+    otherPlayers.push_back(charMessage.id);
   }
   else
   {
@@ -162,7 +194,20 @@ void Client::sendSateMessage(const StateMessage& message) {
     std::cerr << "Failed to send state message. Socket not connected or invalid." << std::endl;
   }
 }
-void Client::sendConnectionMessage(const ConnectionMessage& message) {
+void Client::sendConnectionRequest(const NewConnection& message) {
+  if (connected && socket) {
+    sf::Packet connectionPacket;
+    connectionPacket << message;
+    if (socket->send(connectionPacket) != sf::Socket::Done) {
+      std::cerr << "Failed to send connection message" << std::endl;
+    }
+  }
+  else
+  {
+    std::cerr << "Failed to send connection message. Socket not connected or invalid." << std::endl;
+  }
+}
+void Client::sendCharChoiceMessage(const CharacterChoosing& message) {
   if (connected && socket) {
     sf::Packet connectionPacket;
     connectionPacket << message;
@@ -224,4 +269,20 @@ void Client::setServerHost(bool serverHost)
 bool Client::isGameIsRunning() const
 {
   return gameIsRunning;
+}
+int Client::getCharacterId() const
+{
+  return characterID;
+}
+void Client::setCharacterId(int characterId)
+{
+  characterID = characterId;
+}
+const std::vector<int>& Client::getOtherPlayers() const
+{
+  return otherPlayers;
+}
+const std::vector<bool>& Client::getCharacterAvailablity() const
+{
+  return characterAvailablity;
 }

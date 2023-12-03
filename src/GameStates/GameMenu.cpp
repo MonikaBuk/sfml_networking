@@ -39,10 +39,8 @@ void GameMenu::update(float dt)
 void GameMenu::render()
 {
   userNameInput->draw();
-
   hostButton->draw();
   joinButton->draw();
-
   if (userNameInput->getIsEnabled())
   {
     window.draw(textInputTittle);
@@ -50,8 +48,9 @@ void GameMenu::render()
 }
 void GameMenu::mouseClicked(sf::Event event)
 {
+
   // just a local IP as for public IP I would have to connect to a website which, and request the information, but it might not work on school computer or for other security reasons
-  sf::IpAddress localAddress = network->localIP;
+   sf::IpAddress localAddress = network->localIP;
   if (joinButton->isSelected() && joinButton->getIsEnabled())
   {
     if (network->clientConnect(localAddress))
@@ -61,17 +60,16 @@ void GameMenu::mouseClicked(sf::Event event)
     }
     return;
   }
-  if (hostButton->isSelected() && hostButton->getIsEnabled())
+  else if (hostButton->isSelected() && hostButton->getIsEnabled())
   {
     if (!network->serverCreate)
     {
       network->createServer();
       network->clientConnect(localAddress);
-
       network->getClient()->setServerHost(true);
       stateHandler.setState(new GameLobby(window, network, stateHandler));
+      return ;
     }
-
     if (network->serverCreate && network->clientConnect(localAddress))
     {
       network->getClient()->setServerHost(true);

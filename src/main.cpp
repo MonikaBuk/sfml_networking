@@ -31,7 +31,7 @@ int main()
     float dt = time.asSeconds();
 
     //'process inputs' element of the game loop
-    while (window.pollEvent(event))
+    while (window.pollEvent(event) && window.hasFocus())
     {
       // "close requested" event: we close the window
       if (event.type == sf::Event::Closed)

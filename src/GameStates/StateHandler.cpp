@@ -4,11 +4,8 @@
 
 #include "StateHandler.h"
 
-
-
-void StateHandler::setState(GameState* newState) {
-
-
+void StateHandler::setState(GameState* newState)
+{
   // Release resources of the current state
   delete currentState;
   currentState = nullptr;

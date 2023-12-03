@@ -4,7 +4,7 @@
 #include "ChatMessage.h"
 sf::Packet& operator <<(sf::Packet& packet, const ChatMessage& message)
 {
-  return packet << CHAT << message.text << message.sender;
+  return packet <<CHAT << message.text << message.sender;
 }
 
 sf::Packet& operator >>(sf::Packet& packet, ChatMessage& message)
@@ -26,11 +26,61 @@ sf::Packet& operator >>(sf::Packet& packet, StateMessage& message)
 
 sf::Packet& operator <<(sf::Packet& packet, const ConnectionMessage& message)
 {
-  return packet << CONNECTION << message.gameRunning;
+  packet << CONNECTION << message.gameRunning;
+  for (bool status : message.characterAvailability)
+  {
+    packet << status;
+  }
+  return packet;
 }
 
 sf::Packet& operator >>(sf::Packet& packet, ConnectionMessage& message)
 {
-  packet  >> message.gameRunning;
+  packet >> message.gameRunning;
+  for (int i = 0; i < 4; ++i)
+  {
+    bool asd = true;
+    packet >> asd;
+    std::cout <<asd <<"this get read into \n";
+    message.characterAvailability[i] = asd;
+  }
   return packet;
 }
+
+sf::Packet& operator <<(sf::Packet& packet, const CharacterChoosing& message)
+{
+  return packet << CHAR_CHOICE << message.id;
+}
+
+sf::Packet& operator >>(sf::Packet& packet, CharacterChoosing& message)
+{
+  packet  >> message.id;
+  return packet;
+}
+sf::Packet& operator <<(sf::Packet& packet, const CharacterUpdatePacket& message)
+{
+  return packet  << CHARACTER_UPDATE << message.characterID << message.newPosition.x << message.newPosition.y << message.state;
+}
+
+sf::Packet& operator >>(sf::Packet& packet, CharacterUpdatePacket& message)
+{
+  packet  >> message.characterID >> message.newPosition.x >> message.newPosition.y >> message.state;
+  return packet;
+}
+
+sf::Packet& operator <<(sf::Packet& packet, const OtherCharacters& message)
+{
+  return packet << OTHER_CHAR << message.id;
+}
+
+sf::Packet& operator >>(sf::Packet& packet, OtherCharacters& message)
+{
+  packet  >> message.id;
+  return packet;
+}
+
+sf::Packet& operator <<(sf::Packet& packet, const NewConnection& message)
+{
+  return packet << NEW_CONNECTION;
+}
+

@@ -70,3 +70,15 @@ void Character::draw()
 {
   window.draw(*GetObjSprite());
 }
+void Character::changePosition(float dt, sf::Vector2f charPos)
+{
+  GetObjSprite()->setPosition(charPos);
+}
+Character::Direction Character::getDirection() const
+{
+  return direction;
+}
+int Character::getId() const
+{
+  return ID;
+}

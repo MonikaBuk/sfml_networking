@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <algorithm>
 
 void GamePlay::Map_Loading(const std::string& tmxPath,const std::string& imgPath, std::unique_ptr<sf::Texture>& tileMap,   std::vector<std::vector<std::unique_ptr<Tile>>>& TILE_MAP)
 {
@@ -86,26 +87,45 @@ bool GamePlay::init()
   racoon = std::make_unique<Character>();
   fox = std::make_unique<Character>();
   cat = std::make_unique<Character>();
-  bird->innitCharacter(1, "Data/Images/characters/BIRDSPRITESHEET.png", sf::Vector2f (300,300),Character::RIGHT);
-  racoon->innitCharacter(2, "Data/Images/characters/RACCOONSPRITESHEET.png", sf::Vector2f (window.getSize().x - 200,200),Character::LEFT);
-  fox->innitCharacter(3, "Data/Images/characters/FOXSPRITESHEET.png", sf::Vector2f (300,300),Character::LEFT);
-  cat->innitCharacter(4, "Data/Images/characters/CATSPRITESHEET.png", sf::Vector2f (300,300),Character::LEFT);
+  bird->innitCharacter(0, "Data/Images/characters/BIRDSPRITESHEET.png", sf::Vector2f (300,300),Character::RIGHT);
+  racoon->innitCharacter(1, "Data/Images/characters/RACCOONSPRITESHEET.png", sf::Vector2f (window.getSize().x - 200,200),Character::LEFT);
+  fox->innitCharacter(2, "Data/Images/characters/FOXSPRITESHEET.png", sf::Vector2f (window.getSize().x - 200,400),Character::LEFT);
+  cat->innitCharacter(3, "Data/Images/characters/CATSPRITESHEET.png", sf::Vector2f (300,400),Character::LEFT);
   characters.push_back(std::move(bird));
-  characters.push_back(std::move(racoon));
-  characters.push_back(std::move(fox));
   characters.push_back(std::move(cat));
-
+  characters.push_back(std::move(fox));
   characters.push_back(std::move(racoon));
   playerCharacter = std::make_unique<Player>();
+  int playerID = network->getClient()->getCharacterId();
+  playerCharacter->assignCharacter(std::move(characters[playerID]));
+  std::vector<int> otherPlayersList;
+  otherPlayersList = network->getClient()->getOtherPlayers();
+  otherPlayersList.erase(std::remove(otherPlayersList.begin(), otherPlayersList.end(), playerID), otherPlayersList.end());
 
-  playerCharacter->assignCharacter(std::move(characters[1]));
+
+
+
+  std::cout << "The player char num is " << playerID << "\n";
+  std::cout << "The player char id num is " << playerCharacter->getPlayerCharacter()->getId() << "\n";
+
+  for (int num : otherPlayersList) {
+    std::cout << "Processing other char num: " << num << "\n";
+    otherPlayers.push_back(std::move(characters[num]));
+  }
+
   return true;
-
 }
+
 void GamePlay::update(float dt)
 {
   playerCharacter->movePlayer(dt);
-    playerCharacter->getPlayerCharacter()->handleAnim(dt);
+  playerCharacter->getPlayerCharacter()->handleAnim(dt);
+
+  for (const auto& player : otherPlayers)
+  {
+    std::cout << player->getId() <<"\n";
+    player->handleAnim(dt);
+  }
   for (const auto& layer : TILE_MAP_Wall)
   {
     for (const auto& tile : layer)
@@ -117,18 +137,10 @@ void GamePlay::update(float dt)
           playerCharacter->direction))
       {
         playerCharacter->onCollision(playerCharacter->direction);
-        std::cout << "Collision with Tile ID: " << tile->GetID() << "\n";
-        std::cout
-          << "Player Position: "
-          << playerCharacter->getPlayerCharacter()->getCollider().getPosition().x
-          << ", "
-          << playerCharacter->getPlayerCharacter()->getCollider().getPosition().y
-          << "\n";
-        std::cout << "Tile Position: " << tile->getCollider().getPosition().x
-                  << ", " << tile->getCollider().getPosition().y << "\n";
       }
     }
   }
+
 }
 void GamePlay::mouseClicked(sf::Event event) {
   // Implementation of the mouseClicked function
@@ -144,6 +156,10 @@ void GamePlay::render()
   DrawMap(TILE_MAP_FlOOR);
   DrawMap(TILE_MAP_Wall);
   playerCharacter->getPlayerCharacter()->drawObject();
+  for (const auto& players : otherPlayers)
+  {
+    players->drawObject();
+  }
 
 }
 void GamePlay::textEntered(sf::Event event) {}

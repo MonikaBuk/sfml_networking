@@ -21,6 +21,7 @@ class GamePlay : public GameState
   std::unique_ptr<sf::Texture> tileMapWall =  std::make_unique<sf::Texture>();
   std::vector<std::vector<std::unique_ptr<Tile>>> TILE_MAP_Wall;
   std::vector<std::unique_ptr<Character>> characters;
+  std::vector<std::unique_ptr<Character>> otherPlayers;
 
    bool init()override;
    void update(float dt);
@@ -38,6 +39,7 @@ class GamePlay : public GameState
     const tmx::TileLayer::Tile& tile, float scale);
   StateHandler&  stateHandler;
   Network* network;
+  void CreatePlayer(int id, std::vector<std::unique_ptr<Character>>);
 
  private:
   std::unique_ptr<Character> bird;
@@ -45,6 +47,7 @@ class GamePlay : public GameState
   std::unique_ptr<Character> fox;
   std::unique_ptr<Character> racoon;
   std::unique_ptr<Player> playerCharacter;
+
 
 };
 

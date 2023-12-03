@@ -29,7 +29,12 @@ class ButtonUI: public UIElement
   sf::Text text;
   std::string buttonText;
   std::string buttonFilePath;
-  bool selected;
+  bool selected = false;
+  bool available = true;
+
+ public:
+  bool isAvailable() const;
+  void setAvailable(bool available);
 
  public:
   bool isSelected() const;
