@@ -110,7 +110,7 @@ bool GamePlay::init()
 
   for (int num : otherPlayersList) {
     std::cout << "Processing other char num: " << num << "\n";
-    otherPlayers.push_back(std::move(characters[num]));
+    network->getClient()->otherCharacters.push_back(std::move(characters[num]));
   }
 
   return true;
@@ -121,7 +121,7 @@ void GamePlay::update(float dt)
   playerCharacter->movePlayer(dt);
   playerCharacter->getPlayerCharacter()->handleAnim(dt);
 
-  for (const auto& player : otherPlayers)
+  for (const auto& player : network->getClient()->otherCharacters)
   {
     std::cout << player->getId() <<"\n";
     player->handleAnim(dt);
@@ -140,6 +140,14 @@ void GamePlay::update(float dt)
       }
     }
   }
+  sf::Vector2f charPos = playerCharacter->getPlayerCharacter()->GetObjSprite()->getPosition();
+  int playerState = playerCharacter->getPlayerCharacter()->getDirection();
+  int id = playerCharacter->getPlayerCharacter()->getId();
+  CharacterUpdatePacket playerUpdate;
+  playerUpdate.newPosition = charPos;
+  playerUpdate.characterID = id;
+  playerUpdate.state =playerState;
+  network->getClient()->sendPlayerUpdate(playerUpdate);
 
 }
 void GamePlay::mouseClicked(sf::Event event) {
@@ -156,7 +164,7 @@ void GamePlay::render()
   DrawMap(TILE_MAP_FlOOR);
   DrawMap(TILE_MAP_Wall);
   playerCharacter->getPlayerCharacter()->drawObject();
-  for (const auto& players : otherPlayers)
+  for (const auto& players : network->getClient()->otherCharacters)
   {
     players->drawObject();
   }

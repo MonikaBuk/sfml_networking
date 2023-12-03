@@ -13,16 +13,16 @@ class Character : public GameObject
   int getHealth() const;
   void setHealth(int health);
   void handleAnim(float dt);
-  void changePosition(float dt, sf::Vector2f charPos);
-  enum  Direction
+  void changePosition(sf::Vector2f charPos);
+  enum  MovementDirection
   {
     UP = 1,
     DOWN = 2,
     RIGHT = 3,
     LEFT = 4,
     OTHER = 5,
-  }direction;
-  void innitCharacter(int id, const std::string& characterText, sf::Vector2f spawn_position, Direction direction1);
+  }movementDirection;
+  void innitCharacter(int id, const std::string& characterText, sf::Vector2f spawn_position, MovementDirection direction1);
   float getSpeed() const;
 
 
@@ -46,7 +46,7 @@ class Character : public GameObject
   int getId() const;
 
  public:
-  Direction getDirection() const;
+  MovementDirection getDirection() const;
 };
 
 

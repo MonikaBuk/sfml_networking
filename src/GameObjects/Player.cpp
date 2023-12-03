@@ -15,25 +15,25 @@ void Player::movePlayer(const float& dt)
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
     {
       velocity.x -= playerCharacter->getSpeed();
-      playerCharacter->direction = Character::LEFT;
+      playerCharacter->movementDirection = Character::LEFT;
     }
 
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
     {
       velocity.x += playerCharacter->getSpeed();
-      playerCharacter->direction = Character::RIGHT;
+      playerCharacter->movementDirection = Character::RIGHT;
     }
 
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
     {
       velocity.y -= playerCharacter->getSpeed();
-      playerCharacter->direction = Character::UP;
+      playerCharacter->movementDirection = Character::UP;
     }
 
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
     {
       velocity.y += playerCharacter->getSpeed();
-      playerCharacter->direction = Character::DOWN;
+      playerCharacter->movementDirection = Character::DOWN;
     }
   }
 

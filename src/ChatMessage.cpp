@@ -84,3 +84,24 @@ sf::Packet& operator <<(sf::Packet& packet, const NewConnection& message)
   return packet << NEW_CONNECTION;
 }
 
+sf::Packet& operator <<(sf::Packet& packet, const UnavailableCharacter& message)
+{  packet << UNAV_CHAR;
+  for (bool status : message.characterAvailability)
+  {
+    packet << status;
+  }
+  return packet;
+}
+
+sf::Packet& operator >>(sf::Packet& packet, UnavailableCharacter& message)
+{
+  for (int i = 0; i < 4; ++i)
+  {
+    bool asd = true;
+    packet >> asd;
+    std::cout <<asd <<"this get read into \n";
+    message.characterAvailability[i] = asd;
+  }
+  return packet;
+}
+

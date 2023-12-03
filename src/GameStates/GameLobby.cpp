@@ -164,15 +164,16 @@ void GameLobby::mouseWheelScrolled(sf::Event event) {
 }
 void GameLobby::mouseMoved(sf::Event event)
 {
+  availableCharacters = network->getClient()->getCharacterAvailablity();
+  for (int i = 0; i < 4; i++)
+  {
+    characterButtons[i]->setAvailable(availableCharacters[i]);
+  }
+
  startButton->onSelected(event);
  for (auto& button : characterButtons)
  {
    button->onSelected(event);
  }
  chatBox->getSendButton()->onSelected(event);
- for (int i = 0; i < 4; i++)
- {
-     characterButtons[i]->setAvailable(availableCharacters[i]);
- }
-
 }

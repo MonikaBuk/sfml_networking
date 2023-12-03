@@ -73,6 +73,14 @@ void Client::run()
             std::cout << "Received Other Player message" << std::endl;
             handleOtherCharChooseMessage(receivedPacket);
             break;
+          case MessageType::UNAV_CHAR:
+            std::cout << "Received Unav char Player message" << std::endl;
+           handleUnavCharChooseMessage(receivedPacket);
+            break;
+          case MessageType::CHARACTER_UPDATE:
+            std::cout << "Received Updaye Player message" << std::endl;
+            handleCharacterUpdateMessage(receivedPacket);
+            break;
           default:
             std::cerr << "Received an unknown message type: " << messageType << std::endl;
             break;
@@ -112,21 +120,20 @@ void Client::handleStateMessage(sf::Packet& packet)
 
   switch (newState)
   {
-    case 1: // StateType::Lobby
-
+    case 1:
+      // StateType::Lobby
       break;
-    case 2: // StateType::InGame
-
+    case 2:
+      // StateType::InGame
       break;
-    case 3: // StateType::GameOver
-
+    case 3:
+      // StateType::GameOver
       break;
     default:
       std::cerr << "Received an unknown state: " << newState << std::endl;
       // Handle unexpected state
       break;
   }
-
 }
 
 void Client::handleConnectionMessage(sf::Packet& packet)
@@ -161,6 +168,37 @@ void Client::handleOtherCharChooseMessage(sf::Packet& packet)
   if (packet >> charMessage)
   {
     otherPlayers.push_back(charMessage.id);
+  }
+  else
+  {
+    std::cerr << "Failed to extract chat message from received packet." << std::endl;
+  }
+}
+void Client::handleUnavCharChooseMessage(sf::Packet& packet)
+{
+  UnavailableCharacter charMessage;
+  if (packet >> charMessage)
+  {
+    characterAvailablity = charMessage.characterAvailability;
+  }
+  else
+  {
+    std::cerr << "Failed to extract chat message from received packet." << std::endl;
+  }
+}
+void Client::handleCharacterUpdateMessage(sf::Packet& packet)
+{
+  CharacterUpdatePacket charMessage;
+  if (packet >> charMessage)
+  {
+    for(int i = 0; i < otherCharacters.size(); i++)
+    {
+      if(charMessage.characterID == otherCharacters[i]->getId())
+      {
+        otherCharacters[i]->changePosition(sf::Vector2f (charMessage.newPosition.x, charMessage.newPosition.y));
+        otherCharacters[i]->movementDirection =  static_cast<Character::MovementDirection>(charMessage.state);
+      }
+    }
   }
   else
   {
@@ -208,6 +246,19 @@ void Client::sendConnectionRequest(const NewConnection& message) {
   }
 }
 void Client::sendCharChoiceMessage(const CharacterChoosing& message) {
+  if (connected && socket) {
+    sf::Packet connectionPacket;
+    connectionPacket << message;
+    if (socket->send(connectionPacket) != sf::Socket::Done) {
+      std::cerr << "Failed to send connection message" << std::endl;
+    }
+  }
+  else
+  {
+    std::cerr << "Failed to send connection message. Socket not connected or invalid." << std::endl;
+  }
+}
+void Client::sendPlayerUpdate(const CharacterUpdatePacket& message) {
   if (connected && socket) {
     sf::Packet connectionPacket;
     connectionPacket << message;
@@ -286,3 +337,4 @@ const std::vector<bool>& Client::getCharacterAvailablity() const
 {
   return characterAvailablity;
 }
+

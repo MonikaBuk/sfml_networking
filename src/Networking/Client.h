@@ -5,12 +5,13 @@
 #ifndef SFMLGAME_CLIENT_H
 #define SFMLGAME_CLIENT_H
 
+#include "../ChatMessage.h"
+#include "../GameObjects/Character.h"
 #include <Sfml/Network.hpp>
 #include <atomic>
 #include <iostream>
 #include <thread>
 #include <vector>
-#include "../ChatMessage.h"
 
 class Client
 {
@@ -22,22 +23,38 @@ class Client
   std::atomic<bool> connected = false;
   bool isMessageReceived() const;
   void setMessageReceived(bool messageReceived);
+
   const ChatMessage& getLastMessage() const;
   void setLastMessage(const ChatMessage& lastMessage);
+
   const std::string& getUserName() const;
   void setUserName(const std::string& userName);
-  void handleStateMessage(sf::Packet& packet);
+
+
   void handleChatMessage(sf::Packet& packet);
+
   void sendSateMessage(const StateMessage& message);
   int getNewState() const;
+  void handleStateMessage(sf::Packet& packet);
   bool isStateChanged() const;
   void setStateChanged(bool stateChanged);
-  void sendConnectionMessage(const ConnectionMessage& message);
+
   bool isServerHost() const;
   void setServerHost(bool serverHost);
   bool isGameIsRunning() const;
+
   void sendCharChoiceMessage(const CharacterChoosing& message);
   const std::vector<int>& getOtherPlayers() const;
+  const std::vector<bool>& getCharacterAvailablity() const;
+  int getCharacterId() const;
+  void setCharacterId(int characterId);
+  void handleCharChooseMessage(sf::Packet& packet);
+  void handleOtherCharChooseMessage(sf::Packet& packet);
+  void sendConnectionRequest(const NewConnection& message);
+  void handleUnavCharChooseMessage(sf::Packet& packet);
+  void sendPlayerUpdate(const CharacterUpdatePacket& message);
+
+  std::vector<std::unique_ptr<Character>> otherCharacters;
 
  private:
   std::unique_ptr<sf::TcpSocket> socket;
@@ -54,14 +71,9 @@ class Client
   std::vector<int> otherPlayers;
   std::vector<bool> characterAvailablity;
 
- public:
-  const std::vector<bool>& getCharacterAvailablity() const;
 
-  int getCharacterId() const;
-  void setCharacterId(int characterId);
-  void handleCharChooseMessage(sf::Packet& packet);
-  void handleOtherCharChooseMessage(sf::Packet& packet);
-  void sendConnectionRequest(const NewConnection& message);
+ public:
+  void handleCharacterUpdateMessage(sf::Packet& packet);
 };
 
 #endif // SFMLGAME_CLIENT_H

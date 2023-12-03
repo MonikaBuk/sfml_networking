@@ -21,6 +21,12 @@ class Server
   void listen(sf::TcpSocket& cSocket);
   void send(sf::Packet& packet, sf::TcpSocket& connection);
   std::atomic<bool> created = false;
+  bool isGameIsRunning() const;
+  void setGameIsRunning(bool gameIsRunning);
+
+  void sendToEveryone(sf::Packet& packet);
+  void sendToSender(sf::Packet& packet);
+  void sendToOthers(sf::Packet& packet);
 
  private:
   std::vector<std::thread> workers;
@@ -31,13 +37,11 @@ class Server
   bool  running = true;
   int portNum;
   bool gameIsRunning = false;
+  std::vector<short>clientIDs[4];
   std::vector<bool>characterAvailableID = {true,true,true,true};
   std::vector<int> characterChoosenID;
+  std::vector<int> characterOwnedBy ={0,0,0,0};
  public:
-  bool isGameIsRunning() const;
-  void setGameIsRunning(bool gameIsRunning);
-  std::vector<short>clientIDs[4];
-
 
 };
 

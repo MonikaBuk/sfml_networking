@@ -15,7 +15,8 @@ enum  MessageType
   CHAR_CHOICE = 4,
   CHARACTER_UPDATE = 5,
   OTHER_CHAR = 6,
-  NEW_CONNECTION = 7
+  NEW_CONNECTION = 7,
+  UNAV_CHAR = 8
 };
 
 struct ChatMessage
@@ -69,6 +70,13 @@ struct NewConnection
 };
 sf::Packet& operator <<(sf::Packet& packet, const NewConnection& message);
 sf::Packet& operator >>(sf::Packet& packet, NewConnection& message);
+
+struct UnavailableCharacter
+{
+  std::vector<bool> characterAvailability = {true,true,true,true};
+};
+sf::Packet& operator <<(sf::Packet& packet, const UnavailableCharacter& message);
+sf::Packet& operator >>(sf::Packet& packet, UnavailableCharacter& message);
 
 
 #endif // SFMLGAME_CHATMESSAGE_H

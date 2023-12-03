@@ -17,7 +17,7 @@ float Character::getSpeed() const
 }
 void Character::handleAnim(float dt)
 {
-  switch (direction)
+  switch (movementDirection)
   {
     case Character::UP:
       animation.Update(8,dt, false);
@@ -49,7 +49,7 @@ void Character::handleAnim(float dt)
       break;
   }
 }
-void Character::innitCharacter(int id, const std::string & characterText, sf::Vector2f spawn_position, Direction direction1)
+void Character::innitCharacter(int id, const std::string & characterText, sf::Vector2f spawn_position, MovementDirection direction1)
 {
   if (!characterTexture.loadFromFile(characterText))
   {
@@ -62,7 +62,7 @@ void Character::innitCharacter(int id, const std::string & characterText, sf::Ve
   GetObjSprite()->setTexture(characterTexture);
   animation.initAnim(&characterTexture, sf::Vector2u(4,9), 0.3);
 
-  direction = direction1;
+  movementDirection = direction1;
   GetObjSprite()->setScale(2.5,2.5);
 }
 
@@ -70,13 +70,13 @@ void Character::draw()
 {
   window.draw(*GetObjSprite());
 }
-void Character::changePosition(float dt, sf::Vector2f charPos)
+void Character::changePosition(sf::Vector2f charPos)
 {
   GetObjSprite()->setPosition(charPos);
 }
-Character::Direction Character::getDirection() const
+Character::MovementDirection Character::getDirection() const
 {
-  return direction;
+  return movementDirection;
 }
 int Character::getId() const
 {
