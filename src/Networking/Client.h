@@ -21,20 +21,20 @@ class Client
   void sendChatMessage(const ChatMessage& message);
   std::atomic<bool> running = false;
   std::atomic<bool> connected = false;
+
   bool isMessageReceived() const;
   void setMessageReceived(bool messageReceived);
-
   const ChatMessage& getLastMessage() const;
   void setLastMessage(const ChatMessage& lastMessage);
+  void handleChatMessage(sf::Packet& packet);
+
 
   const std::string& getUserName() const;
   void setUserName(const std::string& userName);
 
 
-  void handleChatMessage(sf::Packet& packet);
-
-  void sendSateMessage(const StateMessage& message);
   int getNewState() const;
+  void sendSateMessage(const StateMessage& message);
   void handleStateMessage(sf::Packet& packet);
   bool isStateChanged() const;
   void setStateChanged(bool stateChanged);
@@ -57,7 +57,7 @@ class Client
   std::vector<std::unique_ptr<Character>> otherCharacters;
 
  private:
-  std::unique_ptr<sf::TcpSocket> socket;
+  std::unique_ptr<sf::TcpSocket> TcpSocket;
   bool messageReceived;
   ChatMessage lastMessage;
   std::string  userName = "testName";

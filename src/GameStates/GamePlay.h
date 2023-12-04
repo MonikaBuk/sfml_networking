@@ -25,6 +25,7 @@ class GamePlay : public GameState
 
    bool init()override;
    void update(float dt);
+   sf::Clock updateTimer;
    void render() override;
    void mouseClicked(sf::Event event) override;
    void keyPressed(sf::Event event) override;

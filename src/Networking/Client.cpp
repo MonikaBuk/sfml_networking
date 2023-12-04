@@ -9,9 +9,9 @@
 void Client::connect(sf::IpAddress& ipToConnect)
 {
 
-  if (socket == nullptr)
-    socket = std::make_unique<sf::TcpSocket>();
-  if (socket->connect(ipToConnect, 53000) == sf::Socket::Status::Done)
+  if (TcpSocket == nullptr)
+    TcpSocket = std::make_unique<sf::TcpSocket>();
+  if (TcpSocket->connect(ipToConnect, 53000) == sf::Socket::Status::Done)
   {
     std::cout << "You're Connected!" << std::endl;
     connected = true;
@@ -23,7 +23,6 @@ void Client::connect(sf::IpAddress& ipToConnect)
     sendConnectionRequest(infoRequest);
     std::thread run_thread ([&]{run();});
     run_thread.detach();
-
   }
   else
   {
@@ -39,12 +38,12 @@ void Client::run()
     while(connected)
     {
       sf::Packet receivedPacket;
-      auto status = socket->receive(receivedPacket);
+      auto status = TcpSocket->receive(receivedPacket);
       if (status ==sf::Socket::Status::Disconnected)
       {
         connected = false;
         std::cout << "clean disconnection" << std::endl;
-        socket ->disconnect();
+        TcpSocket ->disconnect();
         break;
       }
       else if (status == sf::Socket::Status::Done)
@@ -136,6 +135,7 @@ void Client::handleStateMessage(sf::Packet& packet)
   }
 }
 
+// handle received packets
 void Client::handleConnectionMessage(sf::Packet& packet)
 {
   ConnectionMessage connectionMessage;
@@ -159,7 +159,7 @@ void Client::handleCharChooseMessage(sf::Packet& packet)
   }
   else
   {
-    std::cerr << "Failed to extract chat message from received packet." << std::endl;
+    std::cerr << "Failed to extract character message from received packet." << std::endl;
   }
 }
 void Client::handleOtherCharChooseMessage(sf::Packet& packet)
@@ -171,7 +171,7 @@ void Client::handleOtherCharChooseMessage(sf::Packet& packet)
   }
   else
   {
-    std::cerr << "Failed to extract chat message from received packet." << std::endl;
+    std::cerr << "Failed to extract other character message from received packet." << std::endl;
   }
 }
 void Client::handleUnavCharChooseMessage(sf::Packet& packet)
@@ -183,7 +183,7 @@ void Client::handleUnavCharChooseMessage(sf::Packet& packet)
   }
   else
   {
-    std::cerr << "Failed to extract chat message from received packet." << std::endl;
+    std::cerr << "Failed to extract unavailable character message from received packet." << std::endl;
   }
 }
 void Client::handleCharacterUpdateMessage(sf::Packet& packet)
@@ -202,15 +202,15 @@ void Client::handleCharacterUpdateMessage(sf::Packet& packet)
   }
   else
   {
-    std::cerr << "Failed to extract chat message from received packet." << std::endl;
+    std::cerr << "Failed to extract character update message from received packet." << std::endl;
   }
 }
-
+// send  packets
 void Client::sendChatMessage(const ChatMessage& message) {
-  if (connected && socket) {
+  if (connected && TcpSocket) {
     sf::Packet messagePacket;
     messagePacket << message;
-    if (socket->send(messagePacket) != sf::Socket::Done) {
+    if (TcpSocket->send(messagePacket) != sf::Socket::Done) {
       std::cerr << "Failed to send chat message" << std::endl;
     }
   }
@@ -219,11 +219,12 @@ void Client::sendChatMessage(const ChatMessage& message) {
     std::cerr << "Failed to send chat message. Socket not connected or invalid." << std::endl;
   }
 }
+
 void Client::sendSateMessage(const StateMessage& message) {
-  if (connected && socket) {
+  if (connected && TcpSocket) {
     sf::Packet messagePacket;
     messagePacket << message;
-    if (socket->send(messagePacket) != sf::Socket::Done) {
+    if (TcpSocket->send(messagePacket) != sf::Socket::Done) {
       std::cerr << "Failed to send state message" << std::endl;
     }
   }
@@ -232,37 +233,12 @@ void Client::sendSateMessage(const StateMessage& message) {
     std::cerr << "Failed to send state message. Socket not connected or invalid." << std::endl;
   }
 }
+
 void Client::sendConnectionRequest(const NewConnection& message) {
-  if (connected && socket) {
+  if (connected && TcpSocket) {
     sf::Packet connectionPacket;
     connectionPacket << message;
-    if (socket->send(connectionPacket) != sf::Socket::Done) {
-      std::cerr << "Failed to send connection message" << std::endl;
-    }
-  }
-  else
-  {
-    std::cerr << "Failed to send connection message. Socket not connected or invalid." << std::endl;
-  }
-}
-void Client::sendCharChoiceMessage(const CharacterChoosing& message) {
-  if (connected && socket) {
-    sf::Packet connectionPacket;
-    connectionPacket << message;
-    if (socket->send(connectionPacket) != sf::Socket::Done) {
-      std::cerr << "Failed to send connection message" << std::endl;
-    }
-  }
-  else
-  {
-    std::cerr << "Failed to send connection message. Socket not connected or invalid." << std::endl;
-  }
-}
-void Client::sendPlayerUpdate(const CharacterUpdatePacket& message) {
-  if (connected && socket) {
-    sf::Packet connectionPacket;
-    connectionPacket << message;
-    if (socket->send(connectionPacket) != sf::Socket::Done) {
+    if (TcpSocket->send(connectionPacket) != sf::Socket::Done) {
       std::cerr << "Failed to send connection message" << std::endl;
     }
   }
@@ -272,6 +248,35 @@ void Client::sendPlayerUpdate(const CharacterUpdatePacket& message) {
   }
 }
 
+void Client::sendCharChoiceMessage(const CharacterChoosing& message) {
+  if (connected && TcpSocket) {
+    sf::Packet connectionPacket;
+    connectionPacket << message;
+    if (TcpSocket->send(connectionPacket) != sf::Socket::Done) {
+      std::cerr << "Failed to send character choice message" << std::endl;
+    }
+  }
+  else
+  {
+    std::cerr << "Failed to send connection message. Socket not connected or invalid." << std::endl;
+  }
+}
+
+void Client::sendPlayerUpdate(const CharacterUpdatePacket& message) {
+  if (connected && TcpSocket) {
+    sf::Packet connectionPacket;
+    connectionPacket << message;
+    if (TcpSocket->send(connectionPacket) != sf::Socket::Done) {
+      std::cerr << "Failed to send connection message" << std::endl;
+    }
+  }
+  else
+  {
+    std::cerr << "Failed to send player update message. Socket not connected or invalid." << std::endl;
+  }
+}
+
+// setters and getters
 bool Client::isMessageReceived() const
 {
   return messageReceived;

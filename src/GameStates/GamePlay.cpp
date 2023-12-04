@@ -125,6 +125,7 @@ void GamePlay::update(float dt)
   {
     std::cout << player->getId() <<"\n";
     player->handleAnim(dt);
+    player->updateInterpolation(dt);
   }
   for (const auto& layer : TILE_MAP_Wall)
   {
@@ -140,14 +141,19 @@ void GamePlay::update(float dt)
       }
     }
   }
-  sf::Vector2f charPos = playerCharacter->getPlayerCharacter()->GetObjSprite()->getPosition();
-  int playerState = playerCharacter->getPlayerCharacter()->getDirection();
-  int id = playerCharacter->getPlayerCharacter()->getId();
-  CharacterUpdatePacket playerUpdate;
-  playerUpdate.newPosition = charPos;
-  playerUpdate.characterID = id;
-  playerUpdate.state =playerState;
-  network->getClient()->sendPlayerUpdate(playerUpdate);
+  if (updateTimer.getElapsedTime() >= sf::seconds(0.02f)) // Adjust the time limit as needed
+  {
+    sf::Vector2f charPos =
+      playerCharacter->getPlayerCharacter()->GetObjSprite()->getPosition();
+    int playerState = playerCharacter->getPlayerCharacter()->getDirection();
+    int id          = playerCharacter->getPlayerCharacter()->getId();
+    CharacterUpdatePacket playerUpdate;
+    playerUpdate.newPosition = charPos;
+    playerUpdate.characterID = id;
+    playerUpdate.state       = playerState;
+    network->getClient()->sendPlayerUpdate(playerUpdate);
+    updateTimer.restart();
+  }
 
 }
 void GamePlay::mouseClicked(sf::Event event) {

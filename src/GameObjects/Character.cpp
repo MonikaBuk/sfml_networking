@@ -72,7 +72,8 @@ void Character::draw()
 }
 void Character::changePosition(sf::Vector2f charPos)
 {
-  GetObjSprite()->setPosition(charPos);
+  targetPosition = charPos;
+  interpolationFactor = 0.0f;
 }
 Character::MovementDirection Character::getDirection() const
 {
@@ -82,3 +83,16 @@ int Character::getId() const
 {
   return ID;
 }
+sf::Vector2f lerp(const sf::Vector2f& start, const sf::Vector2f& end, float t)
+{
+  return (1.0f - t) * start + t * end;
+}
+
+void Character::updateInterpolation(float dt)
+{
+  currentPosition = lerp(currentPosition, targetPosition, interpolationFactor);
+  interpolationFactor += interpolationSpeed * dt;
+  interpolationFactor = std::min(1.0f, interpolationFactor);
+  GetObjSprite()->setPosition(currentPosition);
+}
+

@@ -41,12 +41,17 @@ class Character : public GameObject
   int health;
   float speed = 100.0;
   int ID;
+  sf::Vector2f currentPosition;
+  sf::Vector2f targetPosition;
+  float interpolationFactor;
+  float interpolationSpeed = 100.0f;
 
  public:
   int getId() const;
 
  public:
   MovementDirection getDirection() const;
+  void updateInterpolation(float dt);
 };
 
 
