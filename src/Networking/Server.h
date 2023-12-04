@@ -18,8 +18,9 @@ class Server
  public:
   void init();
   void run();
+  void runTcpServer();
   void listen(sf::TcpSocket& cSocket);
-  void send(sf::Packet& packet, sf::TcpSocket& connection);
+
   std::atomic<bool> created = false;
   bool isGameIsRunning() const;
   void setGameIsRunning(bool gameIsRunning);
@@ -28,15 +29,23 @@ class Server
   void sendToSender(sf::Packet& packet);
   void sendToOthers(sf::Packet& packet);
 
+  void sendInfoForNewConnections();
+  void sendInfoForGameStart(sf::Packet receivedPacket);
+  void sendInfoForChosenCharacter(sf::Packet receivedPacket, sf::Packet copyPacket, short currentClientID);
+
  private:
   std::vector<std::thread> workers;
   std::vector<std::unique_ptr<sf::TcpSocket>> connections;
   std::unique_ptr<sf::TcpListener>listener;
-  std::unique_ptr<sf::TcpSocket> socket;
+  std::unique_ptr<sf::TcpSocket> tcpSocket;
+  sf::UdpSocket udpSocket;
   std::mutex mutex;
   bool  running = true;
   int portNum;
+
   bool gameIsRunning = false;
+
+  //info needed for character selection
   std::vector<short>clientIDs[4];
   std::vector<bool>characterAvailableID = {true,true,true,true};
   std::vector<int> characterChoosenID;
