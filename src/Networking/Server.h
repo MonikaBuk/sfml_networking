@@ -19,6 +19,7 @@ class Server
   void init();
   void run();
   void runTcpServer();
+  void runUdpServer();
   void listen(sf::TcpSocket& cSocket);
 
   std::atomic<bool> created = false;
@@ -39,23 +40,29 @@ class Server
   std::unique_ptr<sf::TcpListener>listener;
   std::unique_ptr<sf::TcpSocket> tcpSocket;
   std::unique_ptr<sf::UdpSocket> udpSocket;
+  unsigned short serverPort = 54000;
   std::mutex mutex;
   bool  running = true;
   int portNum;
 
   std::vector<int> udpClientSockets;
 
+
   bool gameIsRunning = false;
 
+
   //info needed for character selection
+  short clientNum = 0;
+  short clientsWithCharNum = 0;
+  short MAX_CLIENT_NUMBER;
   std::vector<short>clientIDs[4];
   std::vector<bool>characterAvailableID = {true,true,true,true};
   std::vector<int> characterChoosenID;
   std::vector<int> characterOwnedBy ={0,0,0,0};
-  unsigned short serverPort = 54000;
 
 
-  void runUdpServer();
+
+
 };
 
 #endif // SFMLGAME_SERVER_H

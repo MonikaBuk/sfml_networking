@@ -26,7 +26,7 @@ sf::Packet& operator >>(sf::Packet& packet, StateMessage& message)
 
 sf::Packet& operator <<(sf::Packet& packet, const ConnectionMessage& message)
 {
-  packet << CONNECTION << message.gameRunning << message.serverPort;
+  packet << CONNECTION << message.gameRunning;
   for (bool status : message.characterAvailability)
   {
     packet << status;
@@ -97,10 +97,9 @@ sf::Packet& operator >>(sf::Packet& packet, UnavailableCharacter& message)
 {
   for (int i = 0; i < 4; ++i)
   {
-    bool asd = true;
-    packet >> asd;
-    std::cout <<asd <<"this get read into \n";
-    message.characterAvailability[i] = asd;
+    bool available = true;
+    packet >> available;
+    message.characterAvailability[i] = available;
   }
   return packet;
 }

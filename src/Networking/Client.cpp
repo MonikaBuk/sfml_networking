@@ -39,7 +39,7 @@ void Client::connect(sf::IpAddress& ipToConnect)
   }
   else
   {
-    std::cout << "Failed to connect" << std::endl;
+    std::cerr << "Failed to connect" << std::endl;
   }
 }
 
@@ -74,30 +74,7 @@ void Client::run()
     }
   }
 }
-/*
-void Client::recieveUdpPackets()
-{
-  std::cout << "udp packet handling received\n";
-  sf::Packet receivedPacketUdp;
-  sf::IpAddress senderAddress;
-  unsigned short senderPort;
-  statusUdp = UdpSocket->receive(receivedPacketUdp, senderAddress, senderPort);
 
-  std::cout << "udp packet handling received\n";
-  if (statusUdp == sf::Socket::Done)
-  {
-    int messageType;
-    receivedPacketUdp >> messageType;
-    std::cout << "udp packet received\n";
-    handleUdpMessage(static_cast<MessageType>(messageType), receivedPacketUdp);
-    std::cout << "udp packet handling done\n";
-  }
-  else
-  {
-    std::cerr << "Failed to receive UDP packet. Status: " << statusUdp << std::endl;
-  }
-}
-*/
 void Client::runUdpClient()
 {
   running = true;
@@ -114,8 +91,6 @@ void Client::runUdpClient()
     {
       int messageType;
       receivedPacket >> messageType;
-      std::cout << "Received UDP packet from " << sender
-                << " with messageType: " << messageType << std::endl;
       handleUdpMessage(static_cast<MessageType>(messageType), receivedPacket);
     }
   }
@@ -126,31 +101,24 @@ void Client::handleTCPMessages(MessageType messageType, sf::Packet& receivedPack
   switch (static_cast<MessageType>(messageType))
   {
     case MessageType::CHAT:
-      std::cout << "Received CHAT message" << std::endl;
       handleChatMessage(receivedPacket);
       break;
     case MessageType::STATE:
-      std::cout << "Received STATE message" << std::endl;
       handleStateMessage(receivedPacket);
       break;
     case MessageType::CONNECTION:
-      std::cout << "Received CONNECTION message" << std::endl;
       handleConnectionMessage(receivedPacket);
       break;
     case MessageType::CHAR_CHOICE:
-      std::cout << "Received Character message" << std::endl;
       handleCharChooseMessage(receivedPacket);
       break;
     case MessageType::OTHER_CHAR:
-      std::cout << "Received Other Player message" << std::endl;
       handleOtherCharChooseMessage(receivedPacket);
       break;
     case MessageType::UNAV_CHAR:
-      std::cout << "Received Unav char Player message" << std::endl;
       handleUnavCharChooseMessage(receivedPacket);
       break;
     case MessageType::CHARACTER_UPDATE:
-      std::cout << "Received Updaye Player message" << std::endl;
       handleCharacterUpdateMessage(receivedPacket);
       break;
     default:
@@ -163,31 +131,24 @@ void Client::handleUdpMessage(MessageType messageType, sf::Packet& receivedPacke
   switch (static_cast<MessageType>(messageType))
   {
     case MessageType::CHAT:
-      std::cout << "Received CHAT message" << std::endl;
       handleChatMessage(receivedPacket);
       break;
     case MessageType::STATE:
-      std::cout << "Received STATE message" << std::endl;
       handleStateMessage(receivedPacket);
       break;
     case MessageType::CONNECTION:
-      std::cout << "Received CONNECTION message" << std::endl;
       handleConnectionMessage(receivedPacket);
       break;
     case MessageType::CHAR_CHOICE:
-      std::cout << "Received Character message" << std::endl;
       handleCharChooseMessage(receivedPacket);
       break;
     case MessageType::OTHER_CHAR:
-      std::cout << "Received Other Player message" << std::endl;
       handleOtherCharChooseMessage(receivedPacket);
       break;
     case MessageType::UNAV_CHAR:
-      std::cout << "Received Unav char Player message" << std::endl;
       handleUnavCharChooseMessage(receivedPacket);
       break;
     case MessageType::CHARACTER_UPDATE:
-      std::cout << "Received Updaye Player message" << std::endl;
       handleCharacterUpdateMessage(receivedPacket);
       break;
     default:
@@ -203,7 +164,6 @@ void Client::handleChatMessage(sf::Packet& packet)
   {
     setLastMessage(chatMessage);
     setMessageReceived(true);
-    std::cout << "Received: " << chatMessage.text << " from " << chatMessage.sender << std::endl;
   }
   else
   {
@@ -266,6 +226,7 @@ void Client::handleCharChooseMessage(sf::Packet& packet)
   if (packet >> charMessage)
   {
     characterID = charMessage.id;
+    characterIsSelected = true;
   }
   else
   {
@@ -371,20 +332,6 @@ void Client::sendCharChoiceMessage(const CharacterChoosing& message) {
     std::cerr << "Failed to send connection message. Socket not connected or invalid." << std::endl;
   }
 }
-
-void Client::sendPlayerUpdate(const CharacterUpdatePacket& message) {
-  if (connected && TcpSocket) {
-    sf::Packet connectionPacket;
-    connectionPacket << message;
-    if (TcpSocket->send(connectionPacket) != sf::Socket::Done) {
-      std::cerr << "Failed to send connection message" << std::endl;
-    }
-  }
-  else
-  {
-    std::cerr << "Failed to send player update message. Socket not connected or invalid." << std::endl;
-  }
-}
 void Client::sendPlayerUpdate2(const CharacterUpdatePacket& message) {
   if (connected && UdpSocket) {
     sf::Packet updatePacket;
@@ -466,4 +413,7 @@ const std::vector<bool>& Client::getCharacterAvailablity() const
 {
   return characterAvailablity;
 }
-
+bool Client::isCharacterIsSelected() const
+{
+  return characterIsSelected;
+}

@@ -6,12 +6,12 @@
 
 
 
-void Player::movePlayer(const float& dt)
+void Player::changeDirection(const float& dt)
 {
-  velocity.x = 0.0f;
-  velocity.y = 0.0f;
+  resetVellocity();
   if(window.hasFocus())
   {
+
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
     {
       velocity.x -= playerCharacter->getSpeed();
@@ -36,13 +36,16 @@ void Player::movePlayer(const float& dt)
       playerCharacter->movementDirection = Character::DOWN;
     }
   }
-
+}
+void Player::move(const float& dt)
+{
+  prevPos = getPlayerCharacter()->GetObjSprite()->getPosition();
   playerCharacter->GetObjSprite()->move(velocity * dt);
 }
-
-
+/*
 void Player::onCollision(sf::Vector2f direction)
 {
+  prevPos = GetObjSprite()->getPosition();
   if (direction.x < 0.0f && velocity.x > 0.0f)
   {
     velocity.x = 0.0f;
@@ -60,10 +63,19 @@ void Player::onCollision(sf::Vector2f direction)
   {
     velocity.y = 0.0f;
   }
+}*/
+void Player::resetVellocity()
+{
+  velocity.x = 0.0f;
+  velocity.y = 0.0f;
 }
 void Player::assignCharacter(std::unique_ptr<Character> character) {
   playerCharacter = std::move(character);}
 const std::unique_ptr<Character>& Player::getPlayerCharacter() const
 {
   return playerCharacter;
+}
+const sf::Vector2f& Player::getPrevPos() const
+{
+  return prevPos;
 }

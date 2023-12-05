@@ -21,9 +21,9 @@ void Server::init()
 
 void Server::run()
 {
- std::thread run_udp_server([&] {runUdpServer(); });
- run_udp_server.detach();
- runTcpServer();
+  std::thread run_udp_server([&] {runUdpServer(); });
+  run_udp_server.detach();
+  runTcpServer();
 }
 
 void Server::runTcpServer()
@@ -35,6 +35,7 @@ void Server::runTcpServer()
         connections.emplace_back(std::make_unique<sf::TcpSocket>()).operator*();
       if (listener->accept(cSock) != sf::Socket::Done)
       {
+        clientNum --;
         connections.pop_back();
         return;
       }
@@ -43,6 +44,7 @@ void Server::runTcpServer()
         std::cout << "accept done \n";
       }
       std::cout << "Client connected @ " << cSock.getRemotePort() << std::endl;
+      clientNum ++;
       workers.emplace_back(
         [&]
         {
@@ -72,19 +74,11 @@ void Server::runUdpServer()
     if (status == sf::Socket::Done)
     {
       std::cout << "Received UDP packet from " << sender << ":" << port << std::endl;
-
-      // Iterate over all connected clients and send the received packet to each of them
       for (auto& client : udpClientSockets)
       {
         sf::IpAddress clientIpAddress = sf::IpAddress::getLocalAddress();
         unsigned short clientPort = client;
-
-        std::cout << "Sending UDP packet to client " << clientIpAddress << ":" << clientPort << std::endl;
-
-        // Make a copy of the received packet for each client
         sf::Packet copyOfReceivedPacket = receivedPacket;
-
-        // Send the copy of the packet to the current client
         if (client != port)
         {
           if (
@@ -92,17 +86,14 @@ void Server::runUdpServer()
               copyOfReceivedPacket, clientIpAddress, clientPort) !=
             sf::Socket::Done)
           {
-            // Handle the error
             std::cerr << "Failed to send UDP packet to client "
                       << clientIpAddress << ":" << clientPort << std::endl;
           }
-          std::cout << "Sent UDP packet to client " << clientIpAddress << ":" << clientPort << std::endl;
         }
       }
     }
   }
 }
-
 
 void Server::listen(sf::TcpSocket& cSocket)
 {
@@ -134,7 +125,19 @@ void Server::listen(sf::TcpSocket& cSocket)
       copyPacket >> state;
       if (state == 2)
       {
-        sendInfoForGameStart(receivedPacket);
+        if (clientNum == clientsWithCharNum)
+        {
+          sendInfoForGameStart(receivedPacket);
+        }
+        else
+        {
+          ChatMessage msg;
+          sf::Packet serverMsg;
+          msg.sender = "Server";
+          msg.text = "Everyone must select a character before the game";
+          serverMsg << msg;
+          sendToEveryone(serverMsg);
+        }
       }
     }
     else if(static_cast<MessageType>(messageType) == MessageType::NEW_CONNECTION)
@@ -159,10 +162,10 @@ void Server::sendToEveryone(sf::Packet& packet) {
   {
     std::lock_guard<std::mutex> lck(mutex);
 
-      if (connection->send(packet) != sf::Socket::Done)
-      {
-        std::cerr << "Failed to send packet to a client" << std::endl;
-      }
+    if (connection->send(packet) != sf::Socket::Done)
+    {
+      std::cerr << "Failed to send packet to a client" << std::endl;
+    }
   }
 }
 void Server::sendToSender(sf::Packet& packet) {
@@ -195,69 +198,71 @@ void Server::sendToOthers(sf::Packet& packet) {
 
 //handling different type of info requests and send them back relevant info
 void Server::sendInfoForNewConnections()
-  {
-    sf::Packet connectionPacket;
-    ConnectionMessage newConnection;
-    newConnection.gameRunning = isGameIsRunning();
-    newConnection.characterAvailability = characterAvailableID;
-    connectionPacket << newConnection;
-    sendToSender(connectionPacket);
-  }
+{
+  sf::Packet connectionPacket;
+  ConnectionMessage newConnection;
+  newConnection.gameRunning = isGameIsRunning();
+  newConnection.characterAvailability = characterAvailableID;
+  connectionPacket << newConnection;
+  sendToSender(connectionPacket);
+}
 
-  void Server::sendInfoForGameStart(sf::Packet receivedPacket)
-  {
-    for (int i = 0; i < characterAvailableID.size(); i++) {
-      if (!characterAvailableID[i]) {
-        characterChoosenID.push_back(i);
-      }
+void Server::sendInfoForGameStart(sf::Packet receivedPacket)
+{
+  for (int i = 0; i < characterAvailableID.size(); i++) {
+    if (!characterAvailableID[i]) {
+      characterChoosenID.push_back(i);
     }
-    for (auto& id : characterChoosenID)
-    {
-      OtherCharacters newChars;
-      newChars.id = id;
-      sf::Packet charPacket;
-      charPacket << newChars;
-      sendToEveryone(charPacket);
-    }
-    sendToEveryone(receivedPacket);
   }
-  void Server::sendInfoForChosenCharacter(sf::Packet receivedPacket, sf::Packet copyPacket, short currentClientID)
+  for (auto& id : characterChoosenID)
   {
-    int charID;
-    copyPacket >> charID;
-    ChatMessage message;
-    if (characterAvailableID[charID])
+    OtherCharacters newChars;
+    newChars.id = id;
+    sf::Packet charPacket;
+    charPacket << newChars;
+    sendToEveryone(charPacket);
+  }
+  sendToEveryone(receivedPacket);
+}
+void Server::sendInfoForChosenCharacter(sf::Packet receivedPacket, sf::Packet copyPacket, short currentClientID)
+{
+  int charID;
+  copyPacket >> charID;
+  ChatMessage message;
+  if (characterAvailableID[charID])
+  {
+    message.text = "Character Is available";
+    clientsWithCharNum ++;
+    for (int i = 0; i < characterOwnedBy.size(); ++i)
     {
-      message.text = "Character Is available";
-      for (int i = 0; i < characterOwnedBy.size(); ++i)
+      if (characterOwnedBy[i] == currentClientID)
       {
-        if (characterOwnedBy[i] == currentClientID)
-        {
-          characterAvailableID[i] = true;
-          characterOwnedBy[i]     = 0;
-        }
+        characterAvailableID[i] = true;
+        characterOwnedBy[i]     = 0;
+        clientsWithCharNum --;
       }
-      characterOwnedBy[charID]     = currentClientID;
-      characterAvailableID[charID] = false;
-      sendToSender(receivedPacket);
     }
-    else
-    {
-      message.text = "Character Is Unavialable";
-    }
-    message.sender = charID;
-    sf::Packet serverMsg;
-    serverMsg << message;
-    sendToSender(serverMsg);
-    sf::Packet unavCharPacket;
-    UnavailableCharacter unavailableCharacters;
-    unavailableCharacters.characterAvailability = characterAvailableID;
-    unavCharPacket << unavailableCharacters;
-    sendToEveryone(unavCharPacket);
+    characterOwnedBy[charID]     = currentClientID;
+    characterAvailableID[charID] = false;
+    sendToSender(receivedPacket);
   }
+  else
+  {
+    message.text = "Character Is Unavialable";
+  }
+  message.sender = charID;
+  sf::Packet serverMsg;
+  serverMsg << message;
+  sendToSender(serverMsg);
+  sf::Packet unavCharPacket;
+  UnavailableCharacter unavailableCharacters;
+  unavailableCharacters.characterAvailability = characterAvailableID;
+  unavCharPacket << unavailableCharacters;
+  sendToEveryone(unavCharPacket);
+}
 
 
-  // setters and getters
+// setters and getters
 bool Server::isGameIsRunning() const
 {
   return gameIsRunning;
@@ -266,5 +271,3 @@ void Server::setGameIsRunning(bool gameIsRunning)
 {
   Server::gameIsRunning = gameIsRunning;
 }
-
-

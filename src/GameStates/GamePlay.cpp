@@ -41,7 +41,7 @@ void GamePlay::SetTileWithID(std::unique_ptr<sf::Texture>& tileMap,   std::vecto
   const unsigned int MAP_COLUMNS, const unsigned int MAP_ROWS, const tmx::Vector2u& tile_size,
   const tmx::TileLayer::Tile& tile,float scale)
 {
-  int tilemap_row = tileMap->getSize().x /24;
+  int tilemap_row = tileMap->getSize().x / 16;
 
   auto& current =
     *TILE_MAP.back().emplace_back(std::make_unique<Tile>(tile.ID, *tileMap));
@@ -60,7 +60,7 @@ void GamePlay::SetTileWithID(std::unique_ptr<sf::Texture>& tileMap,   std::vecto
   current.GetSpite()->setScale(scale, scale);
   current.GetSpite()->setPosition(
     (((TILE_MAP.back().size()) - 1) % MAP_COLUMNS) * (tile_size.x * scale),
-    (((TILE_MAP.back().size()) - 1) / MAP_ROWS) * tile_size.y *scale);
+    (((TILE_MAP.back().size()) - 1) / MAP_COLUMNS) * (tile_size.y * scale));
 }
 void GamePlay::DrawMap(std::vector<std::vector<std::unique_ptr<Tile>>>& TILE_MAP)
 {
@@ -81,13 +81,13 @@ GamePlay::GamePlay(sf::RenderWindow& window, Network* network, StateHandler& han
 
 bool GamePlay::init()
 {
-  Map_Loading("Data/Images/floor_map.tmx", "Data/Images/Dungeon_24x24.png", tileMapFloor, TILE_MAP_FlOOR);
-  Map_Loading("Data/walls_gamemap.tmx", "Data/Images/Dungeon_24x24.png", tileMapWall, TILE_MAP_Wall);
+  Map_Loading("Data/new tilemap/tile_map.tmx", "Data/new tilemap/tilemap_packed.png", tileMapFloor, TILE_MAP_FlOOR);
+//  Map_Loading("Data/new tilemap/walls and obsticles.tmx", "Data/new tilemap/tilemap_packed.png", tileMapWall, TILE_MAP_Wall);
   bird = std::make_unique<Character>();
   racoon = std::make_unique<Character>();
   fox = std::make_unique<Character>();
   cat = std::make_unique<Character>();
-  bird->innitCharacter(0, "Data/Images/characters/BIRDSPRITESHEET.png", sf::Vector2f (300,300),Character::RIGHT);
+  bird->innitCharacter(0, "Data/Images/characters/BIRDSPRITESHEET.png", sf::Vector2f (100,100),Character::RIGHT);
   racoon->innitCharacter(1, "Data/Images/characters/RACCOONSPRITESHEET.png", sf::Vector2f (window.getSize().x - 200,200),Character::LEFT);
   fox->innitCharacter(2, "Data/Images/characters/FOXSPRITESHEET.png", sf::Vector2f (window.getSize().x - 200,400),Character::LEFT);
   cat->innitCharacter(3, "Data/Images/characters/CATSPRITESHEET.png", sf::Vector2f (300,400),Character::LEFT);
@@ -95,13 +95,15 @@ bool GamePlay::init()
   characters.push_back(std::move(cat));
   characters.push_back(std::move(fox));
   characters.push_back(std::move(racoon));
-  playerCharacter = std::make_unique<Player>();
-  int playerID = network->getClient()->getCharacterId();
-  playerCharacter->assignCharacter(std::move(characters[playerID]));
+
   std::vector<int> otherPlayersList;
   otherPlayersList = network->getClient()->getOtherPlayers();
-  otherPlayersList.erase(std::remove(otherPlayersList.begin(), otherPlayersList.end(), playerID), otherPlayersList.end());
-
+  playerCharacter = std::make_unique<Player>();
+    int playerID = network->getClient()->getCharacterId();
+    playerCharacter->assignCharacter(std::move(characters[playerID]));
+    otherPlayersList.erase(
+      std::remove(otherPlayersList.begin(), otherPlayersList.end(), playerID),
+      otherPlayersList.end());
   for (int num : otherPlayersList)
   {
     network->getClient()->otherCharacters.push_back(std::move(characters[num]));
@@ -112,28 +114,30 @@ bool GamePlay::init()
 
 void GamePlay::update(float dt)
 {
-  playerCharacter->movePlayer(dt);
+  playerCharacter->changeDirection(dt);
   playerCharacter->getPlayerCharacter()->handleAnim(dt);
-
+  playerCharacter->move(dt);
   for (const auto& player : network->getClient()->otherCharacters)
   {
     player->handleAnim(dt);
     player->updateInterpolation(dt);
   }
+
   for (const auto& layer : TILE_MAP_Wall)
   {
+
     for (const auto& tile : layer)
     {
-      if (
-        tile->GetID() != 0 &&
-        tile->getCollider().checkCollision(
-          playerCharacter->getPlayerCharacter()->getCollider(),
-          playerCharacter->direction))
+      if(playerCharacter->getPlayerCharacter()->getBoundsWithOffset().intersects(tile->GetSpite()->getGlobalBounds()))
       {
-        playerCharacter->onCollision(playerCharacter->direction);
+        std::cout << "collision \n";
+        playerCharacter->resetVellocity();
+        playerCharacter->getPlayerCharacter()->GetObjSprite()->setPosition(playerCharacter->getPrevPos());
       }
     }
   }
+
+
   if (updateTimer.getElapsedTime() >= sf::seconds(0.02f)) // Adjust the time limit as needed
   {
     sf::Vector2f charPos =
@@ -161,7 +165,7 @@ void GamePlay::render()
 {
   window.clear(sf::Color::Black);
   DrawMap(TILE_MAP_FlOOR);
-  DrawMap(TILE_MAP_Wall);
+ // DrawMap(TILE_MAP_Wall);
   playerCharacter->getPlayerCharacter()->drawObject();
   for (const auto& players : network->getClient()->otherCharacters)
   {

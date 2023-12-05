@@ -41,11 +41,11 @@ void Character::handleAnim(float dt)
       break;
 
     case Character::OTHER:
-      // Handle animation for OTHER direction
+      // Handle iddle animation which I dont have
       break;
 
     default:
-      // Handle the default case (optional)
+      // Handle the default case
       break;
   }
 }
@@ -53,7 +53,6 @@ void Character::innitCharacter(int id, const std::string & characterText, sf::Ve
 {
   if (!characterTexture.loadFromFile(characterText))
   {
-    // Handle error (e.g., log an error message or throw an exception)
     std::cerr << "Failed to load texture: " << characterText << std::endl;
     return;
   }
@@ -61,10 +60,20 @@ void Character::innitCharacter(int id, const std::string & characterText, sf::Ve
   GetObjSprite()->setPosition(spawn_position);
   GetObjSprite()->setTexture(characterTexture);
   animation.initAnim(&characterTexture, sf::Vector2u(4,9), 0.3);
-
   movementDirection = direction1;
   GetObjSprite()->setScale(2.5,2.5);
 }
+
+sf::FloatRect Character::getBoundsWithOffset()
+  {
+    sf::FloatRect boundsWithOffset = GetObjSprite()->getGlobalBounds();
+    boundsWithOffset.top += 30;
+    boundsWithOffset.left += 18;
+    boundsWithOffset.height -= 40;
+    boundsWithOffset.width -= 50;
+    return boundsWithOffset;
+  }
+
 
 void Character::draw()
 {

@@ -43,12 +43,12 @@ class Client
   const std::vector<int>& getOtherPlayers() const;
   const std::vector<bool>& getCharacterAvailablity() const;
   int getCharacterId() const;
-  void setCharacterId(int characterId);
+
   void handleCharChooseMessage(sf::Packet& packet);
   void handleOtherCharChooseMessage(sf::Packet& packet);
   void sendConnectionRequest(const NewConnection& message);
   void handleUnavCharChooseMessage(sf::Packet& packet);
-  void sendPlayerUpdate(const CharacterUpdatePacket& message);
+
   void sendWelcomeMessage();
 
   std::vector<std::unique_ptr<Character>> otherCharacters;
@@ -67,7 +67,12 @@ class Client
   bool gameIsRunning = false;
   int newState;
   bool stateChanged= false;
+  bool characterIsSelected = false;
 
+ public:
+  bool isCharacterIsSelected() const;
+
+ private:
   int characterID;
   std::vector<int> otherPlayers;
   std::vector<bool> characterAvailablity;
@@ -79,9 +84,9 @@ class Client
  public:
   void handleTCPMessages(MessageType messageType, sf::Packet& packet);
   void handleUdpMessage(MessageType messageType, sf::Packet& receivedPacket);
-  void recieveUdpPackets();
   void sendPlayerUpdate2(const CharacterUpdatePacket& message);
   void runUdpClient();
+  void setCharacterId(int characterId);
 };
 
 #endif // SFMLGAME_CLIENT_H

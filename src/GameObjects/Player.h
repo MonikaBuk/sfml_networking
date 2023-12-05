@@ -16,17 +16,19 @@ class Player : public GameObject
 
  private:
   sf::Vector2f velocity;
+  sf::Vector2f prevPos;
 
+ public:
+  const sf::Vector2f& getPrevPos() const;
 
  public:
   void onCollision(sf::Vector2f direction);
-  void movePlayer(const float& dt);
+  void changeDirection(const float& dt);
   void assignCharacter(std::unique_ptr<Character> character);
   void Draw();
 
-
-
-
+  void resetVellocity();
+  void move(const float& dt);
 };
 
 #endif // SFMLGAME_PLAYER_H

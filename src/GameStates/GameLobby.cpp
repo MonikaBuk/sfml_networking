@@ -137,7 +137,6 @@ void GameLobby::mouseClicked(sf::Event event)
       newSate.state = 2;
       network->getServer()->setGameIsRunning(true);
       network->getClient()->sendSateMessage(newSate);
-      stateHandler.setState(new GamePlay(window, network, stateHandler));
       return;
     }
   }

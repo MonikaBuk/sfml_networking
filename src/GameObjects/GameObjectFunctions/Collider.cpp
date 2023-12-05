@@ -27,15 +27,15 @@ sf::Vector2f Collider::getPosition() const
 bool Collider::checkCollision(const Collider& other, sf::Vector2f& direction)
 {
   sf::Vector2f otherPosition = other.getPosition();
-  sf::Vector2f otherHalfSize = other.getHalfSize();
+  sf::Vector2f otherHalfSize = other.getHalfSize() ;
   sf::Vector2f thisPosition  = getPosition();
   sf::Vector2f thisHalfSize  = getHalfSize();
 
-  float delta_x = otherPosition.x - thisPosition.x;
-  float delta_y = otherPosition.y - thisPosition.y;
+  float delta_x = otherPosition.x  - thisPosition.x;
+  float delta_y = otherPosition.y  - thisPosition.y;
 
-  float intersect_x = abs(delta_x) - (otherHalfSize.x + thisHalfSize.x);
-  float intersect_y = abs(delta_y) - (otherHalfSize.y + thisHalfSize.y);
+  float intersect_x = abs(delta_x) - (otherHalfSize.x  + thisHalfSize.x)/2;
+  float intersect_y = abs(delta_y) - (otherHalfSize.y  + thisHalfSize.y)/2;
 
   if (intersect_x <= 0.0f && intersect_y <= 0.0f)
   {

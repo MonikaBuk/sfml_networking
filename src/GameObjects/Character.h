@@ -52,6 +52,7 @@ class Character : public GameObject
  public:
   MovementDirection getDirection() const;
   void updateInterpolation(float dt);
+  sf::FloatRect getBoundsWithOffset();
 };
 
 
