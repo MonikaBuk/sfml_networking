@@ -26,7 +26,7 @@ sf::Packet& operator >>(sf::Packet& packet, StateMessage& message)
 
 sf::Packet& operator <<(sf::Packet& packet, const ConnectionMessage& message)
 {
-  packet << CONNECTION << message.gameRunning;
+  packet << CONNECTION << message.gameRunning << message.serverPort;
   for (bool status : message.characterAvailability)
   {
     packet << status;
@@ -81,7 +81,7 @@ sf::Packet& operator >>(sf::Packet& packet, OtherCharacters& message)
 
 sf::Packet& operator <<(sf::Packet& packet, const NewConnection& message)
 {
-  return packet << NEW_CONNECTION;
+  return packet << NEW_CONNECTION << message.localPort;
 }
 
 sf::Packet& operator <<(sf::Packet& packet, const UnavailableCharacter& message)

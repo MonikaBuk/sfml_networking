@@ -102,14 +102,8 @@ bool GamePlay::init()
   otherPlayersList = network->getClient()->getOtherPlayers();
   otherPlayersList.erase(std::remove(otherPlayersList.begin(), otherPlayersList.end(), playerID), otherPlayersList.end());
 
-
-
-
-  std::cout << "The player char num is " << playerID << "\n";
-  std::cout << "The player char id num is " << playerCharacter->getPlayerCharacter()->getId() << "\n";
-
-  for (int num : otherPlayersList) {
-    std::cout << "Processing other char num: " << num << "\n";
+  for (int num : otherPlayersList)
+  {
     network->getClient()->otherCharacters.push_back(std::move(characters[num]));
   }
 
@@ -123,7 +117,6 @@ void GamePlay::update(float dt)
 
   for (const auto& player : network->getClient()->otherCharacters)
   {
-    std::cout << player->getId() <<"\n";
     player->handleAnim(dt);
     player->updateInterpolation(dt);
   }
@@ -151,7 +144,7 @@ void GamePlay::update(float dt)
     playerUpdate.newPosition = charPos;
     playerUpdate.characterID = id;
     playerUpdate.state       = playerState;
-    network->getClient()->sendPlayerUpdate(playerUpdate);
+    network->getClient()->sendPlayerUpdate2(playerUpdate);
     updateTimer.restart();
   }
 

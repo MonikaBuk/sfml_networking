@@ -38,10 +38,12 @@ class Server
   std::vector<std::unique_ptr<sf::TcpSocket>> connections;
   std::unique_ptr<sf::TcpListener>listener;
   std::unique_ptr<sf::TcpSocket> tcpSocket;
-  sf::UdpSocket udpSocket;
+  std::unique_ptr<sf::UdpSocket> udpSocket;
   std::mutex mutex;
   bool  running = true;
   int portNum;
+
+  std::vector<int> udpClientSockets;
 
   bool gameIsRunning = false;
 
@@ -50,8 +52,10 @@ class Server
   std::vector<bool>characterAvailableID = {true,true,true,true};
   std::vector<int> characterChoosenID;
   std::vector<int> characterOwnedBy ={0,0,0,0};
- public:
+  unsigned short serverPort = 54000;
 
+
+  void runUdpServer();
 };
 
 #endif // SFMLGAME_SERVER_H

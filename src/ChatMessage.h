@@ -37,6 +37,7 @@ sf::Packet& operator >>(sf::Packet& packet, StateMessage& message);
 struct ConnectionMessage
 {
   bool gameRunning;
+  unsigned short serverPort;
   std::vector<bool> characterAvailability = {true,true,true,true};
 };
 sf::Packet& operator <<(sf::Packet& packet, const ConnectionMessage& message);
@@ -67,6 +68,7 @@ sf::Packet& operator >>(sf::Packet& packet, OtherCharacters& message);
 
 struct NewConnection
 {
+  int localPort;
 };
 sf::Packet& operator <<(sf::Packet& packet, const NewConnection& message);
 sf::Packet& operator >>(sf::Packet& packet, NewConnection& message);

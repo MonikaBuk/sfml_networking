@@ -7,15 +7,12 @@ Game::Game(sf::RenderWindow& game_window)
   : window(game_window)
 {
   srand(time(NULL));
-//  client =  std::make_unique<Client>();
   stateHandler.setState(new GameMenu(window, &network, stateHandler));
 }
 
 Game::~Game()
 {
 }
-
-
 
 void Game::update(float dt)
 {

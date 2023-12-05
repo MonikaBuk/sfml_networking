@@ -31,18 +31,14 @@ class Client
 
   const std::string& getUserName() const;
   void setUserName(const std::string& userName);
-
-
   int getNewState() const;
   void sendSateMessage(const StateMessage& message);
   void handleStateMessage(sf::Packet& packet);
   bool isStateChanged() const;
   void setStateChanged(bool stateChanged);
-
   bool isServerHost() const;
   void setServerHost(bool serverHost);
   bool isGameIsRunning() const;
-
   void sendCharChoiceMessage(const CharacterChoosing& message);
   const std::vector<int>& getOtherPlayers() const;
   const std::vector<bool>& getCharacterAvailablity() const;
@@ -53,11 +49,16 @@ class Client
   void sendConnectionRequest(const NewConnection& message);
   void handleUnavCharChooseMessage(sf::Packet& packet);
   void sendPlayerUpdate(const CharacterUpdatePacket& message);
+  void sendWelcomeMessage();
 
   std::vector<std::unique_ptr<Character>> otherCharacters;
 
  private:
   std::unique_ptr<sf::TcpSocket> TcpSocket;
+  std::unique_ptr<sf::UdpSocket> UdpSocket;
+  sf::IpAddress clientIpAddress;
+  unsigned short localPort;
+  unsigned short udpServerPort;
   bool messageReceived;
   ChatMessage lastMessage;
   std::string  userName = "testName";
@@ -66,14 +67,21 @@ class Client
   bool gameIsRunning = false;
   int newState;
   bool stateChanged= false;
-  void handleConnectionMessage(sf::Packet& packet);
+
   int characterID;
   std::vector<int> otherPlayers;
   std::vector<bool> characterAvailablity;
 
+  void handleConnectionMessage(sf::Packet& packet);
+  void handleCharacterUpdateMessage(sf::Packet& packet);
+
 
  public:
-  void handleCharacterUpdateMessage(sf::Packet& packet);
+  void handleTCPMessages(MessageType messageType, sf::Packet& packet);
+  void handleUdpMessage(MessageType messageType, sf::Packet& receivedPacket);
+  void recieveUdpPackets();
+  void sendPlayerUpdate2(const CharacterUpdatePacket& message);
+  void runUdpClient();
 };
 
 #endif // SFMLGAME_CLIENT_H

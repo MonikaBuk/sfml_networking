@@ -12,7 +12,8 @@ void Server::init()
   {
     std::cerr << "Failed to bind and listen on port 53000" << std::endl;
   }
-  if (udpSocket.bind(54000) != sf::Socket::Done)
+  udpSocket = std::make_unique<sf::UdpSocket>();
+  if (udpSocket->bind(serverPort) != sf::Socket::Done)
   {
     std::cerr << "Failed to bind and listen on port 54000" << std::endl;
   }
@@ -20,6 +21,8 @@ void Server::init()
 
 void Server::run()
 {
+ std::thread run_udp_server([&] {runUdpServer(); });
+ run_udp_server.detach();
  runTcpServer();
 }
 
@@ -56,6 +59,50 @@ void Server::runTcpServer()
     }
   }
 }
+void Server::runUdpServer()
+{
+  while (running)
+  {
+    sf::Packet receivedPacket;
+    sf::IpAddress sender;
+    unsigned short port;
+    std::cout << "Received UDP packet running from " << sender  << std::endl;
+    auto status = udpSocket->receive(receivedPacket, sender, port);
+
+    if (status == sf::Socket::Done)
+    {
+      std::cout << "Received UDP packet from " << sender << ":" << port << std::endl;
+
+      // Iterate over all connected clients and send the received packet to each of them
+      for (auto& client : udpClientSockets)
+      {
+        sf::IpAddress clientIpAddress = sf::IpAddress::getLocalAddress();
+        unsigned short clientPort = client;
+
+        std::cout << "Sending UDP packet to client " << clientIpAddress << ":" << clientPort << std::endl;
+
+        // Make a copy of the received packet for each client
+        sf::Packet copyOfReceivedPacket = receivedPacket;
+
+        // Send the copy of the packet to the current client
+        if (client != port)
+        {
+          if (
+            udpSocket->send(
+              copyOfReceivedPacket, clientIpAddress, clientPort) !=
+            sf::Socket::Done)
+          {
+            // Handle the error
+            std::cerr << "Failed to send UDP packet to client "
+                      << clientIpAddress << ":" << clientPort << std::endl;
+          }
+          std::cout << "Sent UDP packet to client " << clientIpAddress << ":" << clientPort << std::endl;
+        }
+      }
+    }
+  }
+}
+
 
 void Server::listen(sf::TcpSocket& cSocket)
 {
@@ -92,6 +139,9 @@ void Server::listen(sf::TcpSocket& cSocket)
     }
     else if(static_cast<MessageType>(messageType) == MessageType::NEW_CONNECTION)
     {
+      int newUDPPortNum;
+      copyPacket >> newUDPPortNum;
+      udpClientSockets.push_back(newUDPPortNum);
       sendInfoForNewConnections();
     }
     else
@@ -152,7 +202,7 @@ void Server::sendInfoForNewConnections()
     newConnection.characterAvailability = characterAvailableID;
     connectionPacket << newConnection;
     sendToSender(connectionPacket);
-  };
+  }
 
   void Server::sendInfoForGameStart(sf::Packet receivedPacket)
   {
