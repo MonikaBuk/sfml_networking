@@ -16,7 +16,8 @@ enum  MessageType
   CHARACTER_UPDATE = 5,
   OTHER_CHAR = 6,
   NEW_CONNECTION = 7,
-  UNAV_CHAR = 8
+  UNAV_CHAR = 8,
+  BOMB_SPAWN = 9
 };
 
 struct ChatMessage
@@ -79,6 +80,14 @@ struct UnavailableCharacter
 };
 sf::Packet& operator <<(sf::Packet& packet, const UnavailableCharacter& message);
 sf::Packet& operator >>(sf::Packet& packet, UnavailableCharacter& message);
+
+struct BombSpawnMessage
+{
+  sf::Vector2f  spawn_pos;
+  int charID;
+};
+sf::Packet& operator <<(sf::Packet& packet, const struct BombSpawnMessage& message);
+sf::Packet& operator >>(sf::Packet& packet, struct BombSpawnMessage& message);
 
 
 #endif // SFMLGAME_CHATMESSAGE_H

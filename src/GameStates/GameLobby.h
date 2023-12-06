@@ -41,6 +41,8 @@ class GameLobby: public GameState
   std::unique_ptr<ButtonUI> racoonButton;
   std::vector<std::unique_ptr<ButtonUI>> characterButtons;
   std::vector<bool> availableCharacters;
+  void innitButtons();
+  void innitText();
 };
 
 #endif // SFMLGAME_GAMELOBBY_H

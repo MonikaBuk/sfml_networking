@@ -5,17 +5,9 @@
 #include "GameLobby.h"
 #include "GamePlay.h"
 
-GameLobby::GameLobby(sf::RenderWindow& window, Network* network, StateHandler& handler) : GameState(window), network(network), stateHandler(handler)
+void GameLobby::innitButtons()
 {
-}
-bool GameLobby::init()
-{
-  if (!font.loadFromFile("Data/Fonts/Font/kenvector_future.ttf"))
-  {
-    std::cerr << "Failed to load font.";
-  }
   std::string buttonFilePath = "Data/Images/ui/blue_button05.png";
-  bckImage    = std::make_unique<BackgroundImage>("Data/Images/background.jpg");
   startButton = std::make_unique<ButtonUI>(
     font,
     20,
@@ -60,7 +52,9 @@ bool GameLobby::init()
     sf::Vector2f(70, 20),
     sf::Vector2f(12, 12));
   characterButtons.push_back(std::move(racoonButton));
-  chatBox = std::make_unique<ChatBoxUI>(*network->getClient());
+}
+void GameLobby::innitText()
+{
   std::string ipAddressString = network->localIP.toString();
   ipToConnectText             = std::make_unique<CustomText>(
     font, 20, CustomColors::BcktBlue, " IP TO CONNECT: " + ipAddressString);
@@ -73,6 +67,22 @@ bool GameLobby::init()
     window.getSize().x / 2 - waitText->getGlobalBounds().width / 2,
     window.getSize().y / 2);
   waitText->setIsEnabled(false);
+}
+
+GameLobby::GameLobby(sf::RenderWindow& window, Network* network, StateHandler& handler) : GameState(window), network(network), stateHandler(handler)
+{
+}
+bool GameLobby::init()
+{
+  if (!font.loadFromFile("Data/Fonts/Font/kenvector_future.ttf"))
+  {
+    std::cerr << "Failed to load font.";
+  }
+
+  bckImage    = std::make_unique<BackgroundImage>("Data/Images/background.jpg");
+  innitButtons();
+  innitText();
+  chatBox = std::make_unique<ChatBoxUI>(*network->getClient());
   bckImage->GetObjSprite()->setColor(sf::Color(255,255,255, 150));
 
   if (!network->getClient()->isServerHost())

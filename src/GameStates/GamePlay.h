@@ -55,13 +55,13 @@ class GamePlay : public GameState
   std::unique_ptr<Character> fox;
   std::unique_ptr<Character> racoon;
   std::unique_ptr<Player> playerCharacter;
-  std::vector<std::unique_ptr<Bomb>> bombs;
-  std::unique_ptr<Bomb> playerBomb;
+  sf::Texture tombTexture;
 
   void handleOwnCharacter(float dt);
   void handleOtherCharacters(float dt);
   void innitBombs();
-  bool playerSpawnedABomb = false;
+  void handleBombs(float dt);
+  void handleExplodingTiles(float dt);
 };
 
 #endif // SFMLGAME_GAMEPLAY_H

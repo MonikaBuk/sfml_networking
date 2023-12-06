@@ -103,4 +103,15 @@ sf::Packet& operator >>(sf::Packet& packet, UnavailableCharacter& message)
   }
   return packet;
 }
+sf::Packet& operator <<(sf::Packet& packet, const BombSpawnMessage& message)
+{
+  return packet << BOMB_SPAWN << message.charID << message.spawn_pos.x << message.spawn_pos.y;
+}
+
+sf::Packet& operator >>(sf::Packet& packet, BombSpawnMessage& message)
+{
+  packet >> message.charID >> message.spawn_pos.x >> message.spawn_pos.y;
+  return packet;
+}
+
 

@@ -17,36 +17,44 @@ float Character::getSpeed() const
 }
 void Character::handleAnim(float dt)
 {
-  switch (movementDirection)
+  if (!dead)
   {
-    case Character::UP:
-      animation.Update(8,dt, false);
+    switch (movementDirection)
+    {
+      case Character::UP:
+        animation.Update(8, dt, false);
 
-      GetObjSprite()->setTextureRect(animation.rect);
-      break;
+        GetObjSprite()->setTextureRect(animation.rect);
+        break;
 
-    case Character::DOWN:
-      animation.Update(1,dt, false);
-      GetObjSprite()->setTextureRect(animation.rect);
-      break;
+      case Character::DOWN:
+        animation.Update(1, dt, false);
+        GetObjSprite()->setTextureRect(animation.rect);
+        break;
 
-    case Character::RIGHT:
-      animation.Update(4,dt, false);
-      GetObjSprite()->setTextureRect(animation.rect);
-      break;
+      case Character::RIGHT:
+        animation.Update(4, dt, false);
+        GetObjSprite()->setTextureRect(animation.rect);
+        break;
 
-    case Character::LEFT:
-      animation.Update(6,dt, false);
-      GetObjSprite()->setTextureRect(animation.rect);
-      break;
+      case Character::LEFT:
+        animation.Update(6, dt, false);
+        GetObjSprite()->setTextureRect(animation.rect);
+        break;
 
-    case Character::OTHER:
-      // Handle iddle animation which I dont have
-      break;
+      case Character::OTHER:
+        // Handle iddle animation which I dont have
+        break;
 
-    default:
-      // Handle the default case
-      break;
+      default:
+        // Handle the default case
+        break;
+    }
+  }
+  else
+  {
+    GetObjSprite()->setTextureRect(sf::IntRect (0.0f,0.0f,GetObjSprite()->getTexture()->getSize().x,GetObjSprite()->getTexture()->getSize().y));
+    GetObjSprite()->setScale(0.3,0.3);
   }
 }
 void Character::innitCharacter(int id, const std::string & characterText, sf::Vector2f spawn_position, MovementDirection direction1)
@@ -64,6 +72,7 @@ void Character::innitCharacter(int id, const std::string & characterText, sf::Ve
   GetObjSprite()->setScale(2.5,2.5);
 }
 
+// boundaries changed to simulate more 2.5 view;
 sf::FloatRect Character::getBoundsWithOffset()
   {
     sf::FloatRect boundsWithOffset = GetObjSprite()->getGlobalBounds();
@@ -92,6 +101,8 @@ int Character::getId() const
 {
   return ID;
 }
+
+// smooths out character movement in case packet loss
 sf::Vector2f lerp(const sf::Vector2f& start, const sf::Vector2f& end, float t)
 {
   return (1.0f - t) * start + t * end;
@@ -104,12 +115,12 @@ void Character::updateInterpolation(float dt)
   interpolationFactor = std::min(1.0f, interpolationFactor);
   GetObjSprite()->setPosition(currentPosition);
 }
-sf::Vector2f Character::getPositionWithOffset()
-{
-  sf::FloatRect boundsWithOffset = GetObjSprite()->getGlobalBounds();
-  sf::Vector2f newPos;
-  newPos.x = boundsWithOffset.top += 30;
-  newPos.y =boundsWithOffset.left += 18;
 
-  return newPos;
+bool Character::isDead() const
+{
+  return dead;
+}
+void Character::setDead(bool dead)
+{
+  Character::dead = dead;
 }

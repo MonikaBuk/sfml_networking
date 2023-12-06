@@ -42,7 +42,11 @@ class Character : public GameObject
   sf::Vector2f targetPosition;
   float interpolationFactor;
   float interpolationSpeed = 100.0f;
+  bool dead = false;
 
+ public:
+  bool isDead() const;
+  void setDead(bool dead);
 };
 
 

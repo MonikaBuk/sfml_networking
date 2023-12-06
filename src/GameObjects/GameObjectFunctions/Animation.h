@@ -14,6 +14,7 @@ class Animation
 
     void initAnim (sf::Texture* texture, sf::Vector2u imageCount, float switch_time);
     void Update(int row, float dt,bool faceRight);
+    void resetAnim();
     sf::IntRect rect;
 
    private:

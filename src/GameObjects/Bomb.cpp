@@ -3,23 +3,29 @@
 //
 
 #include "Bomb.h"
-void Bomb::spawnBomb(sf::Vector2f spawnPosition, float dt)
+void Bomb::spawnBomb( float dt)
 {
-  if (0 >= current_durration && isSpawned) {
-    GetObjSprite()->setPosition(spawnPosition);
-    std::cout<< "this gets called";
-  }
-  current_durration += dt;
+  if (0.0f >= current_duration && isSpawned)
+  {
+    GetObjSprite()->setPosition(spawnPos);
+    GetObjSprite()->setScale(radius,radius);
+    animation.resetAnim();
 
-  if (current_durration < detonationTime) {
+  }
+    if (current_duration <= detonationTime  && isSpawned) {
     animation.Update(0, dt, false);
     GetObjSprite()->setTextureRect(animation.rect);
-    std::cout<< "animation gets called";
+    current_duration += dt;
+    if (current_duration > detonationTime /2)
+    {
+      exploding = true;
+    }
   }
   else {
     GetObjSprite()->setPosition(-10.f, -10.f);
     isSpawned = false;
-    current_durration = 0.f;
+    current_duration = 0.0f;
+    exploding = false;
   }
 }
 void Bomb::innitBomb(const std::string& characterText)
@@ -30,7 +36,7 @@ void Bomb::innitBomb(const std::string& characterText)
   };
   GetObjSprite()->setTexture(bombTexture);
   GetObjSprite()->setScale(0.5, 0.5);
-  animation.initAnim(&bombTexture, sf::Vector2u(24,1), 0.2);
+  animation.initAnim(&bombTexture, sf::Vector2u(24,1), 0.1);
 }
 bool Bomb::getIsSpawned() const
 {
@@ -47,4 +53,24 @@ void Bomb::draw()
     window.draw(*GetObjSprite());
   }
 
+}
+float Bomb::getRadius() const
+{
+  return radius;
+}
+void Bomb::setRadius(float radius)
+{
+  Bomb::radius = radius;
+}
+const sf::Vector2f& Bomb::getSpawnPos() const
+{
+  return spawnPos;
+}
+void Bomb::setSpawnPos(const sf::Vector2f& spawnPos)
+{
+  Bomb::spawnPos = spawnPos;
+}
+bool Bomb::isExploding() const
+{
+  return exploding;
 }

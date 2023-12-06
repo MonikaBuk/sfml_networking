@@ -121,6 +121,9 @@ void Client::handleTCPMessages(MessageType messageType, sf::Packet& receivedPack
     case MessageType::CHARACTER_UPDATE:
       handleCharacterUpdateMessage(receivedPacket);
       break;
+    case MessageType::BOMB_SPAWN:
+      handleBombSpawnMessage(receivedPacket);
+      break;
     default:
       std::cerr << "Received an unknown message type: " << messageType << std::endl;
       break;
@@ -178,7 +181,6 @@ void Client::handleStateMessage(sf::Packet& packet)
   // Handle state change
    newState = stateMessage.state;
    stateChanged = true;
-
   switch (newState)
   {
     case 1:
@@ -192,7 +194,6 @@ void Client::handleStateMessage(sf::Packet& packet)
       break;
     default:
       std::cerr << "Received an unknown state: " << newState << std::endl;
-      // Handle unexpected state
       break;
   }
 }
@@ -276,6 +277,25 @@ void Client::handleCharacterUpdateMessage(sf::Packet& packet)
     std::cerr << "Failed to extract character update message from received packet." << std::endl;
   }
 }
+void Client::handleBombSpawnMessage(sf::Packet& packet)
+{
+  BombSpawnMessage charMessage;
+  if (packet >> charMessage)
+  {
+    for(int i = 0; i < otherBombs.size(); i++)
+    {
+      if (charMessage.charID == i)
+      {
+       otherBombs[i]->setSpawnPos(charMessage.spawn_pos);
+       otherBombs[i]->setSpawned(true);
+      }
+    }
+  }
+  else
+  {
+    std::cerr << "Failed to extract character update message from received packet." << std::endl;
+  }
+}
 // send  packets
 void Client::sendChatMessage(const ChatMessage& message) {
   if (connected && TcpSocket) {
@@ -346,7 +366,19 @@ void Client::sendPlayerUpdate2(const CharacterUpdatePacket& message) {
     std::cerr << "Failed to send player update message. Socket not connected or invalid." << std::endl;
   }
 }
-
+void Client::sendBombSpawnMessage(const BombSpawnMessage& message) {
+  if (connected && TcpSocket) {
+    sf::Packet messagePacket;
+    messagePacket << message;
+    if (TcpSocket->send(messagePacket) != sf::Socket::Done) {
+      std::cerr << "Failed to send state message" << std::endl;
+    }
+  }
+  else
+  {
+    std::cerr << "Failed to send state message. Socket not connected or invalid." << std::endl;
+  }
+}
 // setters and getters
 bool Client::isMessageReceived() const
 {
@@ -412,8 +444,4 @@ const std::vector<int>& Client::getOtherPlayers() const
 const std::vector<bool>& Client::getCharacterAvailablity() const
 {
   return characterAvailablity;
-}
-bool Client::isCharacterIsSelected() const
-{
-  return characterIsSelected;
 }

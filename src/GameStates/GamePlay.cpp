@@ -90,12 +90,10 @@ void GamePlay::DrawMap(std::vector<std::vector<std::unique_ptr<Tile>>>& TILE_MAP
 }
 void GamePlay::innitBombs()
 {
-  playerBomb = std::make_unique<Bomb>();
-  playerBomb->innitBomb("Data/Images/objects/ezgif.com-gif-maker.png");
     for (int i = 0; i < 5; ++i) {
       auto newBomb = std::make_unique<Bomb>();
       newBomb->innitBomb("Data/Images/objects/ezgif.com-gif-maker.png");
-      bombs.push_back(std::move(newBomb));
+      network->getClient()->otherBombs.push_back(std::move(newBomb));
     }
   }
 
@@ -113,6 +111,7 @@ void GamePlay::innitCharacters()
   characters.push_back(std::move(cat));
   characters.push_back(std::move(fox));
   characters.push_back(std::move(racoon));
+  tombTexture.loadFromFile("Data/Images/objects/tombstone.png");
 }
 void GamePlay::distributeCharacters()
 {
@@ -134,8 +133,6 @@ void GamePlay::handleOwnCharacter(float dt)
   playerCharacter->changeDirection(dt);
   playerCharacter->getPlayerCharacter()->handleAnim(dt);
   playerCharacter->move(dt);
-  playerBomb->spawnBomb(playerCharacter->getPlayerCharacter()->getPositionWithOffset(), dt);
-
   for (const auto& tile : TILE_MAP_FlOOR[1])
   {
     if (playerCharacter->getPlayerCharacter()->getBoundsWithOffset().intersects(
@@ -156,6 +153,15 @@ void GamePlay::handleOwnCharacter(float dt)
         playerCharacter->getPrevPos());
     }
   }
+  for (const auto& bomb : network->getClient()->otherBombs)
+  {
+    if (bomb->isExploding()  &&(playerCharacter->getPlayerCharacter()->getBoundsWithOffset().intersects(
+          bomb->GetObjSprite()->getGlobalBounds())))
+    {
+      playerCharacter->getPlayerCharacter()->GetObjSprite()->setTexture(tombTexture);
+      playerCharacter->getPlayerCharacter()->setDead(true);
+    }
+  }
 }
 void GamePlay::handleOtherCharacters(float dt)
 {
@@ -163,6 +169,32 @@ void GamePlay::handleOtherCharacters(float dt)
   {
     character->handleAnim(dt);
     character->updateInterpolation(dt);
+  }
+}
+
+void GamePlay::handleBombs(float dt)
+{
+  for (const auto& bomb : network->getClient()->otherBombs)
+  {
+    bomb->spawnBomb(dt);
+  }
+}
+
+void GamePlay::handleExplodingTiles(float dt)
+{
+  for (const auto& tile : TILE_MAP_FlOOR[2])
+  {
+    for (const auto& bomb : network->getClient()->otherBombs)
+    {
+      if (
+        bomb->isExploding() &&
+        (tile->GetSpite()->getGlobalBounds().intersects(
+          bomb->GetObjSprite()->getGlobalBounds())))
+      {
+        tile->GetSpite()->setTextureRect(sf::IntRect (0,0,0,0));
+        tile->GetSpite()->setPosition(0,0);
+      }
+    }
   }
 }
 void GamePlay::sendCharacterUpdate()
@@ -186,8 +218,6 @@ GamePlay::GamePlay(sf::RenderWindow& window, Network* network, StateHandler& han
 
 }
 
-
-
 bool GamePlay::init()
 {
   Map_Loading("Data/new tilemap/tile_map.tmx", "Data/new tilemap/tilemap_packed.png", tileMapFloor, TILE_MAP_FlOOR, 3);
@@ -199,10 +229,11 @@ bool GamePlay::init()
 
 void GamePlay::update(float dt)
 {
+  handleExplodingTiles(dt);
   handleOwnCharacter(dt);
   sendCharacterUpdate();
   handleOtherCharacters(dt);
-
+  handleBombs(dt);
 }
 void GamePlay::mouseClicked(sf::Event event) {
   // Implementation of the mouseClicked function
@@ -212,8 +243,14 @@ void GamePlay::keyPressed(sf::Event event)
 {
   if (event.key.code == sf::Keyboard::Space)
   {
-    //bombs[0]->setSpawned(true);
-    playerBomb->setSpawned(true);
+    sf::Vector2f spawnPos = playerCharacter->getPlayerCharacter()->GetObjSprite()->getPosition();
+    BombSpawnMessage msg;
+    msg.spawn_pos = spawnPos;
+    msg.charID = playerCharacter->getPlayerCharacter()->getId();
+    sf::Packet bombMsg;
+    bombMsg << msg;
+    network->getClient()->sendBombSpawnMessage(msg);
+
   }
 }
 
@@ -226,13 +263,10 @@ void GamePlay::render()
   {
     players->drawObject();
   }
-  playerBomb->draw();
-  for (const auto& bomb : bombs)
+  for (const auto& bomb : network->getClient()->otherBombs)
   {
     bomb->draw();
   }
-
-
 }
 void GamePlay::textEntered(sf::Event event) {}
 void GamePlay::mouseWheelScrolled(sf::Event event) {}

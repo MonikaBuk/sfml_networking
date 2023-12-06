@@ -137,6 +137,10 @@ void Server::listen(sf::TcpSocket& cSocket)
         }
       }
     }
+    else if (static_cast<MessageType>(messageType) == MessageType::BOMB_SPAWN)
+    {
+      sendToEveryone(receivedPacket);
+    }
     else if(static_cast<MessageType>(messageType) == MessageType::NEW_CONNECTION)
     {
       int newUDPPortNum;

@@ -7,6 +7,7 @@
 
 #include "../ChatMessage.h"
 #include "../GameObjects/Character.h"
+#include "../GameObjects/Bomb.h"
 #include <Sfml/Network.hpp>
 #include <atomic>
 #include <iostream>
@@ -52,6 +53,8 @@ class Client
   void sendWelcomeMessage();
 
   std::vector<std::unique_ptr<Character>> otherCharacters;
+  std::vector<std::unique_ptr<Bomb>> otherBombs;
+  std::vector<std::unique_ptr<GameObject>> tombstones;
 
  private:
   std::unique_ptr<sf::TcpSocket> TcpSocket;
@@ -61,18 +64,12 @@ class Client
   unsigned short udpServerPort;
   bool messageReceived;
   ChatMessage lastMessage;
-  std::string  userName = "testName";
-  sf::IpAddress ipAddress;
+  std::string  userName;
   bool serverHost= false;
   bool gameIsRunning = false;
   int newState;
   bool stateChanged= false;
   bool characterIsSelected = false;
-
- public:
-  bool isCharacterIsSelected() const;
-
- private:
   int characterID;
   std::vector<int> otherPlayers;
   std::vector<bool> characterAvailablity;
@@ -87,6 +84,8 @@ class Client
   void sendPlayerUpdate2(const CharacterUpdatePacket& message);
   void runUdpClient();
   void setCharacterId(int characterId);
+  void sendBombSpawnMessage(const BombSpawnMessage& message);
+  void handleBombSpawnMessage(sf::Packet& packet);
 };
 
 #endif // SFMLGAME_CLIENT_H

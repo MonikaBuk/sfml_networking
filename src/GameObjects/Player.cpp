@@ -9,7 +9,7 @@
 void Player::changeDirection(const float& dt)
 {
   resetVellocity();
-  if(window.hasFocus())
+  if(window.hasFocus() && !playerCharacter->isDead())
   {
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
@@ -39,8 +39,11 @@ void Player::changeDirection(const float& dt)
 }
 void Player::move(const float& dt)
 {
-  prevPos = getPlayerCharacter()->GetObjSprite()->getPosition();
-  playerCharacter->GetObjSprite()->move(velocity * dt);
+  if(!playerCharacter->isDead())
+  {
+    prevPos = getPlayerCharacter()->GetObjSprite()->getPosition();
+    playerCharacter->GetObjSprite()->move(velocity * dt);
+  }
 }
 /*
 void Player::onCollision(sf::Vector2f direction)

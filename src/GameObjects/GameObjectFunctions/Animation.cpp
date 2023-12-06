@@ -47,3 +47,7 @@ void Animation::Update(int row, float dt, bool faceRight)
     rect.width = -abs(rect.width);
   }
 }
+void Animation::resetAnim()
+{
+  current_image.x = 0;
+}

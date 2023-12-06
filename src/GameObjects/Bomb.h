@@ -10,13 +10,27 @@ class Bomb : public GameObject
 {
  public:
   void innitBomb(const std::string& characterText);
-  void spawnBomb(sf::Vector2f spawn_position, float dt);
+  void spawnBomb(float dt);
 
  private:
   sf::Texture bombTexture;
   bool isSpawned = false;
-  float detonationTime = 0.2 * 25.0;
-  float current_durration = 0;
+  float detonationTime = 0.1 * 23.0;
+  float current_duration = 0.0f;
+  float radius = 0.5;
+  sf::Vector2f  spawnPos;
+  bool exploding = false;
+
+ public:
+  bool isExploding() const;
+
+ public:
+  const sf::Vector2f& getSpawnPos() const;
+  void setSpawnPos(const sf::Vector2f& spawnPos);
+
+ public:
+  float getRadius() const;
+  void setRadius(float radius);
 
  public:
   bool getIsSpawned() const;
