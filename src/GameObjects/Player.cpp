@@ -79,3 +79,11 @@ const sf::Vector2f& Player::getPrevPos() const
 {
   return prevPos;
 }
+bool Player::isBombDeployed() const
+{
+  return bombDeployed;
+}
+void Player::setBombDeployed(bool bombDeployed)
+{
+  Player::bombDeployed = bombDeployed;
+}

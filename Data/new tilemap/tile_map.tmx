@@ -2,7 +2,7 @@
 <map version="1.10" tiledversion="1.10.0" orientation="orthogonal" renderorder="right-down" width="28" height="16" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="1">
  <tileset firstgid="1" source="Tiled/sampleSheet.tsx"/>
  <tileset firstgid="65" source="tilemap_packed.tsx"/>
- <layer id="2" name="floor" width="28" height="16">
+ <layer id="1" name="floor" width="28" height="16">
   <data encoding="csv">
 113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,
 113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,
@@ -22,7 +22,7 @@
 113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113
 </data>
  </layer>
- <layer id="4" name="walls" width="28" height="16">
+ <layer id="2" name="walls" width="28" height="16">
   <data encoding="csv">
 66,67,67,67,67,67,67,67,67,67,67,67,67,67,67,67,67,67,67,67,67,67,67,67,67,67,67,68,
 78,79,79,79,79,79,79,79,79,79,79,79,79,79,79,79,79,79,79,79,79,79,79,79,79,79,79,80,
@@ -42,7 +42,7 @@
 90,91,91,91,91,91,91,91,91,91,91,91,91,91,91,91,91,91,91,91,91,91,91,91,91,91,91,92
 </data>
  </layer>
- <layer id="5" name="crates" width="28" height="16">
+ <layer id="3" name="crates" width="28" height="16">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,

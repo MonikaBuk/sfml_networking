@@ -17,16 +17,17 @@ class Player : public GameObject
  private:
   sf::Vector2f velocity;
   sf::Vector2f prevPos;
+  bool bombDeployed;
+
+ public:
+  bool isBombDeployed() const;
+  void setBombDeployed(bool bombDeployed);
 
  public:
   const sf::Vector2f& getPrevPos() const;
-
- public:
-  void onCollision(sf::Vector2f direction);
+  //void onCollision(sf::Vector2f direction);
   void changeDirection(const float& dt);
   void assignCharacter(std::unique_ptr<Character> character);
-  void Draw();
-
   void resetVellocity();
   void move(const float& dt);
 };

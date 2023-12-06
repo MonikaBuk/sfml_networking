@@ -68,12 +68,9 @@ void Server::runUdpServer()
     sf::Packet receivedPacket;
     sf::IpAddress sender;
     unsigned short port;
-    std::cout << "Received UDP packet running from " << sender  << std::endl;
     auto status = udpSocket->receive(receivedPacket, sender, port);
-
     if (status == sf::Socket::Done)
     {
-      std::cout << "Received UDP packet from " << sender << ":" << port << std::endl;
       for (auto& client : udpClientSockets)
       {
         sf::IpAddress clientIpAddress = sf::IpAddress::getLocalAddress();

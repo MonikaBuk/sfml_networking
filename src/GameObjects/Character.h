@@ -22,18 +22,15 @@ class Character : public GameObject
     LEFT = 4,
     OTHER = 5,
   }movementDirection;
+
   void innitCharacter(int id, const std::string& characterText, sf::Vector2f spawn_position, MovementDirection direction1);
   float getSpeed() const;
-
-
-  enum  CharacterStates
-  {
-    HEALTHY = 1,
-    DAMAGED = 2,
-    DEAD = 3,
-  };
   void draw();
-
+  int getId() const;
+  MovementDirection getDirection() const;
+  void updateInterpolation(float dt);
+  sf::FloatRect getBoundsWithOffset();
+  sf::Vector2f getPositionWithOffset();
 
  private:
   Animation characterAnim;
@@ -46,13 +43,6 @@ class Character : public GameObject
   float interpolationFactor;
   float interpolationSpeed = 100.0f;
 
- public:
-  int getId() const;
-
- public:
-  MovementDirection getDirection() const;
-  void updateInterpolation(float dt);
-  sf::FloatRect getBoundsWithOffset();
 };
 
 

@@ -4,6 +4,7 @@
 
 #ifndef SFMLGAME_GAMEPLAY_H
 #define SFMLGAME_GAMEPLAY_H
+#include "../GameObjects/Bomb.h"
 #include "../GameObjects/Character.h"
 #include "../GameObjects/Player.h"
 #include "../Tmx/Tile.h"
@@ -32,15 +33,21 @@ class GamePlay : public GameState
    void textEntered(sf::Event event) override;
    void mouseWheelScrolled(sf::Event event) override;
    void mouseMoved(sf::Event event) override;
-   void Map_Loading(const std::string& tmxPath,const std::string& imgPath, std::unique_ptr<sf::Texture>& tileMap,   std::vector<std::vector<std::unique_ptr<Tile>>>& TILE_MAP_Wall);
+   void Map_Loading(const std::string& tmxPath, const std::string& imgPath,
+                    std::unique_ptr<sf::Texture>& tileMap,
+                    std::vector<std::vector<std::unique_ptr<Tile>>>& TILE_MAP,
+                    float scale);
    void DrawMap(std::vector<std::vector<std::unique_ptr<Tile>>>& TILE_MAP);
-   void SetTileWithID(
-     std::unique_ptr<sf::Texture>& tileMap, std::vector<std::vector<std::unique_ptr<Tile>>>& TILE_MAP,
-    const unsigned int columns, const unsigned int rows, const tmx::Vector2u& vector2,
-    const tmx::TileLayer::Tile& tile, float scale);
+   void SetTileWithID(std::unique_ptr<sf::Texture>& tileMap,
+                      std::vector<std::vector<std::unique_ptr<Tile>>>& TILE_MAP,
+                      const unsigned int MAP_COLUMNS, const unsigned int MAP_ROWS,
+                      const tmx::Vector2u& tile_size, const tmx::TileLayer::Tile& tile,
+                      float scale, std::size_t currentLayerIndex);
   StateHandler&  stateHandler;
   Network* network;
-  void CreatePlayer(int id, std::vector<std::unique_ptr<Character>>);
+  void innitCharacters();
+  void distributeCharacters();
+  void sendCharacterUpdate();
 
  private:
   std::unique_ptr<Character> bird;
@@ -48,8 +55,13 @@ class GamePlay : public GameState
   std::unique_ptr<Character> fox;
   std::unique_ptr<Character> racoon;
   std::unique_ptr<Player> playerCharacter;
+  std::vector<std::unique_ptr<Bomb>> bombs;
+  std::unique_ptr<Bomb> playerBomb;
 
-
+  void handleOwnCharacter(float dt);
+  void handleOtherCharacters(float dt);
+  void innitBombs();
+  bool playerSpawnedABomb = false;
 };
 
 #endif // SFMLGAME_GAMEPLAY_H

@@ -104,4 +104,12 @@ void Character::updateInterpolation(float dt)
   interpolationFactor = std::min(1.0f, interpolationFactor);
   GetObjSprite()->setPosition(currentPosition);
 }
+sf::Vector2f Character::getPositionWithOffset()
+{
+  sf::FloatRect boundsWithOffset = GetObjSprite()->getGlobalBounds();
+  sf::Vector2f newPos;
+  newPos.x = boundsWithOffset.top += 30;
+  newPos.y =boundsWithOffset.left += 18;
 
+  return newPos;
+}
