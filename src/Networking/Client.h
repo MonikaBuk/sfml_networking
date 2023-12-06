@@ -69,7 +69,6 @@ class Client
   bool gameIsRunning = false;
   int newState;
   bool stateChanged= false;
-  bool characterIsSelected = false;
   int characterID;
   std::vector<int> otherPlayers;
   std::vector<bool> characterAvailablity;
@@ -83,9 +82,11 @@ class Client
   void handleUdpMessage(MessageType messageType, sf::Packet& receivedPacket);
   void sendPlayerUpdate2(const CharacterUpdatePacket& message);
   void runUdpClient();
-  void setCharacterId(int characterId);
   void sendBombSpawnMessage(const BombSpawnMessage& message);
   void handleBombSpawnMessage(sf::Packet& packet);
+  void sendPlayerDiedMsg(const PlayerKilledMessage& message);
+  void handlePlayerKilledMessage(sf::Packet& packet);
+  void sendDisconnectionRequest(const Disconnection& message);
 };
 
 #endif // SFMLGAME_CLIENT_H

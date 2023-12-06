@@ -124,3 +124,11 @@ void Character::setDead(bool dead)
 {
   Character::dead = dead;
 }
+bool Character::isTextureChanged() const
+{
+  return texture_changed;
+}
+void Character::setTextureChanged(bool textureChanged)
+{
+  texture_changed = textureChanged;
+}

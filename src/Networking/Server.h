@@ -13,6 +13,16 @@
 #include <mutex>
 #include <thread>
 
+struct ClientData
+{
+  int clientID;
+  int characterID;
+  std::string  userName;
+  int udpPortNumber;
+  bool hasCharacter = false;
+};
+
+
 class Server
 {
  public:
@@ -54,11 +64,12 @@ class Server
   //info needed for character selection
   short clientNum = 0;
   short clientsWithCharNum = 0;
-  short MAX_CLIENT_NUMBER;
+  short MAX_CLIENT_NUMBER = 4;
   std::vector<short>clientIDs[4];
   std::vector<bool>characterAvailableID = {true,true,true,true};
   std::vector<int> characterChoosenID;
   std::vector<int> characterOwnedBy ={0,0,0,0};
+  std::vector<ClientData> connectedClients;
 
 
 

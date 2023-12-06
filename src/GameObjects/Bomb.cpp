@@ -35,7 +35,7 @@ void Bomb::innitBomb(const std::string& characterText)
     std::cerr << "Bomb png did not load";
   };
   GetObjSprite()->setTexture(bombTexture);
-  GetObjSprite()->setScale(0.5, 0.5);
+  GetObjSprite()->setScale(radius, radius);
   animation.initAnim(&bombTexture, sf::Vector2u(24,1), 0.1);
 }
 bool Bomb::getIsSpawned() const

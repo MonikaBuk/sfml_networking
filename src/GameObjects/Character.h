@@ -43,6 +43,11 @@ class Character : public GameObject
   float interpolationFactor;
   float interpolationSpeed = 100.0f;
   bool dead = false;
+  bool texture_changed = false;
+
+ public:
+  bool isTextureChanged() const;
+  void setTextureChanged(bool textureChanged);
 
  public:
   bool isDead() const;

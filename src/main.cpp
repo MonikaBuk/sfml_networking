@@ -46,6 +46,11 @@ int main()
         game.mouseWheelScrolled(event);
       if (event.type == sf::Event::MouseMoved)
         game.mouseMoved(event);
+      if (event.type == sf::Event::Closed)
+      {
+        game.windowClosed(event);
+        window.close();
+      }
     }
 
     //'update' element of the game loop

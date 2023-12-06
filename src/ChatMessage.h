@@ -17,7 +17,11 @@ enum  MessageType
   OTHER_CHAR = 6,
   NEW_CONNECTION = 7,
   UNAV_CHAR = 8,
-  BOMB_SPAWN = 9
+  BOMB_SPAWN = 9,
+  BOMB_KILLED = 10,
+  ITEM_SPAWN = 11,
+  ITEM_COLLECTED = 12,
+  DISCONNECTION = 13
 };
 
 struct ChatMessage
@@ -38,7 +42,6 @@ sf::Packet& operator >>(sf::Packet& packet, StateMessage& message);
 struct ConnectionMessage
 {
   bool gameRunning;
-  unsigned short serverPort;
   std::vector<bool> characterAvailability = {true,true,true,true};
 };
 sf::Packet& operator <<(sf::Packet& packet, const ConnectionMessage& message);
@@ -70,6 +73,7 @@ sf::Packet& operator >>(sf::Packet& packet, OtherCharacters& message);
 struct NewConnection
 {
   int localPort;
+  std::string userName;
 };
 sf::Packet& operator <<(sf::Packet& packet, const NewConnection& message);
 sf::Packet& operator >>(sf::Packet& packet, NewConnection& message);
@@ -88,6 +92,20 @@ struct BombSpawnMessage
 };
 sf::Packet& operator <<(sf::Packet& packet, const struct BombSpawnMessage& message);
 sf::Packet& operator >>(sf::Packet& packet, struct BombSpawnMessage& message);
+
+struct PlayerKilledMessage
+{
+  int id;
+};
+sf::Packet& operator <<(sf::Packet& packet, const PlayerKilledMessage& message);
+sf::Packet& operator >>(sf::Packet& packet, PlayerKilledMessage& message);
+
+struct Disconnection
+{
+  std::string userName;
+};
+sf::Packet& operator <<(sf::Packet& packet, const Disconnection& message);
+sf::Packet& operator >>(sf::Packet& packet, Disconnection& message);
 
 
 #endif // SFMLGAME_CHATMESSAGE_H

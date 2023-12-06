@@ -24,6 +24,7 @@ class GameLobby: public GameState
   void textEntered(sf::Event event) override;
   void mouseWheelScrolled(sf::Event event) override;
   void mouseMoved(sf::Event event) override;
+ void gameClosed(sf::Event event)override;
 
  private:
   Network* network;

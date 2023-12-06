@@ -68,3 +68,8 @@ void Game::mouseWheelScrolled(sf::Event event) {
 void Game::mouseMoved(sf::Event event) {
   stateHandler.mouseMoved(event);
 }
+void Game::windowClosed(sf::Event event)
+{
+  std::cout << "gets to game \n";
+  stateHandler.gameClosed(event);
+}

@@ -162,6 +162,13 @@ void GamePlay::handleOwnCharacter(float dt)
       playerCharacter->getPlayerCharacter()->setDead(true);
     }
   }
+  if(playerCharacter->getPlayerCharacter()->isDead() && !playerCharacter->getPlayerCharacter()->isTextureChanged())
+  {
+    PlayerKilledMessage msg;
+    msg.id = playerCharacter->getPlayerCharacter()->getId();
+    network->getClient()->sendPlayerDiedMsg(msg);
+    playerCharacter->getPlayerCharacter()->setTextureChanged(true);
+  }
 }
 void GamePlay::handleOtherCharacters(float dt)
 {
@@ -169,6 +176,14 @@ void GamePlay::handleOtherCharacters(float dt)
   {
     character->handleAnim(dt);
     character->updateInterpolation(dt);
+    if (character->isDead())
+    {
+      if (!character->isTextureChanged())
+      {
+        character->GetObjSprite()->setTexture(tombTexture);
+        character->setTextureChanged(true);
+      }
+    }
   }
 }
 

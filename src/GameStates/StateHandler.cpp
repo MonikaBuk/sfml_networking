@@ -51,3 +51,7 @@ void StateHandler::onWheelScrolled(sf::Event event) {  currentState->mouseWheelS
 void StateHandler::mouseMoved(sf::Event event)
 {
   currentState->mouseMoved(event);}
+void StateHandler::gameClosed(sf::Event event)
+{
+  currentState->gameClosed(event);
+}

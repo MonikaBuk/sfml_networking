@@ -81,7 +81,7 @@ sf::Packet& operator >>(sf::Packet& packet, OtherCharacters& message)
 
 sf::Packet& operator <<(sf::Packet& packet, const NewConnection& message)
 {
-  return packet << NEW_CONNECTION << message.localPort;
+  return packet << NEW_CONNECTION << message.localPort << message.userName;
 }
 
 sf::Packet& operator <<(sf::Packet& packet, const UnavailableCharacter& message)
@@ -114,4 +114,18 @@ sf::Packet& operator >>(sf::Packet& packet, BombSpawnMessage& message)
   return packet;
 }
 
+sf::Packet& operator <<(sf::Packet& packet, const PlayerKilledMessage& message)
+{
+  return packet << BOMB_KILLED << message.id;
+}
 
+sf::Packet& operator >>(sf::Packet& packet, PlayerKilledMessage& message)
+{
+  packet  >> message.id;
+  return packet;
+}
+
+sf::Packet& operator <<(sf::Packet& packet, const Disconnection& message)
+{
+  return packet <<DISCONNECTION << message.userName;
+}

@@ -27,6 +27,7 @@ void Client::connect(sf::IpAddress& ipToConnect)
     localPort = UdpSocket->getLocalPort();
     NewConnection infoRequest;
     infoRequest.localPort = localPort;
+    infoRequest.userName = getUserName();
     sendConnectionRequest(infoRequest);
 
     // Start the TCP thread
@@ -118,11 +119,11 @@ void Client::handleTCPMessages(MessageType messageType, sf::Packet& receivedPack
     case MessageType::UNAV_CHAR:
       handleUnavCharChooseMessage(receivedPacket);
       break;
-    case MessageType::CHARACTER_UPDATE:
-      handleCharacterUpdateMessage(receivedPacket);
-      break;
     case MessageType::BOMB_SPAWN:
       handleBombSpawnMessage(receivedPacket);
+      break;
+    case MessageType::BOMB_KILLED:
+      handlePlayerKilledMessage(receivedPacket);
       break;
     default:
       std::cerr << "Received an unknown message type: " << messageType << std::endl;
@@ -133,24 +134,6 @@ void Client::handleUdpMessage(MessageType messageType, sf::Packet& receivedPacke
 {
   switch (static_cast<MessageType>(messageType))
   {
-    case MessageType::CHAT:
-      handleChatMessage(receivedPacket);
-      break;
-    case MessageType::STATE:
-      handleStateMessage(receivedPacket);
-      break;
-    case MessageType::CONNECTION:
-      handleConnectionMessage(receivedPacket);
-      break;
-    case MessageType::CHAR_CHOICE:
-      handleCharChooseMessage(receivedPacket);
-      break;
-    case MessageType::OTHER_CHAR:
-      handleOtherCharChooseMessage(receivedPacket);
-      break;
-    case MessageType::UNAV_CHAR:
-      handleUnavCharChooseMessage(receivedPacket);
-      break;
     case MessageType::CHARACTER_UPDATE:
       handleCharacterUpdateMessage(receivedPacket);
       break;
@@ -205,7 +188,6 @@ void Client::handleConnectionMessage(sf::Packet& packet)
   if (packet >> connectionMessage)
   {
     gameIsRunning = connectionMessage.gameRunning;
-    udpServerPort = connectionMessage.serverPort;
     std::cerr << gameIsRunning << std::endl;
     characterAvailablity = connectionMessage.characterAvailability;
   }
@@ -227,11 +209,11 @@ void Client::handleCharChooseMessage(sf::Packet& packet)
   if (packet >> charMessage)
   {
     characterID = charMessage.id;
-    characterIsSelected = true;
+    //characterIsSelected = true;
   }
   else
   {
-    std::cerr << "Failed to extract character message from received packet." << std::endl;
+    std::cerr << "Failed to extract character choose message from received packet." << std::endl;
   }
 }
 void Client::handleOtherCharChooseMessage(sf::Packet& packet)
@@ -263,12 +245,12 @@ void Client::handleCharacterUpdateMessage(sf::Packet& packet)
   CharacterUpdatePacket charMessage;
   if (packet >> charMessage)
   {
-    for(int i = 0; i < otherCharacters.size(); i++)
+    for(auto & otherCharacter : otherCharacters)
     {
-      if(charMessage.characterID == otherCharacters[i]->getId())
+      if(charMessage.characterID == otherCharacter->getId())
       {
-        otherCharacters[i]->changePosition(sf::Vector2f (charMessage.newPosition.x, charMessage.newPosition.y));
-        otherCharacters[i]->movementDirection =  static_cast<Character::MovementDirection>(charMessage.state);
+        otherCharacter->changePosition(sf::Vector2f (charMessage.newPosition.x, charMessage.newPosition.y));
+        otherCharacter->movementDirection =  static_cast<Character::MovementDirection>(charMessage.state);
       }
     }
   }
@@ -293,7 +275,25 @@ void Client::handleBombSpawnMessage(sf::Packet& packet)
   }
   else
   {
-    std::cerr << "Failed to extract character update message from received packet." << std::endl;
+    std::cerr << "Failed to extract bomb spawn message from received packet." << std::endl;
+  }
+}
+void Client::handlePlayerKilledMessage(sf::Packet& packet)
+{
+  PlayerKilledMessage charMessage;
+  if (packet >> charMessage)
+  {
+    for(auto & otherCharacter : otherCharacters)
+    {
+      if(charMessage.id == otherCharacter->getId())
+      {
+        otherCharacter->setDead(true);
+      }
+    }
+  }
+  else
+  {
+    std::cerr << "Failed to extract character dead message from received packet." << std::endl;
   }
 }
 // send  packets
@@ -331,6 +331,20 @@ void Client::sendConnectionRequest(const NewConnection& message) {
     connectionPacket << message;
     if (TcpSocket->send(connectionPacket) != sf::Socket::Done) {
       std::cerr << "Failed to send connection message" << std::endl;
+    }
+  }
+  else
+  {
+    std::cerr << "Failed to send connection message. Socket not connected or invalid." << std::endl;
+  }
+}
+
+void Client::sendDisconnectionRequest(const Disconnection& message) {
+  if (connected && TcpSocket) {
+    sf::Packet connectionPacket;
+    connectionPacket << message;
+    if (TcpSocket->send(connectionPacket) != sf::Socket::Done) {
+      std::cerr << "Failed to send disconnection message" << std::endl;
     }
   }
   else
@@ -377,6 +391,20 @@ void Client::sendBombSpawnMessage(const BombSpawnMessage& message) {
   else
   {
     std::cerr << "Failed to send state message. Socket not connected or invalid." << std::endl;
+  }
+}
+void Client::sendPlayerDiedMsg(const PlayerKilledMessage& message)
+{
+  if (connected && TcpSocket) {
+    sf::Packet messagePacket;
+    messagePacket << message;
+    if (TcpSocket->send(messagePacket) != sf::Socket::Done) {
+      std::cerr << "Failed to send death message" << std::endl;
+    }
+  }
+  else
+  {
+    std::cerr << "Failed to send death message. Socket not connected or invalid." << std::endl;
   }
 }
 // setters and getters
@@ -433,10 +461,7 @@ int Client::getCharacterId() const
 {
   return characterID;
 }
-void Client::setCharacterId(int characterId)
-{
-  characterID = characterId;
-}
+
 const std::vector<int>& Client::getOtherPlayers() const
 {
   return otherPlayers;

@@ -35,7 +35,6 @@ void Server::runTcpServer()
         connections.emplace_back(std::make_unique<sf::TcpSocket>()).operator*();
       if (listener->accept(cSock) != sf::Socket::Done)
       {
-        clientNum --;
         connections.pop_back();
         return;
       }
@@ -44,7 +43,6 @@ void Server::runTcpServer()
         std::cout << "accept done \n";
       }
       std::cout << "Client connected @ " << cSock.getRemotePort() << std::endl;
-      clientNum ++;
       workers.emplace_back(
         [&]
         {
@@ -143,10 +141,23 @@ void Server::listen(sf::TcpSocket& cSocket)
     }
     else if(static_cast<MessageType>(messageType) == MessageType::NEW_CONNECTION)
     {
+      clientNum++;
       int newUDPPortNum;
-      copyPacket >> newUDPPortNum;
+      std:: string  userName;
+      copyPacket >> newUDPPortNum >> userName;
       udpClientSockets.push_back(newUDPPortNum);
+      ClientData newClient;
+      newClient.udpPortNumber = newUDPPortNum;
+      newClient.userName =  userName;
+      newClient.clientID = clientNum;
+      newClient.characterID = -1;
+      connectedClients.push_back(newClient);
       sendInfoForNewConnections();
+    }
+    else if(static_cast<MessageType>(messageType) == MessageType::DISCONNECTION)
+    {
+      clientNum --;
+      std::cout << "someone disconected";
     }
     else
     {
