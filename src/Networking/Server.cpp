@@ -37,7 +37,6 @@ void Server::runTcpServer()
       if (listener->accept(cSock) != sf::Socket::Done)
       {
         connections.pop_back();
-        std::cout << "client pobed back \n";
         return;
       }
       else
@@ -49,13 +48,14 @@ void Server::runTcpServer()
         [&]
         {
           listen(cSock);
-          std::cout << connections.size() << "someone from server disconnected  " << cSock.getLocalPort() << std::endl;;
           std::lock_guard<std::mutex>lck(mutex);
           for (int i = 0; i < connections.size(); ++i)
           {
-            if (connections[i]->getLocalPort() == cSock.getLocalPort()) continue;
-            connections.erase(std::next(connections.begin(), i));
-            break;
+            if (connections[i]->getLocalPort() == cSock.getLocalPort())
+            {
+              connections.erase(connections.begin() + i);
+              break;
+            }
           }
         });
       std::this_thread::sleep_for(std::chrono::milliseconds(100));
