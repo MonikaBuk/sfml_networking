@@ -107,5 +107,12 @@ struct Disconnection
 sf::Packet& operator <<(sf::Packet& packet, const Disconnection& message);
 sf::Packet& operator >>(sf::Packet& packet, Disconnection& message);
 
+struct ConnectionRequest
+{
+  bool connectionAllowed;
+};
+sf::Packet& operator <<(sf::Packet& packet, const ConnectionRequest& message);
+sf::Packet& operator >>(sf::Packet& packet, ConnectionRequest& message);
+
 
 #endif // SFMLGAME_CHATMESSAGE_H

@@ -55,9 +55,6 @@ class Server
   bool  running = true;
   int portNum;
 
-  std::vector<int> udpClientSockets;
-
-
   bool gameIsRunning = false;
 
 

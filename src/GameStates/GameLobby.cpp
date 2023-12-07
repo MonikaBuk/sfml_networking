@@ -147,6 +147,7 @@ void GameLobby::mouseClicked(sf::Event event)
       newSate.state = 2;
       network->getServer()->setGameIsRunning(true);
       network->getClient()->sendSateMessage(newSate);
+      startButton->setIsEnabled(false);
       return;
     }
   }
@@ -188,7 +189,5 @@ void GameLobby::mouseMoved(sf::Event event)
 }
 void GameLobby::gameClosed(sf::Event event)
 {
-  std::cout << "game closed in lobby \n";
-  Disconnection msg;
-  network->getClient()->sendDisconnectionRequest(msg);
+
 }

@@ -14,8 +14,8 @@ class Network
   Network();
   ~Network() = default;
   bool clientConnect(sf::IpAddress& ipToConnect);
-  const std::unique_ptr<Client>& getClient() const;
-  const std::unique_ptr<Server>& getServer() const;
+  [[nodiscard]] const std::unique_ptr<Client>& getClient() const;
+  [[nodiscard]] const std::unique_ptr<Server>& getServer() const;
   void  createServer();
   sf::IpAddress localIP = sf::IpAddress::getLocalAddress();
   bool serverCreate = false;

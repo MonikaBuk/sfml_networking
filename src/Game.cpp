@@ -70,6 +70,10 @@ void Game::mouseMoved(sf::Event event) {
 }
 void Game::windowClosed(sf::Event event)
 {
-  std::cout << "gets to game \n";
+
+  Disconnection msg;
+  msg.userName = network.getClient()->getUserName();
+  network.getClient()->sendDisconnectionRequest(msg);
   stateHandler.gameClosed(event);
+  window.close();
 }

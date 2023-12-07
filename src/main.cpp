@@ -49,7 +49,6 @@ int main()
       if (event.type == sf::Event::Closed)
       {
         game.windowClosed(event);
-        window.close();
       }
     }
 

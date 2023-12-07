@@ -33,20 +33,23 @@ void Server::runTcpServer()
     {
       sf::TcpSocket& cSock =
         connections.emplace_back(std::make_unique<sf::TcpSocket>()).operator*();
+      std::cout << connections.size() << "current clients connected\n";
       if (listener->accept(cSock) != sf::Socket::Done)
       {
         connections.pop_back();
+        std::cout << "client pobed back \n";
         return;
       }
       else
       {
-        std::cout << "accept done \n";
+        std::cout << "Accept new client done \n";
       }
       std::cout << "Client connected @ " << cSock.getRemotePort() << std::endl;
       workers.emplace_back(
         [&]
         {
           listen(cSock);
+          std::cout << connections.size() << "someone from server disconnected  " << cSock.getLocalPort() << std::endl;;
           std::lock_guard<std::mutex>lck(mutex);
           for (int i = 0; i < connections.size(); ++i)
           {
@@ -69,12 +72,13 @@ void Server::runUdpServer()
     auto status = udpSocket->receive(receivedPacket, sender, port);
     if (status == sf::Socket::Done)
     {
-      for (auto& client : udpClientSockets)
+      // Handle the received UDP packet
+      for (auto& client : connectedClients)
       {
-        sf::IpAddress clientIpAddress = sf::IpAddress::getLocalAddress();
-        unsigned short clientPort = client;
+        sf::IpAddress clientIpAddress   = sf::IpAddress::getLocalAddress();
+        unsigned short clientPort       = client.udpPortNumber;
         sf::Packet copyOfReceivedPacket = receivedPacket;
-        if (client != port)
+        if (client.udpPortNumber != port)
         {
           if (
             udpSocket->send(
@@ -90,10 +94,12 @@ void Server::runUdpServer()
   }
 }
 
+
 void Server::listen(sf::TcpSocket& cSocket)
 {
   static short clientID   = 0;
   short currentClientID   = ++clientID;
+
   bool continue_receiving = true;
 
   while (continue_receiving)
@@ -131,12 +137,14 @@ void Server::listen(sf::TcpSocket& cSocket)
           msg.sender = "Server";
           msg.text = "Everyone must select a character before the game";
           serverMsg << msg;
+          std::cout << " info for all char char";
           sendToEveryone(serverMsg);
         }
       }
     }
     else if (static_cast<MessageType>(messageType) == MessageType::BOMB_SPAWN)
     {
+      std::cout << " bomb chosen char";
       sendToEveryone(receivedPacket);
     }
     else if(static_cast<MessageType>(messageType) == MessageType::NEW_CONNECTION)
@@ -145,7 +153,6 @@ void Server::listen(sf::TcpSocket& cSocket)
       int newUDPPortNum;
       std:: string  userName;
       copyPacket >> newUDPPortNum >> userName;
-      udpClientSockets.push_back(newUDPPortNum);
       ClientData newClient;
       newClient.udpPortNumber = newUDPPortNum;
       newClient.userName =  userName;
@@ -156,8 +163,17 @@ void Server::listen(sf::TcpSocket& cSocket)
     }
     else if(static_cast<MessageType>(messageType) == MessageType::DISCONNECTION)
     {
-      clientNum --;
-      std::cout << "someone disconected";
+      std::cout << "someone disconnected\n";
+      std::string userName;
+      copyPacket >> userName;
+      std::cout << userName << "username disconnected\n";
+
+      auto it = std::remove_if(
+        connectedClients.begin(),
+        connectedClients.end(),
+        [&](const ClientData& client) { return client.userName == userName; });
+      connectedClients.erase(it, connectedClients.end());
+      break ;
     }
     else
     {
@@ -176,7 +192,7 @@ void Server::sendToEveryone(sf::Packet& packet) {
 
     if (connection->send(packet) != sf::Socket::Done)
     {
-      std::cerr << "Failed to send packet to a client" << std::endl;
+      std::cerr << "Failed to send packet to a everyone" << std::endl;
     }
   }
 }
@@ -201,12 +217,11 @@ void Server::sendToOthers(sf::Packet& packet) {
     {
       if (connection->send(packet) != sf::Socket::Done)
       {
-        std::cerr << "Failed to send packet to a client" << std::endl;
+        std::cerr << "Failed to send packet to a other client" << std::endl;
       }
     }
   }
 }
-
 
 //handling different type of info requests and send them back relevant info
 void Server::sendInfoForNewConnections()
@@ -234,6 +249,7 @@ void Server::sendInfoForGameStart(sf::Packet receivedPacket)
     charPacket << newChars;
     sendToEveryone(charPacket);
   }
+  std::cout << " game start info";
   sendToEveryone(receivedPacket);
 }
 void Server::sendInfoForChosenCharacter(sf::Packet receivedPacket, sf::Packet copyPacket, short currentClientID)
@@ -243,6 +259,7 @@ void Server::sendInfoForChosenCharacter(sf::Packet receivedPacket, sf::Packet co
   ChatMessage message;
   if (characterAvailableID[charID])
   {
+    std::cout << " info chosen char";
     message.text = "Character Is available";
     clientsWithCharNum ++;
     for (int i = 0; i < characterOwnedBy.size(); ++i)
@@ -270,6 +287,7 @@ void Server::sendInfoForChosenCharacter(sf::Packet receivedPacket, sf::Packet co
   UnavailableCharacter unavailableCharacters;
   unavailableCharacters.characterAvailability = characterAvailableID;
   unavCharPacket << unavailableCharacters;
+  std::cout << " unav  char";
   sendToEveryone(unavCharPacket);
 }
 

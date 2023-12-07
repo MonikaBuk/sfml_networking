@@ -17,7 +17,6 @@ void Client::connect(sf::IpAddress& ipToConnect)
     connected = true;
     sendWelcomeMessage();
 
-    // Set up and bind UDP socket
     UdpSocket = std::make_unique<sf::UdpSocket>();
     if (UdpSocket->bind(sf::Socket::AnyPort) != sf::Socket::Done)
     {
@@ -28,6 +27,7 @@ void Client::connect(sf::IpAddress& ipToConnect)
     NewConnection infoRequest;
     infoRequest.localPort = localPort;
     infoRequest.userName = getUserName();
+    std::cout <<  infoRequest.userName << "name is sent";
     sendConnectionRequest(infoRequest);
 
     // Start the TCP thread
@@ -58,7 +58,7 @@ void Client::run()
         connected = false;
         std::cout << "clean disconnection" << std::endl;
         TcpSocket->disconnect();
-        break;
+        return ;
       }
       else if (status == sf::Socket::Status::Done)
       {
@@ -67,8 +67,16 @@ void Client::run()
         handleTCPMessages(
           static_cast<MessageType>(messageType), receivedPacket);
       }
+      else if (status == sf::Socket::Status::Error)
+      {
+        std::cerr << "Socket error occurred. Closing connection." << std::endl;
+        connected = false;
+        TcpSocket->disconnect();
+        return;
+      }
       else
       {
+        int portnum = TcpSocket->getRemotePort();
         std::cerr << "Failed to receive packet. Status: " << status
                   << std::endl;
       }
@@ -78,15 +86,19 @@ void Client::run()
 
 void Client::runUdpClient()
 {
-  running = true;
-  while (running && connected)
+  while (running)
   {
     sf::Packet receivedPacket;
     sf::IpAddress sender;
     unsigned short port;
 
-    // Receive the UDP packet first
     auto status = UdpSocket->receive(receivedPacket, sender, port);
+    if (status == sf::Socket::Status::Disconnected)
+    {
+      std::cout << "udo clean disconnection" << std::endl;
+      UdpSocket->unbind();
+      return ;
+    }
 
     if (status == sf::Socket::Done)
     {
@@ -343,13 +355,14 @@ void Client::sendDisconnectionRequest(const Disconnection& message) {
   if (connected && TcpSocket) {
     sf::Packet connectionPacket;
     connectionPacket << message;
+    std::cerr << "disconnection message" << std::endl;
     if (TcpSocket->send(connectionPacket) != sf::Socket::Done) {
       std::cerr << "Failed to send disconnection message" << std::endl;
     }
   }
   else
   {
-    std::cerr << "Failed to send connection message. Socket not connected or invalid." << std::endl;
+    std::cerr << "Failed to send diconnection message. Socket not connected or invalid." << std::endl;
   }
 }
 
@@ -367,17 +380,17 @@ void Client::sendCharChoiceMessage(const CharacterChoosing& message) {
   }
 }
 void Client::sendPlayerUpdate2(const CharacterUpdatePacket& message) {
-  if (connected && UdpSocket) {
+  if (UdpSocket && UdpSocket->getLocalPort() != 0) {
     sf::Packet updatePacket;
-    sf::IpAddress testIp = sf::IpAddress::getLocalAddress();
+    sf::IpAddress serverIp = sf::IpAddress::getLocalAddress();
     updatePacket << message;
-    if (UdpSocket->send(updatePacket, testIp, 54000) != sf::Socket::Done) {
+    if (UdpSocket->send(updatePacket, serverIp, 54000) != sf::Socket::Done) {
       std::cerr << "Failed to send player update udp message" << std::endl;
     }
   }
   else
   {
-    std::cerr << "Failed to send player update message. Socket not connected or invalid." << std::endl;
+    std::cerr << "Failed to send player update message. Socket not connected or invalid from client to server." << std::endl;
   }
 }
 void Client::sendBombSpawnMessage(const BombSpawnMessage& message) {
@@ -385,12 +398,12 @@ void Client::sendBombSpawnMessage(const BombSpawnMessage& message) {
     sf::Packet messagePacket;
     messagePacket << message;
     if (TcpSocket->send(messagePacket) != sf::Socket::Done) {
-      std::cerr << "Failed to send state message" << std::endl;
+      std::cerr << "Failed to send bomb spawn message" << std::endl;
     }
   }
   else
   {
-    std::cerr << "Failed to send state message. Socket not connected or invalid." << std::endl;
+    std::cerr << "Failed to send bomb spawn message. Socket not connected or invalid." << std::endl;
   }
 }
 void Client::sendPlayerDiedMsg(const PlayerKilledMessage& message)

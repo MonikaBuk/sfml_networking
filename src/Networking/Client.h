@@ -61,10 +61,10 @@ class Client
   std::unique_ptr<sf::UdpSocket> UdpSocket;
   sf::IpAddress clientIpAddress;
   unsigned short localPort;
-  unsigned short udpServerPort;
   bool messageReceived;
   ChatMessage lastMessage;
   std::string  userName;
+  bool collectionAlllowed;
   bool serverHost= false;
   bool gameIsRunning = false;
   int newState;
