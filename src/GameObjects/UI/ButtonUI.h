@@ -25,6 +25,14 @@ class ButtonUI: public UIElement
   sf::Vector2f position;
   sf::Vector2f scale;
   sf::Texture buttonTexture;
+
+ public:
+  void setButtonTexture(const sf::Texture& buttonTexture);
+
+ public:
+  const sf::Texture& getButtonTexture() const;
+
+ private:
   GameObject buttonBox;
   sf::Text text;
   std::string buttonText;

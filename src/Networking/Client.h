@@ -6,10 +6,11 @@
 #define SFMLGAME_CLIENT_H
 
 #include "../ChatMessage.h"
-#include "../GameObjects/Character.h"
 #include "../GameObjects/Bomb.h"
+#include "../GameObjects/Character.h"
 #include <Sfml/Network.hpp>
 #include <atomic>
+#include <future>
 #include <iostream>
 #include <thread>
 #include <vector>
@@ -64,7 +65,20 @@ class Client
   bool messageReceived;
   ChatMessage lastMessage;
   std::string  userName;
-  bool collectionAlllowed;
+  bool collectionAllowed = false;
+  bool hasCharacter = false;
+  bool characterChanged = false;
+
+
+
+ public:
+  bool isHasCharacter() const;
+  bool isCharacterChanged() const;
+  void setCharacterChanged(bool characterChanged);
+
+ public:
+  bool isCollectionAllowed() const;
+ private:
   bool serverHost= false;
   bool gameIsRunning = false;
   int newState;
@@ -87,6 +101,7 @@ class Client
   void sendPlayerDiedMsg(const PlayerKilledMessage& message);
   void handlePlayerKilledMessage(sf::Packet& packet);
   void sendDisconnectionRequest(const Disconnection& message);
+  void handleCOnnectionDeniedMessage(sf::Packet& packet);
 };
 
 #endif // SFMLGAME_CLIENT_H

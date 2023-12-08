@@ -113,3 +113,11 @@ void ButtonUI::setAvailable(bool available)
 {
   ButtonUI::available = available;
 }
+const sf::Texture& ButtonUI::getButtonTexture() const
+{
+  return buttonTexture;
+}
+void ButtonUI::setButtonTexture(const sf::Texture& buttonTexture)
+{
+  ButtonUI::buttonTexture = buttonTexture;
+}

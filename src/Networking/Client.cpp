@@ -137,6 +137,10 @@ void Client::handleTCPMessages(MessageType messageType, sf::Packet& receivedPack
     case MessageType::BOMB_KILLED:
       handlePlayerKilledMessage(receivedPacket);
       break;
+    case MessageType::CONNECTION_DENIED:
+      handleCOnnectionDeniedMessage(receivedPacket);
+      break ;
+      //TcpSocket->disconnect();
     default:
       std::cerr << "Received an unknown message type: " << messageType << std::endl;
       break;
@@ -199,6 +203,7 @@ void Client::handleConnectionMessage(sf::Packet& packet)
   ConnectionMessage connectionMessage;
   if (packet >> connectionMessage)
   {
+    collectionAllowed = true;
     gameIsRunning = connectionMessage.gameRunning;
     std::cerr << gameIsRunning << std::endl;
     characterAvailablity = connectionMessage.characterAvailability;
@@ -221,7 +226,8 @@ void Client::handleCharChooseMessage(sf::Packet& packet)
   if (packet >> charMessage)
   {
     characterID = charMessage.id;
-    //characterIsSelected = true;
+    hasCharacter = true;
+    characterChanged = true;
   }
   else
   {
@@ -308,6 +314,21 @@ void Client::handlePlayerKilledMessage(sf::Packet& packet)
     std::cerr << "Failed to extract character dead message from received packet." << std::endl;
   }
 }
+void Client::handleCOnnectionDeniedMessage(sf::Packet& packet)
+{
+  ConnectionRequest charMessage;
+  if (packet >> charMessage)
+  {
+    std::cout << "Before: " << collectionAllowed << std::endl;
+    collectionAllowed = false;
+    std::cout << "After: " << collectionAllowed << std::endl;
+  }
+  else
+  {
+    std::cerr << "Failed to extract character choose message from received packet." << std::endl;
+  }
+}
+
 // send  packets
 void Client::sendChatMessage(const ChatMessage& message) {
   if (connected && TcpSocket) {
@@ -482,4 +503,20 @@ const std::vector<int>& Client::getOtherPlayers() const
 const std::vector<bool>& Client::getCharacterAvailablity() const
 {
   return characterAvailablity;
+}
+bool Client::isCollectionAllowed() const
+{
+  return collectionAllowed;
+}
+bool Client::isHasCharacter() const
+{
+  return hasCharacter;
+}
+bool Client::isCharacterChanged() const
+{
+  return characterChanged;
+}
+void Client::setCharacterChanged(bool characterChanged)
+{
+  Client::characterChanged = characterChanged;
 }

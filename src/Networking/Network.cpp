@@ -20,7 +20,6 @@ void Network::runServer() {
   server->init();
   serverCreate = server->created;
   server->run();
-
 }
 void Network::createServer()
 {

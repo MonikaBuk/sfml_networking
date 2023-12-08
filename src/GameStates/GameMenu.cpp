@@ -3,16 +3,18 @@
 //
 
 #include "GameMenu.h"
-//#include "GamePlay.h"
+#include <future>
+
 
 GameMenu::GameMenu(sf::RenderWindow& window, Network* network, StateHandler& handler) : GameState(window), network(network), stateHandler(handler)
 {
 }
 void GameMenu::createUserNameInput()
 {
- userNameInput = std::make_unique<InputFieldUI>(window, font, 25, CustomColors::TxtBlue, CustomColors::BcktBlue, sf::Vector2f(35, 45), sf::Vector2f(30, 8), 10);
+ userNameInput = std::make_unique<InputFieldUI>(window, font, 20, CustomColors::TxtBlue, CustomColors::BcktBlue, sf::Vector2f(35, 45), sf::Vector2f(30, 8), 10);
  textInputTittle.setFont(font);
  textInputTittle.setPosition((userNameInput->getPos().x),userNameInput->getPos().y - 50);
+ textInputTittle.setCharacterSize(24);
  textInputTittle.setString("Please enter your name:");
 }
 
@@ -29,11 +31,19 @@ bool GameMenu::init()
     "Host Game", sf::Vector2f(20, 45), sf::Vector2f(25, 10));
   hostButton->setIsEnabled(false);
   joinButton->setIsEnabled(false);
+  cantJoinText =
+    std::make_unique<CustomText>(font, 30, sf::Color::White, "Sorry the lobby is full right now");
+  cantJoinText->setPosition(20, 20);
+  cantJoinText->setIsEnabled(false);
+
   return true;
 }
 void GameMenu::update(float dt)
 {
-
+  if (network->getClient()->isCollectionAllowed())
+  {
+    stateHandler.setState(new GameLobby(window, network, stateHandler));
+  }
 }
 
 void GameMenu::render()
@@ -41,6 +51,7 @@ void GameMenu::render()
   userNameInput->draw();
   hostButton->draw();
   joinButton->draw();
+  cantJoinText->draw();
   if (userNameInput->getIsEnabled())
   {
     window.draw(textInputTittle);
@@ -55,18 +66,18 @@ void GameMenu::mouseClicked(sf::Event event)
     if (network->clientConnect(localAddress))
     {
       network->getClient()->setServerHost(false);
-      stateHandler.setState(new GameLobby(window, network, stateHandler));
+      if(!cantJoinText->getIsEnabled())
+      {
+        cantJoinText->setIsEnabled(true);
+      }
     }
-    return;
   }
   else if (hostButton->isSelected() && hostButton->getIsEnabled())
   {
     if (!network->serverCreate)
     {
       network->createServer();
-      std::cout << "server \n";
       network->clientConnect(localAddress);
-      std::cout << "client \n";
       network->getClient()->setServerHost(true);
       stateHandler.setState(new GameLobby(window, network, stateHandler));
       return;

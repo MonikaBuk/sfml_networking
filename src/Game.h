@@ -7,19 +7,16 @@
 #include "Networking/Client.h"
 #include "Networking/Server.h"
 #include "Networking/Network.h"
-//#include "Tmx/Tile.h"
-//#include "tmxlite/Map.hpp"
-//#include "tmxlite/TileLayer.hpp"
 #include "GameStates/StateHandler.h"
 #include "GameStates/GamePlay.h"
 #include "GameStates/GameMenu.h"
 #include "GameStates/GameLobby.h"
+
 class Game
 {
  public:
   Game(sf::RenderWindow& window);
   ~Game();
- // bool init();
   void update(float dt);
   void render();
   void mouseClicked(sf::Event event);
@@ -28,16 +25,13 @@ class Game
   void mouseWheelScrolled(sf::Event event);
   void mouseMoved(sf::Event event);
   void windowClosed(sf::Event event);
- // const std::unique_ptr<Client>& getClient() const;
+
 
  private:
   sf::RenderWindow& window;
-
- // std::unique_ptr<Client> client = nullptr;
- // std::unique_ptr<Server> server = nullptr;
   StateHandler stateHandler;
   Network network;
-  bool runServer;
+
 };
 
 #endif // PLATFORMER_GAME_H

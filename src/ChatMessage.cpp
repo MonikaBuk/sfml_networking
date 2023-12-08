@@ -39,10 +39,9 @@ sf::Packet& operator >>(sf::Packet& packet, ConnectionMessage& message)
   packet >> message.gameRunning;
   for (int i = 0; i < 4; ++i)
   {
-    bool asd = true;
-    packet >> asd;
-    std::cout <<asd <<"this get read into \n";
-    message.characterAvailability[i] = asd;
+    bool taken = true;
+    packet >> taken;
+    message.characterAvailability[i] = taken;
   }
   return packet;
 }
@@ -128,4 +127,14 @@ sf::Packet& operator >>(sf::Packet& packet, PlayerKilledMessage& message)
 sf::Packet& operator <<(sf::Packet& packet, const Disconnection& message)
 {
   return packet <<DISCONNECTION << message.userName;
+}
+
+sf::Packet& operator <<(sf::Packet& packet, const ConnectionRequest& message)
+{
+  return packet << CONNECTION_DENIED << message.connectionAllowed;
+}
+sf::Packet& operator >>(sf::Packet& packet, ConnectionRequest& message)
+{
+  packet  >> message.connectionAllowed;
+  return packet;
 }

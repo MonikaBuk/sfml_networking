@@ -34,12 +34,16 @@ class GameLobby: public GameState
   std::unique_ptr<CustomText> characterText ;
   std::unique_ptr<BackgroundImage> bckImage;
   sf::Font font;
-  StateHandler&  stateHandler;
   std::unique_ptr<ButtonUI> startButton;
   std::unique_ptr<ButtonUI> birdButton;
   std::unique_ptr<ButtonUI> catButton;
   std::unique_ptr<ButtonUI> foxButton;
   std::unique_ptr<ButtonUI> racoonButton;
+  std::unique_ptr<ButtonUI> chosenCharacter;
+  sf::Texture bird;
+  sf::Texture cat;
+  sf::Texture fox;
+  sf::Texture rac;
   std::vector<std::unique_ptr<ButtonUI>> characterButtons;
   std::vector<bool> availableCharacters;
   void innitButtons();

@@ -33,7 +33,6 @@ void Server::runTcpServer()
     {
       sf::TcpSocket& cSock =
         connections.emplace_back(std::make_unique<sf::TcpSocket>()).operator*();
-      std::cout << connections.size() << "current clients connected\n";
       if (listener->accept(cSock) != sf::Socket::Done)
       {
         connections.pop_back();
@@ -99,9 +98,7 @@ void Server::listen(sf::TcpSocket& cSocket)
 {
   static short clientID   = 0;
   short currentClientID   = ++clientID;
-
   bool continue_receiving = true;
-
   while (continue_receiving)
   {
     sf::Packet receivedPacket;
@@ -109,7 +106,7 @@ void Server::listen(sf::TcpSocket& cSocket)
     sf::Packet copyPacket = receivedPacket;
     if (status == sf::Socket::Status::Disconnected)
     {
-      continue_receiving = false; // disconnected
+      continue_receiving = false;
       std::cout << "Disconnected" << std::endl;
     }
     int messageType;
@@ -126,7 +123,14 @@ void Server::listen(sf::TcpSocket& cSocket)
       copyPacket >> state;
       if (state == 2)
       {
-        if (clientNum == clientsWithCharNum)
+        bool hasSelected = true;
+
+        for (const ClientData& value : connectedClients)
+        {
+          hasSelected &= value.hasCharacter;
+        }
+
+        if (hasSelected)
         {
           sendInfoForGameStart(receivedPacket);
         }
@@ -137,43 +141,42 @@ void Server::listen(sf::TcpSocket& cSocket)
           msg.sender = "Server";
           msg.text = "Everyone must select a character before the game";
           serverMsg << msg;
-          std::cout << " info for all char char";
           sendToEveryone(serverMsg);
         }
       }
     }
     else if (static_cast<MessageType>(messageType) == MessageType::BOMB_SPAWN)
     {
-      std::cout << " bomb chosen char";
       sendToEveryone(receivedPacket);
     }
     else if(static_cast<MessageType>(messageType) == MessageType::NEW_CONNECTION)
     {
       clientNum++;
-      int newUDPPortNum;
-      std:: string  userName;
-      copyPacket >> newUDPPortNum >> userName;
-      ClientData newClient;
-      newClient.udpPortNumber = newUDPPortNum;
-      newClient.userName =  userName;
-      newClient.clientID = clientNum;
-      newClient.characterID = -1;
-      connectedClients.push_back(newClient);
-      sendInfoForNewConnections();
+      if (connectedClients.size()<MAX_CLIENT_NUMBER)
+      {
+        int newUDPPortNum;
+        std::string userName;
+        copyPacket >> newUDPPortNum >> userName;
+        ClientData newClient;
+        newClient.udpPortNumber = newUDPPortNum;
+        newClient.userName      = userName;
+        newClient.clientID      = currentClientID;
+        newClient.characterID   = -1;
+        connectedClients.push_back(newClient);
+        sendInfoForNewConnections();
+      }
+      else
+      {
+        ConnectionRequest msg;
+        msg.connectionAllowed = false;
+        sf::Packet newPacket;
+        newPacket << msg;
+        sendToSender( newPacket);
+      }
     }
     else if(static_cast<MessageType>(messageType) == MessageType::DISCONNECTION)
     {
-      std::cout << "someone disconnected\n";
-      std::string userName;
-      copyPacket >> userName;
-      std::cout << userName << "username disconnected\n";
-
-      auto it = std::remove_if(
-        connectedClients.begin(),
-        connectedClients.end(),
-        [&](const ClientData& client) { return client.userName == userName; });
-      connectedClients.erase(it, connectedClients.end());
-      break ;
+      handleDisconnection(copyPacket,currentClientID);
     }
     else
     {
@@ -217,7 +220,7 @@ void Server::sendToOthers(sf::Packet& packet) {
     {
       if (connection->send(packet) != sf::Socket::Done)
       {
-        std::cerr << "Failed to send packet to a other client" << std::endl;
+        std::cerr << "Failed to send packet to a other clients" << std::endl;
       }
     }
   }
@@ -249,7 +252,6 @@ void Server::sendInfoForGameStart(sf::Packet receivedPacket)
     charPacket << newChars;
     sendToEveryone(charPacket);
   }
-  std::cout << " game start info";
   sendToEveryone(receivedPacket);
 }
 void Server::sendInfoForChosenCharacter(sf::Packet receivedPacket, sf::Packet copyPacket, short currentClientID)
@@ -257,27 +259,32 @@ void Server::sendInfoForChosenCharacter(sf::Packet receivedPacket, sf::Packet co
   int charID;
   copyPacket >> charID;
   ChatMessage message;
-  if (characterAvailableID[charID])
+  for (auto& client: connectedClients)
   {
-    std::cout << " info chosen char";
-    message.text = "Character Is available";
-    clientsWithCharNum ++;
-    for (int i = 0; i < characterOwnedBy.size(); ++i)
+    if(client.clientID == currentClientID)
     {
-      if (characterOwnedBy[i] == currentClientID)
+      if (characterAvailableID[charID])
       {
-        characterAvailableID[i] = true;
-        characterOwnedBy[i]     = 0;
-        clientsWithCharNum --;
+        message.text = "Character Is available";
+
+        for (int i = 0; i < characterOwnedBy.size(); ++i)
+        {
+          if (characterOwnedBy[i] == client.clientID)
+          {
+            characterAvailableID[i] = true;
+            characterOwnedBy[i]     = 0;
+          }
+        }
+        characterOwnedBy[charID] = client.clientID;
+        characterAvailableID[charID] = false;
+        client.hasCharacter = true;
+        sendToSender(receivedPacket);
+      }
+      else
+      {
+        message.text = "Character Is Unavialable";
       }
     }
-    characterOwnedBy[charID]     = currentClientID;
-    characterAvailableID[charID] = false;
-    sendToSender(receivedPacket);
-  }
-  else
-  {
-    message.text = "Character Is Unavialable";
   }
   message.sender = charID;
   sf::Packet serverMsg;
@@ -287,9 +294,43 @@ void Server::sendInfoForChosenCharacter(sf::Packet receivedPacket, sf::Packet co
   UnavailableCharacter unavailableCharacters;
   unavailableCharacters.characterAvailability = characterAvailableID;
   unavCharPacket << unavailableCharacters;
-  std::cout << " unav  char";
   sendToEveryone(unavCharPacket);
 }
+
+void Server::handleDisconnection(sf::Packet& copyPacket,int clientId)
+{
+  std::string userName;
+  copyPacket >> userName;
+  for (int i = 0; i < connectedClients.size(); ++i)
+  {
+    if (connectedClients[i].userName == userName)
+    {
+      for (int i = 0; i < characterOwnedBy.size(); ++i)
+      {
+        if (characterOwnedBy[i] == clientId)
+        {
+          characterAvailableID[i] = true;
+          characterOwnedBy[i]     = 0;
+        }
+      }
+      ChatMessage msg;
+      sf::Packet serverMsg;
+      msg.sender = userName;
+      msg.text = " Left the game";
+      serverMsg << msg;
+      sendToEveryone(serverMsg);
+      connectedClients.erase(connectedClients.begin() + i);
+      sf::Packet connectionPacket;
+      ConnectionMessage newConnection;
+      newConnection.gameRunning = isGameIsRunning();
+      newConnection.characterAvailability = characterAvailableID;
+      connectionPacket << newConnection;
+      sendToEveryone(connectionPacket);
+      break;
+    }
+  }
+}
+
 
 
 // setters and getters

@@ -21,7 +21,8 @@ enum  MessageType
   BOMB_KILLED = 10,
   ITEM_SPAWN = 11,
   ITEM_COLLECTED = 12,
-  DISCONNECTION = 13
+  DISCONNECTION = 13,
+  CONNECTION_DENIED = 20
 };
 
 struct ChatMessage

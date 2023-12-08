@@ -10,7 +10,7 @@
 #include <tmxlite/Map.hpp>
 #include <tmxlite/Layer.hpp>
 #include <tmxlite/TileLayer.hpp>
-#include <tmxlite/ObjectGroup.hpp>
+
 
 void GamePlay::Map_Loading(const std::string& tmxPath, const std::string& imgPath,
                            std::unique_ptr<sf::Texture>& tileMap,

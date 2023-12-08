@@ -33,6 +33,7 @@ class GameMenu: public GameState
   std::unique_ptr<ButtonUI> joinButton;
   sf::Text textInputTittle;
   sf::Text textInputIP;
+  std::unique_ptr<CustomText> cantJoinText;
   sf::Font font;
   StateHandler&  stateHandler;
 

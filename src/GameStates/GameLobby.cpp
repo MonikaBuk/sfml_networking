@@ -7,6 +7,10 @@
 
 void GameLobby::innitButtons()
 {
+  bird.loadFromFile("Data/Images/characters/Bird.png");
+  cat.loadFromFile("Data/Images/characters/CAT.png");
+  fox.loadFromFile("Data/Images/characters/FOX.png");
+  rac.loadFromFile("Data/Images/characters/RACCOON.png");
   std::string buttonFilePath = "Data/Images/ui/blue_button05.png";
   startButton = std::make_unique<ButtonUI>(
     font,
@@ -23,7 +27,7 @@ void GameLobby::innitButtons()
     "Data/Images/characters/Bird.png",
     "",
     sf::Vector2f(15, 20),
-    sf::Vector2f(12, 12));
+    sf::Vector2f(10, 12));
   characterButtons.push_back(std::move(birdButton));
   catButton = std::make_unique<ButtonUI>(
     font,
@@ -32,7 +36,7 @@ void GameLobby::innitButtons()
     "Data/Images/characters/CAT.png",
     "",
     sf::Vector2f(30, 20),
-    sf::Vector2f(12, 12));
+    sf::Vector2f(10, 12));
   characterButtons.push_back(std::move(catButton));
   foxButton = std::make_unique<ButtonUI>(
     font,
@@ -41,7 +45,7 @@ void GameLobby::innitButtons()
     "Data/Images/characters/FOX.png",
     "",
     sf::Vector2f(50, 20),
-    sf::Vector2f(12, 12));
+    sf::Vector2f(10, 12));
   characterButtons.push_back(std::move(foxButton));
   racoonButton = std::make_unique<ButtonUI>(
     font,
@@ -50,8 +54,17 @@ void GameLobby::innitButtons()
     "Data/Images/characters/RACCOON.png",
     "",
     sf::Vector2f(70, 20),
-    sf::Vector2f(12, 12));
+    sf::Vector2f(10, 12));
   characterButtons.push_back(std::move(racoonButton));
+  chosenCharacter = std::make_unique<ButtonUI>(
+    font,
+    20,
+    CustomColors::TxtBlue,
+    "Data/Images/characters/RACCOON.png",
+    "",
+    sf::Vector2f(35, 65),
+    sf::Vector2f(15, 17));
+  chosenCharacter->setIsEnabled(false);
 }
 void GameLobby::innitText()
 {
@@ -69,7 +82,7 @@ void GameLobby::innitText()
   waitText->setIsEnabled(false);
 }
 
-GameLobby::GameLobby(sf::RenderWindow& window, Network* network, StateHandler& handler) : GameState(window), network(network), stateHandler(handler)
+GameLobby::GameLobby(sf::RenderWindow& window, Network* network, StateHandler& handler) : GameState(window), network(network)
 {
 }
 bool GameLobby::init()
@@ -122,6 +135,29 @@ bool GameLobby::init()
 void GameLobby::update(float dt)
 {
   chatBox->updateLatestChatMessage();
+  if (network->getClient()->isHasCharacter() && !chosenCharacter->getIsEnabled())
+  {
+    chosenCharacter->setIsEnabled(true);
+  }
+  if (network->getClient()->isCharacterChanged())
+  {
+    switch (network->getClient()->getCharacterId())
+    {
+      case 0:
+        chosenCharacter->setButtonTexture(bird);
+        break ;
+      case 1:
+        chosenCharacter->setButtonTexture(cat);
+        break ;
+      case 2:
+        chosenCharacter->setButtonTexture(fox);
+        break ;
+      case 3:
+        chosenCharacter->setButtonTexture(rac);
+        break ;
+    }
+    network->getClient()->setCharacterChanged(false);
+  }
 }
 void GameLobby::render()
 {
@@ -134,6 +170,7 @@ void GameLobby::render()
   {
     button->draw();
   }
+  chosenCharacter->draw();
   characterText->draw();
 ;}
 void GameLobby::mouseClicked(sf::Event event)
@@ -147,7 +184,6 @@ void GameLobby::mouseClicked(sf::Event event)
       newSate.state = 2;
       network->getServer()->setGameIsRunning(true);
       network->getClient()->sendSateMessage(newSate);
-      startButton->setIsEnabled(false);
       return;
     }
   }

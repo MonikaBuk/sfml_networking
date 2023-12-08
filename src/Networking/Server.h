@@ -43,6 +43,7 @@ class Server
   void sendInfoForNewConnections();
   void sendInfoForGameStart(sf::Packet receivedPacket);
   void sendInfoForChosenCharacter(sf::Packet receivedPacket, sf::Packet copyPacket, short currentClientID);
+  void handleDisconnection(sf::Packet& copyPacket,int clientId);
 
  private:
   std::vector<std::thread> workers;
