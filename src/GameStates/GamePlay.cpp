@@ -12,6 +12,16 @@
 #include <tmxlite/TileLayer.hpp>
 
 
+void::GamePlay::increaseRadius(int  radius)
+{
+
+}
+
+void::GamePlay::increaseSpeed(int speed)
+{
+  int floatNewSpeed = playerCharacter->getPlayerCharacter()->getSpeed() + speed;
+  playerCharacter->getPlayerCharacter()->setSpeed(floatNewSpeed);
+}
 void GamePlay::Map_Loading(const std::string& tmxPath, const std::string& imgPath,
                            std::unique_ptr<sf::Texture>& tileMap,
                            std::vector<std::vector<std::unique_ptr<Tile>>>& TILE_MAP,
@@ -99,6 +109,10 @@ void GamePlay::innitBombs()
 
 void GamePlay::innitCharacters()
 {
+  characters.clear();
+  network->getClient()->otherCharacters.clear();
+  network->getClient()->otherBombs.clear();
+  tombTexture = std::make_unique<sf::Texture>();
   bird = std::make_unique<Character>();
   racoon = std::make_unique<Character>();
   fox = std::make_unique<Character>();
@@ -107,11 +121,13 @@ void GamePlay::innitCharacters()
   racoon->innitCharacter(1, "Data/Images/characters/RACCOONSPRITESHEET.png", sf::Vector2f (window.getSize().x - 140,100),Character::LEFT);
   fox->innitCharacter(2, "Data/Images/characters/FOXSPRITESHEET.png", sf::Vector2f (window.getSize().x - 140,window.getSize().y - 140),Character::LEFT);
   cat->innitCharacter(3, "Data/Images/characters/CATSPRITESHEET.png", sf::Vector2f (100,window.getSize().y - 140),Character::RIGHT);
+  bird->setDead(false);
+  cat->setDead(false);fox->setDead(false);racoon->setDead(false);
   characters.push_back(std::move(bird));
   characters.push_back(std::move(cat));
   characters.push_back(std::move(fox));
   characters.push_back(std::move(racoon));
-  tombTexture.loadFromFile("Data/Images/objects/tombstone.png");
+  tombTexture->loadFromFile("Data/Images/objects/tombstone.png");
 }
 void GamePlay::distributeCharacters()
 {
@@ -158,8 +174,9 @@ void GamePlay::handleOwnCharacter(float dt)
     if (bomb->isExploding()  &&(playerCharacter->getPlayerCharacter()->getBoundsWithOffset().intersects(
           bomb->GetObjSprite()->getGlobalBounds())))
     {
-      playerCharacter->getPlayerCharacter()->GetObjSprite()->setTexture(tombTexture);
+      playerCharacter->getPlayerCharacter()->GetObjSprite()->setTexture(*tombTexture);
       playerCharacter->getPlayerCharacter()->setDead(true);
+      looseText->setIsEnabled(true);
     }
   }
   if(playerCharacter->getPlayerCharacter()->isDead() && !playerCharacter->getPlayerCharacter()->isTextureChanged())
@@ -180,10 +197,20 @@ void GamePlay::handleOtherCharacters(float dt)
     {
       if (!character->isTextureChanged())
       {
-        character->GetObjSprite()->setTexture(tombTexture);
+        character->GetObjSprite()->setTexture(*tombTexture);
         character->setTextureChanged(true);
       }
     }
+  }
+  bool isDead = true;
+  for (const auto& character : network->getClient()->otherCharacters)
+  {
+    isDead &= character->isDead();
+  }
+  if (isDead)
+  {
+    winText->setIsEnabled(true);
+    backToLobbyButton->setIsEnabled(true);
   }
 }
 
@@ -214,7 +241,8 @@ void GamePlay::handleExplodingTiles(float dt)
 }
 void GamePlay::sendCharacterUpdate()
 {
-  if (updateTimer.getElapsedTime() >= sf::seconds(0.02f)) // Adjust the time limit as needed
+  //limiting how often to send packet
+  if (updateTimer.getElapsedTime() >= sf::seconds(0.02f))
   {
     sf::Vector2f charPos =
       playerCharacter->getPlayerCharacter()->GetObjSprite()->getPosition();
@@ -227,7 +255,7 @@ void GamePlay::sendCharacterUpdate()
     network->getClient()->sendPlayerUpdate2(playerUpdate);
     updateTimer.restart();
   }
-};
+}
 GamePlay::GamePlay(sf::RenderWindow& window, Network* network, StateHandler& handler) : GameState(window), network(network), stateHandler(handler)
 {
 
@@ -239,6 +267,19 @@ bool GamePlay::init()
   innitCharacters();
   distributeCharacters();
   innitBombs();
+  font.loadFromFile("Data/Fonts/Font/kenvector_future.ttf");
+  backToLobbyButton = std::make_unique<ButtonUI>(
+    font, 20, CustomColors::TxtBlue , "Data/Images/ui/blue_button05.png",
+    "Back to lobby", sf::Vector2f(40, 45), sf::Vector2f(25, 10));
+  backToLobbyButton->setIsEnabled(false);
+  winText =
+    std::make_unique<CustomText>(font, 30, sf::Color::Green, "You won");
+  winText->setPosition(window.getSize().x/2 - winText->getGlobalBounds().width/2, 49);
+  winText->setIsEnabled(false);
+  looseText =
+    std::make_unique<CustomText>(font, 30, sf::Color::Red, "You lost please \n wait for the game to end");
+  looseText->setPosition(window.getSize().x/2 - looseText->getGlobalBounds().width/2, 49);
+  looseText->setIsEnabled(false);
   return true;
 }
 
@@ -251,7 +292,13 @@ void GamePlay::update(float dt)
   handleBombs(dt);
 }
 void GamePlay::mouseClicked(sf::Event event) {
-  // Implementation of the mouseClicked function
+  if (backToLobbyButton->isSelected() && backToLobbyButton->getIsEnabled())
+  {
+      StateMessage newSate;
+      newSate.state = 1;
+      network->getClient()->sendSateMessage(newSate);
+      return;
+  }
 }
 
 void GamePlay::keyPressed(sf::Event event)
@@ -265,7 +312,6 @@ void GamePlay::keyPressed(sf::Event event)
     sf::Packet bombMsg;
     bombMsg << msg;
     network->getClient()->sendBombSpawnMessage(msg);
-
   }
 }
 
@@ -282,7 +328,13 @@ void GamePlay::render()
   {
     bomb->draw();
   }
+  looseText->draw();
+  winText->draw();
+  backToLobbyButton->draw();
 }
 void GamePlay::textEntered(sf::Event event) {}
 void GamePlay::mouseWheelScrolled(sf::Event event) {}
-void GamePlay::mouseMoved(sf::Event event) {}
+void GamePlay::mouseMoved(sf::Event event)
+{
+  backToLobbyButton->onSelected(event);
+}

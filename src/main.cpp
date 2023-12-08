@@ -13,9 +13,15 @@ int main()
   sf::RenderWindow& window = GameWindow::getWindow();
   window.setFramerateLimit(60);
 
+  sf::Image icon;
+  if (!icon.loadFromFile("Data/Images/bomb.png")) {
+    // Error loading image
+    std::cerr << "Failed to load image" << std::endl;
+  }
+  window.setIcon(icon.getSize().x,icon.getSize().y, icon.getPixelsPtr());
+
   //initialise an instance of the game class
   Game game(window);
-
 
   // A Clock starts counting as soon as it's created
   sf::Clock clock;

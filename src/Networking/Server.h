@@ -31,15 +31,11 @@ class Server
   void runTcpServer();
   void runUdpServer();
   void listen(sf::TcpSocket& cSocket);
-
   std::atomic<bool> created = false;
   bool isGameIsRunning() const;
-  void setGameIsRunning(bool gameIsRunning);
-
   void sendToEveryone(sf::Packet& packet);
   void sendToSender(sf::Packet& packet);
   void sendToOthers(sf::Packet& packet);
-
   void sendInfoForNewConnections();
   void sendInfoForGameStart(sf::Packet receivedPacket);
   void sendInfoForChosenCharacter(sf::Packet receivedPacket, sf::Packet copyPacket, short currentClientID);
@@ -61,7 +57,6 @@ class Server
 
   //info needed for character selection
   short clientNum = 0;
-  short clientsWithCharNum = 0;
   short MAX_CLIENT_NUMBER = 4;
   std::vector<short>clientIDs[4];
   std::vector<bool>characterAvailableID = {true,true,true,true};

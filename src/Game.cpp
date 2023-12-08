@@ -25,14 +25,11 @@ void Game::update(float dt)
       {
         case 1: // StateType::Lobby
           stateHandler.setState(new GameLobby(window, &network, stateHandler));
+          network.getClient()->setStateChanged(false);
           break;
         case 2: // StateType::InGame
           stateHandler.setState(new GamePlay(window, &network, stateHandler));
           network.getClient()->setStateChanged(false);
-
-          break;
-        case 3: // StateType::GameOver
-
           break;
         default:
           std::cerr << "Received an unknown state: " << newState << std::endl;
@@ -70,7 +67,6 @@ void Game::mouseMoved(sf::Event event) {
 }
 void Game::windowClosed(sf::Event event)
 {
-
   Disconnection msg;
   msg.userName = network.getClient()->getUserName();
   network.getClient()->sendDisconnectionRequest(msg);

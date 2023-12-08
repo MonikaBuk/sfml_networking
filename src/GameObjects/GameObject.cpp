@@ -8,10 +8,13 @@ GameObject::GameObject()
 {
   objectSprite = std::make_unique<sf::Sprite>();
 }
-
 void GameObject::drawObject()
 {
-  window.draw(*objectSprite);
+  if (objectSprite) {
+    window.draw(*objectSprite);
+  } else {
+    std::cerr << "Null pointer encountered when drawing objectSprite." << std::endl;
+  }
 }
 Collider GameObject::getCollider() const
 {

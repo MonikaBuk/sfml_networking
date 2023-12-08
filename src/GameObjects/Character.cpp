@@ -132,3 +132,7 @@ void Character::setTextureChanged(bool textureChanged)
 {
   texture_changed = textureChanged;
 }
+void Character::setSpeed(float speed)
+{
+  Character::speed = speed;
+}

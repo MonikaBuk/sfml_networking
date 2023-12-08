@@ -183,7 +183,9 @@ void Client::handleStateMessage(sf::Packet& packet)
   switch (newState)
   {
     case 1:
-      // StateType::Lobby
+      otherBombs.clear();
+      otherCharacters.clear();
+      otherPlayers.clear();
       break;
     case 2:
       // StateType::InGame

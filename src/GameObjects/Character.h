@@ -37,6 +37,11 @@ class Character : public GameObject
   sf::Texture characterTexture;
   int health;
   float speed = 100.0;
+
+ public:
+  void setSpeed(float speed);
+
+ private:
   int ID;
   sf::Vector2f currentPosition;
   sf::Vector2f targetPosition;

@@ -31,33 +31,34 @@ void Server::runTcpServer()
   {
     while (running)
     {
-      sf::TcpSocket& cSock =
-        connections.emplace_back(std::make_unique<sf::TcpSocket>()).operator*();
-      if (listener->accept(cSock) != sf::Socket::Done)
-      {
-        connections.pop_back();
-        return;
-      }
-      else
-      {
-        std::cout << "Accept new client done \n";
-      }
-      std::cout << "Client connected @ " << cSock.getRemotePort() << std::endl;
-      workers.emplace_back(
-        [&]
+        sf::TcpSocket& cSock =
+          connections.emplace_back(std::make_unique<sf::TcpSocket>()).operator*();
+        if (listener->accept(cSock) != sf::Socket::Done)
         {
-          listen(cSock);
-          std::lock_guard<std::mutex>lck(mutex);
-          for (int i = 0; i < connections.size(); ++i)
+          connections.pop_back();
+          return;
+        }
+        else
+        {
+          std::cout << "Accept new client done \n";
+        }
+        std::cout << "Client connected @ " << cSock.getRemotePort()
+                  << std::endl;
+        workers.emplace_back(
+          [&]
           {
-            if (connections[i]->getLocalPort() == cSock.getLocalPort())
+            listen(cSock);
+            std::lock_guard<std::mutex> lck(mutex);
+            for (int i = 0; i < connections.size(); ++i)
             {
-              connections.erase(connections.begin() + i);
-              break;
+              if (connections[i]->getLocalPort() == cSock.getLocalPort())
+              {
+                connections.erase(connections.begin() + i);
+                break;
+              }
             }
-          }
-        });
-      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+          });
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
   }
 }
@@ -68,7 +69,9 @@ void Server::runUdpServer()
     sf::Packet receivedPacket;
     sf::IpAddress sender;
     unsigned short port;
+
     auto status = udpSocket->receive(receivedPacket, sender, port);
+
     if (status == sf::Socket::Done)
     {
       // Handle the received UDP packet
@@ -92,7 +95,6 @@ void Server::runUdpServer()
     }
   }
 }
-
 
 void Server::listen(sf::TcpSocket& cSocket)
 {
@@ -133,16 +135,23 @@ void Server::listen(sf::TcpSocket& cSocket)
         if (hasSelected)
         {
           sendInfoForGameStart(receivedPacket);
+          gameIsRunning = true;
         }
         else
         {
           ChatMessage msg;
           sf::Packet serverMsg;
           msg.sender = "Server";
-          msg.text = "Everyone must select a character before the game";
+          msg.text   = "Everyone must select a character before the game";
           serverMsg << msg;
           sendToEveryone(serverMsg);
         }
+      }
+      else if (state == 1)
+      {
+        characterChoosenID.clear();
+        gameIsRunning = false;
+        sendToEveryone(receivedPacket);
       }
     }
     else if (static_cast<MessageType>(messageType) == MessageType::BOMB_SPAWN)
@@ -231,7 +240,7 @@ void Server::sendInfoForNewConnections()
 {
   sf::Packet connectionPacket;
   ConnectionMessage newConnection;
-  newConnection.gameRunning = isGameIsRunning();
+  newConnection.gameRunning = gameIsRunning;
   newConnection.characterAvailability = characterAvailableID;
   connectionPacket << newConnection;
   sendToSender(connectionPacket);
@@ -239,11 +248,16 @@ void Server::sendInfoForNewConnections()
 
 void Server::sendInfoForGameStart(sf::Packet receivedPacket)
 {
+  characterChoosenID.clear();
+
+  // Collect character IDs that have been chosen
   for (int i = 0; i < characterAvailableID.size(); i++) {
     if (!characterAvailableID[i]) {
       characterChoosenID.push_back(i);
     }
   }
+
+  // Send information about chosen characters
   for (auto& id : characterChoosenID)
   {
     OtherCharacters newChars;
@@ -252,7 +266,11 @@ void Server::sendInfoForGameStart(sf::Packet receivedPacket)
     charPacket << newChars;
     sendToEveryone(charPacket);
   }
-  sendToEveryone(receivedPacket);
+
+  // Send the received packet if it's not empty
+  if (!receivedPacket.getDataSize() == 0) {
+    sendToEveryone(receivedPacket);
+  }
 }
 void Server::sendInfoForChosenCharacter(sf::Packet receivedPacket, sf::Packet copyPacket, short currentClientID)
 {
@@ -305,12 +323,12 @@ void Server::handleDisconnection(sf::Packet& copyPacket,int clientId)
   {
     if (connectedClients[i].userName == userName)
     {
-      for (int i = 0; i < characterOwnedBy.size(); ++i)
+      for (int b = 0; b < characterOwnedBy.size(); ++i)
       {
-        if (characterOwnedBy[i] == clientId)
+        if (characterOwnedBy[b] == clientId)
         {
-          characterAvailableID[i] = true;
-          characterOwnedBy[i]     = 0;
+          characterAvailableID[b] = true;
+          characterOwnedBy[b]     = 0;
         }
       }
       ChatMessage msg;
@@ -331,14 +349,8 @@ void Server::handleDisconnection(sf::Packet& copyPacket,int clientId)
   }
 }
 
-
-
 // setters and getters
 bool Server::isGameIsRunning() const
 {
   return gameIsRunning;
-}
-void Server::setGameIsRunning(bool gameIsRunning)
-{
-  Server::gameIsRunning = gameIsRunning;
 }

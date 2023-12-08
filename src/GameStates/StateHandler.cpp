@@ -6,15 +6,10 @@
 
 void StateHandler::setState(GameState* newState)
 {
-  // Release resources of the current state
   delete currentState;
-  currentState = nullptr;
-
-  // Set the new state
   currentState = newState;
-
-  // Initialize the new state
-  if (currentState) {
+  if (currentState != nullptr)
+  {
     currentState->init();
   }
 }
@@ -28,7 +23,6 @@ void StateHandler::render()
   if (currentState)
     currentState->render();
 }
-
 void StateHandler::mouseClicked(sf::Event event)
 {
   if (currentState)
@@ -41,7 +35,6 @@ void StateHandler::keyPressed(sf::Event event)
 }
 void StateHandler::init()
 {
-  //currentState->init();
 }
 void StateHandler::textEntered(sf::Event event) {
   currentState->textEntered(event);
