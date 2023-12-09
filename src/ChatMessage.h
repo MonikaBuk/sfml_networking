@@ -90,6 +90,7 @@ struct BombSpawnMessage
 {
   sf::Vector2f  spawn_pos;
   int charID;
+  float radius;
 };
 sf::Packet& operator <<(sf::Packet& packet, const struct BombSpawnMessage& message);
 sf::Packet& operator >>(sf::Packet& packet, struct BombSpawnMessage& message);
@@ -100,6 +101,24 @@ struct PlayerKilledMessage
 };
 sf::Packet& operator <<(sf::Packet& packet, const PlayerKilledMessage& message);
 sf::Packet& operator >>(sf::Packet& packet, PlayerKilledMessage& message);
+
+struct ItemSpawnedMessage
+{
+  int id;
+  sf::Vector2f spawnPos;
+  int itemType;
+};
+sf::Packet& operator <<(sf::Packet& packet, const ItemSpawnedMessage& message);
+sf::Packet& operator >>(sf::Packet& packet, ItemSpawnedMessage& message);
+
+struct ItemCollectedMessage
+{
+  int id;
+};
+sf::Packet& operator <<(sf::Packet& packet, const ItemCollectedMessage& message);
+sf::Packet& operator >>(sf::Packet& packet, ItemCollectedMessage& message);
+
+
 
 struct Disconnection
 {

@@ -9,13 +9,29 @@
 #include "IItemConfig.h"
 class Item: public GameObject
 {
+ public:;
+  Item();
   enum Type
   {
-    SPEED,
-    RADIUS,
+    SPEED=1,
+    RADIUS=2
   }type;
+ private:
+  int ID;
+  std::unique_ptr<sf::Sprite> itemSprite;
+  bool enabled = true;
 
+ public:
+  bool isEnabled() const;
+  void setEnabled(bool enabled);
+  int getId() const;
+  void setId(int id);
+  void draw();
+  std::unique_ptr<sf::Sprite>& GetSpite();
   void collect(IItemConfig* collector);
+
+
+
 };
 
 #endif // SFMLGAME_ITEM_H

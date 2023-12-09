@@ -187,6 +187,10 @@ void Server::listen(sf::TcpSocket& cSocket)
     {
       handleDisconnection(copyPacket,currentClientID);
     }
+    else if(static_cast<MessageType>(messageType) == MessageType::ITEM_SPAWN || static_cast<MessageType>(messageType) == MessageType::ITEM_COLLECTED)
+    {
+      sendToEveryone(receivedPacket);
+    }
     else
     {
       sendToOthers(receivedPacket);
@@ -204,7 +208,7 @@ void Server::sendToEveryone(sf::Packet& packet) {
 
     if (connection->send(packet) != sf::Socket::Done)
     {
-      std::cerr << "Failed to send packet to a everyone" << std::endl;
+      //std::cerr << "Failed to send packet to a everyone" << std::endl;
     }
   }
 }

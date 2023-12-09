@@ -16,7 +16,7 @@ void Bomb::spawnBomb( float dt)
     animation.Update(0, dt, false);
     GetObjSprite()->setTextureRect(animation.rect);
     current_duration += dt;
-    if (current_duration > detonationTime /2)
+    if (current_duration > detonationTime *0.6)
     {
       exploding = true;
     }

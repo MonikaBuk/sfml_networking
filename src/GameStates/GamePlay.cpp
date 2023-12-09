@@ -12,11 +12,18 @@
 #include <tmxlite/TileLayer.hpp>
 
 
-void::GamePlay::increaseRadius(int  radius)
+void::GamePlay::increaseRadius(float radius)
 {
-
+  for(int i = 0; i <  network->getClient()->otherBombs.size(); i++)
+  {
+    if (playerCharacter->getPlayerCharacter()->getId() == i)
+    {
+      float newRadius = network->getClient()->otherBombs[i]->getRadius() * radius;
+      network->getClient()->otherBombs[i]->setRadius(newRadius);
+      network->getClient()->otherBombs[i]->GetObjSprite()->setOrigin(newRadius, newRadius);
+    }
+  }
 }
-
 void::GamePlay::increaseSpeed(int speed)
 {
   int floatNewSpeed = playerCharacter->getPlayerCharacter()->getSpeed() + speed;
@@ -113,6 +120,10 @@ void GamePlay::innitCharacters()
   network->getClient()->otherCharacters.clear();
   network->getClient()->otherBombs.clear();
   tombTexture = std::make_unique<sf::Texture>();
+  speedItemTxt = std::make_unique<sf::Texture>();
+  powerItemTxt = std::make_unique<sf::Texture>();
+  speedItemTxt->loadFromFile("Data/Images/speedicon.png");
+  powerItemTxt->loadFromFile("Data/Images/fire.png");
   bird = std::make_unique<Character>();
   racoon = std::make_unique<Character>();
   fox = std::make_unique<Character>();
@@ -171,20 +182,42 @@ void GamePlay::handleOwnCharacter(float dt)
   }
   for (const auto& bomb : network->getClient()->otherBombs)
   {
-    if (bomb->isExploding()  &&(playerCharacter->getPlayerCharacter()->getBoundsWithOffset().intersects(
-          bomb->GetObjSprite()->getGlobalBounds())))
+    if (
+      bomb->isExploding() &&
+      (playerCharacter->getPlayerCharacter()->getBoundsWithOffset().intersects(
+        bomb->GetObjSprite()->getGlobalBounds())))
     {
-      playerCharacter->getPlayerCharacter()->GetObjSprite()->setTexture(*tombTexture);
+      playerCharacter->getPlayerCharacter()->GetObjSprite()->setTexture(
+        *tombTexture);
       playerCharacter->getPlayerCharacter()->setDead(true);
       looseText->setIsEnabled(true);
+      PlayerKilledMessage msg;
+      msg.id = playerCharacter->getPlayerCharacter()->getId();
+      network->getClient()->sendPlayerDiedMsg(msg);
     }
   }
-  if(playerCharacter->getPlayerCharacter()->isDead() && !playerCharacter->getPlayerCharacter()->isTextureChanged())
+  for (const auto& item : network->getClient()->items)
   {
-    PlayerKilledMessage msg;
-    msg.id = playerCharacter->getPlayerCharacter()->getId();
-    network->getClient()->sendPlayerDiedMsg(msg);
-    playerCharacter->getPlayerCharacter()->setTextureChanged(true);
+    if (
+      item->isEnabled() &&
+      playerCharacter->getPlayerCharacter()->getBoundsWithOffset().intersects(
+        item->GetSpite()->getGlobalBounds()))
+    {
+      item->collect(this);
+      item->setEnabled(false);
+      ItemCollectedMessage msg;
+      msg.id = item->getId();
+      network->getClient()->sendItemCollectedMessage(msg);
+    }
+  }
+  for (const auto& item : network->getClient()->items)
+  {
+    if (!item->isEnabled())
+    {
+      ItemCollectedMessage msg;
+      msg.id = item->getId();
+      network->getClient()->sendItemCollectedMessage(msg);
+    }
   }
 }
 void GamePlay::handleOtherCharacters(float dt)
@@ -233,12 +266,45 @@ void GamePlay::handleExplodingTiles(float dt)
         (tile->GetSpite()->getGlobalBounds().intersects(
           bomb->GetObjSprite()->getGlobalBounds())))
       {
+        if(shouldGenerateItem())
+        {
+          generateItem(tile->GetSpite()->getPosition());
+        }
         tile->GetSpite()->setTextureRect(sf::IntRect (0,0,0,0));
         tile->GetSpite()->setPosition(0,0);
       }
     }
   }
 }
+bool GamePlay::shouldGenerateItem()
+{
+  if (itemGenerationTimer.getElapsedTime().asSeconds() >= 1.0f)
+  {
+    itemGenerationTimer.restart();
+    return (rand() % 10) == 0;
+  }
+  return false;
+}
+void GamePlay::generateItem(sf::Vector2f newPos)
+{
+  std::cout << "item generated \n";
+  itemID ++;
+  int itemType;
+  if (rand() % 2 == 0)
+  {
+     itemType = 1;
+  }
+  else
+  {
+     itemType = 2;
+  }
+  ItemSpawnedMessage newItemMsg;
+  newItemMsg.spawnPos = newPos;
+  newItemMsg.id = itemID;
+  newItemMsg.itemType = itemType;
+  network->getClient()->sendItemSpawnedMessage(newItemMsg);
+}
+
 void GamePlay::sendCharacterUpdate()
 {
   //limiting how often to send packet
@@ -290,6 +356,25 @@ void GamePlay::update(float dt)
   sendCharacterUpdate();
   handleOtherCharacters(dt);
   handleBombs(dt);
+
+  if (network->getClient()->isNewItemSpawned())
+  {
+    for (auto& item : network->getClient()->items)
+    {
+      std:: cout << item->type << "item type \n";
+      if (item->type == 1)
+      {
+        item->GetSpite()->setTexture(*speedItemTxt);
+        item->GetSpite()->setScale(0.1, 0.1);
+      }
+      else
+      {
+        item->GetSpite()->setTexture(*powerItemTxt);
+        item->GetSpite()->setScale(0.04, 0.04);
+      }
+    }
+    network->getClient()->setNewItemSpawned(false);
+  }
 }
 void GamePlay::mouseClicked(sf::Event event) {
   if (backToLobbyButton->isSelected() && backToLobbyButton->getIsEnabled())
@@ -305,10 +390,18 @@ void GamePlay::keyPressed(sf::Event event)
 {
   if (event.key.code == sf::Keyboard::Space)
   {
-    sf::Vector2f spawnPos = playerCharacter->getPlayerCharacter()->GetObjSprite()->getPosition();
+    sf::Vector2f spawnPos =
+      playerCharacter->getPlayerCharacter()->GetObjSprite()->getPosition();
     BombSpawnMessage msg;
     msg.spawn_pos = spawnPos;
-    msg.charID = playerCharacter->getPlayerCharacter()->getId();
+    msg.charID    = playerCharacter->getPlayerCharacter()->getId();
+    for (int i = 0; i < network->getClient()->otherBombs.size(); i++)
+    {
+      if (playerCharacter->getPlayerCharacter()->getId() == i)
+      {
+        msg.radius = network->getClient()->otherBombs[i]->getRadius();
+      }
+    }
     sf::Packet bombMsg;
     bombMsg << msg;
     network->getClient()->sendBombSpawnMessage(msg);
@@ -331,6 +424,10 @@ void GamePlay::render()
   looseText->draw();
   winText->draw();
   backToLobbyButton->draw();
+  for (const auto& item : network->getClient()->items)
+  {
+    window.draw(*item->GetSpite());
+  }
 }
 void GamePlay::textEntered(sf::Event event) {}
 void GamePlay::mouseWheelScrolled(sf::Event event) {}

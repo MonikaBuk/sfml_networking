@@ -15,9 +15,9 @@ class Bomb : public GameObject
  private:
   sf::Texture bombTexture;
   bool isSpawned = false;
-  float detonationTime = 0.1 * 23.0;
+  float detonationTime = 0.1 * 22.0;
   float current_duration = 0.0f;
-  float radius = 0.5;
+  float radius = 0.4;
   sf::Vector2f  spawnPos;
   bool exploding = false;
 

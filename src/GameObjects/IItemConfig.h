@@ -9,7 +9,7 @@ class IItemConfig
 {
  public:
   virtual void increaseSpeed(int speed) =0;
-  virtual void increaseRadius(int radius) = 0;
+  virtual void increaseRadius(float radius) = 0;
 };
 
 #endif // SFMLGAME_IITEMCONFIG_H

@@ -28,6 +28,7 @@ class GamePlay : public GameState, public IItemConfig
    bool init()override;
    void update(float dt);
    sf::Clock updateTimer;
+   sf::Clock itemGenerationTimer;
    void render() override;
    void mouseClicked(sf::Event event) override;
    void keyPressed(sf::Event event) override;
@@ -35,7 +36,7 @@ class GamePlay : public GameState, public IItemConfig
    void mouseWheelScrolled(sf::Event event) override;
    void mouseMoved(sf::Event event) override;
    void increaseSpeed(int speed) override;
-   void increaseRadius(int radius) override;
+   void increaseRadius(float radius) override;
 
    //tile map
    void Map_Loading(const std::string& tmxPath, const std::string& imgPath,
@@ -68,6 +69,9 @@ class GamePlay : public GameState, public IItemConfig
   std::unique_ptr<Character> racoon;
   std::unique_ptr<Player> playerCharacter;
   std::unique_ptr<sf::Texture>  tombTexture;
+  std::unique_ptr<sf::Texture>  speedItemTxt;
+  std::unique_ptr<sf::Texture>  powerItemTxt;
+  int itemID = 0;
 
   //ui variables
 
@@ -77,6 +81,8 @@ class GamePlay : public GameState, public IItemConfig
   std::unique_ptr<CustomText> looseText;
 
 
+  bool shouldGenerateItem();
+  void generateItem(sf::Vector2f newPos);
 };
 
 #endif // SFMLGAME_GAMEPLAY_H

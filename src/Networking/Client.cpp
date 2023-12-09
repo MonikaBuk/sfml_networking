@@ -140,7 +140,14 @@ void Client::handleTCPMessages(MessageType messageType, sf::Packet& receivedPack
     case MessageType::CONNECTION_DENIED:
       handleCOnnectionDeniedMessage(receivedPacket);
       break ;
+      //this will cause error and can not recconect even after reduced player number:
       //TcpSocket->disconnect();
+    case MessageType::ITEM_SPAWN:
+      handleItemSpawnedMessages(receivedPacket);
+      break ;
+    case MessageType::ITEM_COLLECTED:
+     handleItemCollectedMessages(receivedPacket);
+     break ;
     default:
       std::cerr << "Received an unknown message type: " << messageType << std::endl;
       break;
@@ -183,9 +190,11 @@ void Client::handleStateMessage(sf::Packet& packet)
   switch (newState)
   {
     case 1:
+      //clearing out all vectors for the next round
       otherBombs.clear();
       otherCharacters.clear();
       otherPlayers.clear();
+      items.clear();
       break;
     case 2:
       // StateType::InGame
@@ -290,6 +299,7 @@ void Client::handleBombSpawnMessage(sf::Packet& packet)
       {
        otherBombs[i]->setSpawnPos(charMessage.spawn_pos);
        otherBombs[i]->setSpawned(true);
+       otherBombs[i]->setRadius(charMessage.radius);
       }
     }
   }
@@ -324,6 +334,46 @@ void Client::handleCOnnectionDeniedMessage(sf::Packet& packet)
     std::cout << "Before: " << collectionAllowed << std::endl;
     collectionAllowed = false;
     std::cout << "After: " << collectionAllowed << std::endl;
+  }
+  else
+  {
+    std::cerr << "Failed to extract character choose message from received packet." << std::endl;
+  }
+}
+void Client::handleItemSpawnedMessages(sf::Packet& packet)
+{
+  ItemSpawnedMessage itemMessage;
+  if (packet >> itemMessage)
+  {
+    std::unique_ptr<Item> newItem = std::make_unique<Item>();
+    newItem->setId(itemMessage.id);
+    newItem->GetSpite()
+        ->setPosition(itemMessage.spawnPos);
+    newItem->type = static_cast<Item::Type>(itemMessage.itemType);
+    items.push_back(std::move(newItem));
+    newItemSpawned = true;
+  }
+  else
+  {
+    std::cerr << "Failed to extract character choose message from received packet." << std::endl;
+  }
+}
+void Client::handleItemCollectedMessages(sf::Packet& packet)
+{
+  ItemCollectedMessage charMessage;
+  if (packet >> charMessage)
+  {
+
+    for (int i = 0; i < items.size(); ++i)
+    {
+      if (items[i]->getId() == charMessage.id)
+      {
+        std::cout << items[i]->getId() << "will be deleted";
+        items.erase(items.begin() + i);
+        break;
+      }
+    }
+
   }
   else
   {
@@ -443,6 +493,34 @@ void Client::sendPlayerDiedMsg(const PlayerKilledMessage& message)
     std::cerr << "Failed to send death message. Socket not connected or invalid." << std::endl;
   }
 }
+void Client::sendItemSpawnedMessage(const ItemSpawnedMessage& message)
+{
+  if (connected && TcpSocket) {
+    sf::Packet messagePacket;
+    messagePacket << message;
+    if (TcpSocket->send(messagePacket) != sf::Socket::Done) {
+      std::cerr << "Failed to send death message" << std::endl;
+    }
+  }
+  else
+  {
+    std::cerr << "Failed to send death message. Socket not connected or invalid." << std::endl;
+  }
+}
+void Client::sendItemCollectedMessage(const ItemCollectedMessage& message)
+{
+  if (connected && TcpSocket) {
+    sf::Packet messagePacket;
+    messagePacket << message;
+    if (TcpSocket->send(messagePacket) != sf::Socket::Done) {
+      std::cerr << "Failed to send death message" << std::endl;
+    }
+  }
+  else
+  {
+    std::cerr << "Failed to send death message. Socket not connected or invalid." << std::endl;
+  }
+}
 // setters and getters
 bool Client::isMessageReceived() const
 {
@@ -521,4 +599,12 @@ bool Client::isCharacterChanged() const
 void Client::setCharacterChanged(bool characterChanged)
 {
   Client::characterChanged = characterChanged;
+}
+bool Client::isNewItemSpawned() const
+{
+  return newItemSpawned;
+}
+void Client::setNewItemSpawned(bool newItemSpawned)
+{
+  Client::newItemSpawned = newItemSpawned;
 }

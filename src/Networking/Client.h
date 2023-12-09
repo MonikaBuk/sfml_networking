@@ -8,6 +8,7 @@
 #include "../ChatMessage.h"
 #include "../GameObjects/Bomb.h"
 #include "../GameObjects/Character.h"
+#include "../GameObjects/Item.h"
 #include <Sfml/Network.hpp>
 #include <atomic>
 #include <future>
@@ -20,42 +21,35 @@ class Client
  public:
   void connect(sf::IpAddress& ipToConnect);
   void run();
-  void sendChatMessage(const ChatMessage& message);
   std::atomic<bool> running = false;
   std::atomic<bool> connected = false;
+  void handleTCPMessages(MessageType messageType, sf::Packet& packet);
+  void handleUdpMessage(MessageType messageType, sf::Packet& receivedPacket);
+  void runUdpClient();
 
+  void sendChatMessage(const ChatMessage& message);
   bool isMessageReceived() const;
   void setMessageReceived(bool messageReceived);
   const ChatMessage& getLastMessage() const;
   void setLastMessage(const ChatMessage& lastMessage);
   void handleChatMessage(sf::Packet& packet);
 
-
   const std::string& getUserName() const;
   void setUserName(const std::string& userName);
   int getNewState() const;
-  void sendSateMessage(const StateMessage& message);
-  void handleStateMessage(sf::Packet& packet);
   bool isStateChanged() const;
   void setStateChanged(bool stateChanged);
   bool isServerHost() const;
   void setServerHost(bool serverHost);
   bool isGameIsRunning() const;
-  void sendCharChoiceMessage(const CharacterChoosing& message);
-  const std::vector<int>& getOtherPlayers() const;
-  const std::vector<bool>& getCharacterAvailablity() const;
   int getCharacterId() const;
 
-  void handleCharChooseMessage(sf::Packet& packet);
-  void handleOtherCharChooseMessage(sf::Packet& packet);
-  void sendConnectionRequest(const NewConnection& message);
-  void handleUnavCharChooseMessage(sf::Packet& packet);
 
-  void sendWelcomeMessage();
 
   std::vector<std::unique_ptr<Character>> otherCharacters;
   std::vector<std::unique_ptr<Bomb>> otherBombs;
   std::vector<std::unique_ptr<GameObject>> tombstones;
+  std::vector<std::unique_ptr<Item>> items;
 
  private:
   std::unique_ptr<sf::TcpSocket> TcpSocket;
@@ -65,19 +59,16 @@ class Client
   bool messageReceived;
   ChatMessage lastMessage;
   std::string  userName;
-  bool collectionAllowed = false;
-  bool hasCharacter = false;
-  bool characterChanged = false;
-
 
 
  public:
   bool isHasCharacter() const;
   bool isCharacterChanged() const;
   void setCharacterChanged(bool characterChanged);
-
- public:
   bool isCollectionAllowed() const;
+  const std::vector<int>& getOtherPlayers() const;
+  const std::vector<bool>& getCharacterAvailablity() const;
+
  private:
   bool serverHost= false;
   bool gameIsRunning = false;
@@ -86,22 +77,40 @@ class Client
   int characterID;
   std::vector<int> otherPlayers;
   std::vector<bool> characterAvailablity;
-
-  void handleConnectionMessage(sf::Packet& packet);
-  void handleCharacterUpdateMessage(sf::Packet& packet);
-
+  bool collectionAllowed = false;
+  bool hasCharacter = false;
+  bool characterChanged = false;
+  bool newItemSpawned = false;
+  bool itemRemoved = false;
 
  public:
-  void handleTCPMessages(MessageType messageType, sf::Packet& packet);
-  void handleUdpMessage(MessageType messageType, sf::Packet& receivedPacket);
-  void sendPlayerUpdate2(const CharacterUpdatePacket& message);
-  void runUdpClient();
-  void sendBombSpawnMessage(const BombSpawnMessage& message);
+  bool isNewItemSpawned() const;
+  void setNewItemSpawned(bool newItemSpawned);
+
+ private:
+  void handleConnectionMessage(sf::Packet& packet);
+  void handleCharacterUpdateMessage(sf::Packet& packet);
   void handleBombSpawnMessage(sf::Packet& packet);
-  void sendPlayerDiedMsg(const PlayerKilledMessage& message);
   void handlePlayerKilledMessage(sf::Packet& packet);
-  void sendDisconnectionRequest(const Disconnection& message);
   void handleCOnnectionDeniedMessage(sf::Packet& packet);
+  void handleCharChooseMessage(sf::Packet& packet);
+  void handleOtherCharChooseMessage(sf::Packet& packet);
+  void handleUnavCharChooseMessage(sf::Packet& packet);
+  void handleStateMessage(sf::Packet& packet);
+  void handleItemSpawnedMessages(sf::Packet& packet);
+  void handleItemCollectedMessages(sf::Packet& packet);
+
+ public:
+  void sendSateMessage(const StateMessage& message);
+  void sendCharChoiceMessage(const CharacterChoosing& message);
+  void sendPlayerUpdate2(const CharacterUpdatePacket& message);
+  void sendBombSpawnMessage(const BombSpawnMessage& message);
+  void sendPlayerDiedMsg(const PlayerKilledMessage& message);
+  void sendDisconnectionRequest(const Disconnection& message);
+  void sendConnectionRequest(const NewConnection& message);
+  void sendWelcomeMessage();
+  void sendItemSpawnedMessage(const ItemSpawnedMessage& message);
+  void sendItemCollectedMessage(const ItemCollectedMessage& message);
 };
 
 #endif // SFMLGAME_CLIENT_H
