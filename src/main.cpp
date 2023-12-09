@@ -13,6 +13,16 @@ int main()
   sf::RenderWindow& window = GameWindow::getWindow();
   window.setFramerateLimit(60);
 
+  sf::Texture cursorImg;
+  if (!cursorImg.loadFromFile("Data/Images/sCursor.png")) {
+    std::cerr << "Failed to load image" << std::endl;
+  }
+  sf::Cursor cursor;
+  cursor.loadFromPixels(cursorImg.copyToImage().getPixelsPtr(), cursorImg.getSize(), {0, 0});
+  {
+    window.setMouseCursor(cursor);
+  }
+
   sf::Image icon;
   if (!icon.loadFromFile("Data/Images/bomb.png")) {
     // Error loading image

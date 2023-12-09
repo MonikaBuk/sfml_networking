@@ -180,22 +180,12 @@ void GamePlay::handleOwnCharacter(float dt)
         playerCharacter->getPrevPos());
     }
   }
-  for (const auto& bomb : network->getClient()->otherBombs)
-  {
-    if (
-      bomb->isExploding() &&
-      (playerCharacter->getPlayerCharacter()->getBoundsWithOffset().intersects(
-        bomb->GetObjSprite()->getGlobalBounds())))
-    {
-      playerCharacter->getPlayerCharacter()->GetObjSprite()->setTexture(
-        *tombTexture);
-      playerCharacter->getPlayerCharacter()->setDead(true);
-      looseText->setIsEnabled(true);
-      PlayerKilledMessage msg;
-      msg.id = playerCharacter->getPlayerCharacter()->getId();
-      network->getClient()->sendPlayerDiedMsg(msg);
-    }
-  }
+  handlePlayerExploding();
+  handleItems();
+}
+
+void GamePlay::handleItems()
+{
   for (const auto& item : network->getClient()->items)
   {
     if (
@@ -203,6 +193,7 @@ void GamePlay::handleOwnCharacter(float dt)
       playerCharacter->getPlayerCharacter()->getBoundsWithOffset().intersects(
         item->GetSpite()->getGlobalBounds()))
     {
+      itemSound.play();
       item->collect(this);
       item->setEnabled(false);
       ItemCollectedMessage msg;
@@ -217,6 +208,26 @@ void GamePlay::handleOwnCharacter(float dt)
       ItemCollectedMessage msg;
       msg.id = item->getId();
       network->getClient()->sendItemCollectedMessage(msg);
+    }
+  }
+}
+void GamePlay::handlePlayerExploding()
+{
+  for (const auto& bomb : network->getClient()->otherBombs)
+  {
+    if (
+      bomb->isExploding() &&
+      (playerCharacter->getPlayerCharacter()->getBoundsWithOffset().intersects(
+        bomb->GetObjSprite()->getGlobalBounds())))
+    {
+      bombSound.play();
+      playerCharacter->getPlayerCharacter()->GetObjSprite()->setTexture(
+        *tombTexture);
+      playerCharacter->getPlayerCharacter()->setDead(true);
+      looseText->setIsEnabled(true);
+      PlayerKilledMessage msg;
+      msg.id = playerCharacter->getPlayerCharacter()->getId();
+      network->getClient()->sendPlayerDiedMsg(msg);
     }
   }
 }
@@ -270,6 +281,7 @@ void GamePlay::handleExplodingTiles(float dt)
         {
           generateItem(tile->GetSpite()->getPosition());
         }
+        bombSound.play();
         tile->GetSpite()->setTextureRect(sf::IntRect (0,0,0,0));
         tile->GetSpite()->setPosition(0,0);
       }
@@ -287,7 +299,6 @@ bool GamePlay::shouldGenerateItem()
 }
 void GamePlay::generateItem(sf::Vector2f newPos)
 {
-  std::cout << "item generated \n";
   itemID ++;
   int itemType;
   if (rand() % 2 == 0)
@@ -322,13 +333,33 @@ void GamePlay::sendCharacterUpdate()
     updateTimer.restart();
   }
 }
+
+void GamePlay::innitSounds()
+{
+  buffer.loadFromFile("Data/sounds/2019-01-02_-_8_Bit_Menu_-_David_Renda_-_FesliyanStudios.com.wav");
+  sound.setBuffer(buffer);
+  sound.setLoop(true);
+  sound.setVolume(10);
+  sound.play();
+  bombBuffer.loadFromFile("Data/sounds/Hit damage 1.wav");
+  bombSound.setBuffer(bombBuffer);
+  bombSound.setLoop(false);
+  bombSound.setVolume(10);
+  itemBuffer.loadFromFile("Data/sounds/Select 1.wav");
+  itemSound.setBuffer(itemBuffer);
+  itemSound.setLoop(false);
+  itemSound.setVolume(10);
+}
 GamePlay::GamePlay(sf::RenderWindow& window, Network* network, StateHandler& handler) : GameState(window), network(network), stateHandler(handler)
 {
 
+
 }
+
 
 bool GamePlay::init()
 {
+  innitSounds();
   Map_Loading("Data/new tilemap/tile_map.tmx", "Data/new tilemap/tilemap_packed.png", tileMapFloor, TILE_MAP_FlOOR, 3);
   innitCharacters();
   distributeCharacters();
@@ -379,6 +410,7 @@ void GamePlay::update(float dt)
 void GamePlay::mouseClicked(sf::Event event) {
   if (backToLobbyButton->isSelected() && backToLobbyButton->getIsEnabled())
   {
+      sound.stop();
       StateMessage newSate;
       newSate.state = 1;
       network->getClient()->sendSateMessage(newSate);

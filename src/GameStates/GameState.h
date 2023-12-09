@@ -7,6 +7,7 @@
 #include <SFML/Graphics.hpp>
 #include "../Networking/Client.h"
 #include "../Networking/Network.h"
+#include <SFML/Audio.hpp>
 
 class GameState
 {

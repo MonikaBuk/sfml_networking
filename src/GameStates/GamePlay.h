@@ -71,6 +71,14 @@ class GamePlay : public GameState, public IItemConfig
   std::unique_ptr<sf::Texture>  tombTexture;
   std::unique_ptr<sf::Texture>  speedItemTxt;
   std::unique_ptr<sf::Texture>  powerItemTxt;
+
+  sf::SoundBuffer buffer;
+  sf::Sound sound;
+  sf::SoundBuffer bombBuffer;
+  sf::Sound bombSound;
+  sf::SoundBuffer itemBuffer;
+  sf::Sound itemSound;
+
   int itemID = 0;
 
   //ui variables
@@ -83,6 +91,9 @@ class GamePlay : public GameState, public IItemConfig
 
   bool shouldGenerateItem();
   void generateItem(sf::Vector2f newPos);
+  void handleItems();
+  void handlePlayerExploding();
+  void innitSounds();
 };
 
 #endif // SFMLGAME_GAMEPLAY_H

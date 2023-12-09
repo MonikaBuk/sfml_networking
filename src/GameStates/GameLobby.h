@@ -46,9 +46,16 @@ class GameLobby: public GameState
   std::unique_ptr<sf::Texture> rac;
   std::vector<std::unique_ptr<ButtonUI>> characterButtons;
   std::vector<bool> availableCharacters;
+
+  sf::SoundBuffer buffer;
+  sf::Sound sound;
+  sf::SoundBuffer clickBuffer;
+  sf::Sound clickSound;
+
   void innitButtons();
   void innitText();
   void updateChosenCharacter();
+  void innitSounds();
 };
 
 #endif // SFMLGAME_GAMELOBBY_H

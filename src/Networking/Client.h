@@ -81,7 +81,6 @@ class Client
   bool hasCharacter = false;
   bool characterChanged = false;
   bool newItemSpawned = false;
-  bool itemRemoved = false;
 
  public:
   bool isNewItemSpawned() const;
