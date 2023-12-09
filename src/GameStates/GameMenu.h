@@ -36,8 +36,8 @@ class GameMenu: public GameState
   std::unique_ptr<CustomText> cantJoinText;
   sf::Font font;
   StateHandler&  stateHandler;
-  sf::SoundBuffer clickBuffer;
-  sf::Sound clickSound;
+ // sf::SoundBuffer clickBuffer;
+  //sf::Sound clickSound;
 
 
 };

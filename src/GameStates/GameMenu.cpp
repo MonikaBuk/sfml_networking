@@ -20,10 +20,12 @@ void GameMenu::createUserNameInput()
 
 bool GameMenu::init()
 {
+  /*
   clickBuffer.loadFromFile("Data/sounds/Text 1.wav");
   clickSound.setBuffer(clickBuffer);
   clickSound.setLoop(false);
   clickSound.setVolume(10);
+   */
   std::string buttonFilePath = "Data/Images/ui/blue_button05.png";
   if(!font.loadFromFile("Data/Fonts/Font/kenvector_future.ttf")){std::cerr << "Failed to load font.";}
   createUserNameInput();
@@ -67,7 +69,7 @@ void GameMenu::mouseClicked(sf::Event event)
   sf::IpAddress localAddress = network->localIP;
   if (joinButton->isSelected() && joinButton->getIsEnabled())
   {
-    clickSound.play();
+   // clickSound.play();
     if (network->clientConnect(localAddress))
     {
       network->getClient()->setServerHost(false);
@@ -79,7 +81,7 @@ void GameMenu::mouseClicked(sf::Event event)
   }
   else if (hostButton->isSelected() && hostButton->getIsEnabled())
   {
-    clickSound.play();
+   // clickSound.play();
     if (!network->serverCreate)
     {
       network->createServer();

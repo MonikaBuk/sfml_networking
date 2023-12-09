@@ -106,7 +106,7 @@ void GameLobby::innitText()
 
 void GameLobby::innitSounds()
 {
-  buffer.loadFromFile("Data/sounds/waiting-time-175800.wav");
+  /*buffer.loadFromFile("Data/sounds/waiting-time-175800.wav");
   sound.setBuffer(buffer);
   sound.setLoop(true);
   sound.setVolume(5);
@@ -114,7 +114,7 @@ void GameLobby::innitSounds()
   clickBuffer.loadFromFile("Data/sounds/Text 1.wav");
   clickSound.setBuffer(clickBuffer);
   clickSound.setLoop(false);
-  clickSound.setVolume(10);
+  clickSound.setVolume(10);*/
 }
 
 GameLobby::GameLobby(sf::RenderWindow& window, Network* network, StateHandler& handler) : GameState(window), network(network)
@@ -201,7 +201,7 @@ void GameLobby::mouseClicked(sf::Event event)
   chatBox->onClickSend(event);
   if (startButton->isSelected() && startButton->getIsEnabled())
   {
-    clickSound.play();
+    //clickSound.play();
     StateMessage newSate;
     newSate.state = 2;
     network->getClient()->sendSateMessage(newSate);
@@ -211,7 +211,7 @@ void GameLobby::mouseClicked(sf::Event event)
   {
     if (characterButtons[i]->isSelected() && characterButtons[i]->isAvailable())
     {
-      clickSound.play();
+     // clickSound.play();
       CharacterChoosing msg;
       msg.id = i;
       network->getClient()->sendCharChoiceMessage(msg);

@@ -193,7 +193,7 @@ void GamePlay::handleItems()
       playerCharacter->getPlayerCharacter()->getBoundsWithOffset().intersects(
         item->GetSpite()->getGlobalBounds()))
     {
-      itemSound.play();
+      //itemSound.play();
       item->collect(this);
       item->setEnabled(false);
       ItemCollectedMessage msg;
@@ -220,7 +220,7 @@ void GamePlay::handlePlayerExploding()
       (playerCharacter->getPlayerCharacter()->getBoundsWithOffset().intersects(
         bomb->GetObjSprite()->getGlobalBounds())))
     {
-      bombSound.play();
+      //bombSound.play();
       playerCharacter->getPlayerCharacter()->GetObjSprite()->setTexture(
         *tombTexture);
       playerCharacter->getPlayerCharacter()->setDead(true);
@@ -281,7 +281,7 @@ void GamePlay::handleExplodingTiles(float dt)
         {
           generateItem(tile->GetSpite()->getPosition());
         }
-        bombSound.play();
+        //bombSound.play();
         tile->GetSpite()->setTextureRect(sf::IntRect (0,0,0,0));
         tile->GetSpite()->setPosition(0,0);
       }
@@ -336,7 +336,7 @@ void GamePlay::sendCharacterUpdate()
 
 void GamePlay::innitSounds()
 {
-  buffer.loadFromFile("Data/sounds/2019-01-02_-_8_Bit_Menu_-_David_Renda_-_FesliyanStudios.com.wav");
+  /*buffer.loadFromFile("Data/sounds/2019-01-02_-_8_Bit_Menu_-_David_Renda_-_FesliyanStudios.com.wav");
   sound.setBuffer(buffer);
   sound.setLoop(true);
   sound.setVolume(10);
@@ -349,6 +349,7 @@ void GamePlay::innitSounds()
   itemSound.setBuffer(itemBuffer);
   itemSound.setLoop(false);
   itemSound.setVolume(10);
+   */
 }
 GamePlay::GamePlay(sf::RenderWindow& window, Network* network, StateHandler& handler) : GameState(window), network(network), stateHandler(handler)
 {
@@ -410,7 +411,7 @@ void GamePlay::update(float dt)
 void GamePlay::mouseClicked(sf::Event event) {
   if (backToLobbyButton->isSelected() && backToLobbyButton->getIsEnabled())
   {
-      sound.stop();
+      //sound.stop();
       StateMessage newSate;
       newSate.state = 1;
       network->getClient()->sendSateMessage(newSate);

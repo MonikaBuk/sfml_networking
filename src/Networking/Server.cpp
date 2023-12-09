@@ -287,7 +287,6 @@ void Server::sendInfoForChosenCharacter(sf::Packet receivedPacket, sf::Packet co
     {
       if (characterAvailableID[charID])
       {
-        message.text = "Character Is available";
 
         for (int i = 0; i < characterOwnedBy.size(); ++i)
         {
@@ -304,14 +303,9 @@ void Server::sendInfoForChosenCharacter(sf::Packet receivedPacket, sf::Packet co
       }
       else
       {
-        message.text = "Character Is Unavialable";
       }
     }
   }
-  message.sender = charID;
-  sf::Packet serverMsg;
-  serverMsg << message;
-  sendToSender(serverMsg);
   sf::Packet unavCharPacket;
   UnavailableCharacter unavailableCharacters;
   unavailableCharacters.characterAvailability = characterAvailableID;
@@ -327,12 +321,12 @@ void Server::handleDisconnection(sf::Packet& copyPacket,int clientId)
   {
     if (connectedClients[i].userName == userName)
     {
-      for (int b = 0; b < characterOwnedBy.size(); ++i)
+      for (int i = 0; i < characterOwnedBy.size(); ++i)
       {
-        if (characterOwnedBy[b] == clientId)
+        if (characterOwnedBy[i] == clientId)
         {
-          characterAvailableID[b] = true;
-          characterOwnedBy[b]     = 0;
+          characterAvailableID[i] = true;
+          characterOwnedBy[i]     = 0;
         }
       }
       ChatMessage msg;

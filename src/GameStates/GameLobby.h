@@ -47,10 +47,10 @@ class GameLobby: public GameState
   std::vector<std::unique_ptr<ButtonUI>> characterButtons;
   std::vector<bool> availableCharacters;
 
-  sf::SoundBuffer buffer;
-  sf::Sound sound;
-  sf::SoundBuffer clickBuffer;
-  sf::Sound clickSound;
+  //sf::SoundBuffer buffer;
+ // sf::Sound sound;
+ // sf::SoundBuffer clickBuffer;
+ // sf::Sound clickSound;
 
   void innitButtons();
   void innitText();

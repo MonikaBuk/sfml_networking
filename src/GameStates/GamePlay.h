@@ -72,12 +72,13 @@ class GamePlay : public GameState, public IItemConfig
   std::unique_ptr<sf::Texture>  speedItemTxt;
   std::unique_ptr<sf::Texture>  powerItemTxt;
 
-  sf::SoundBuffer buffer;
+ /* sf::SoundBuffer buffer;
   sf::Sound sound;
   sf::SoundBuffer bombBuffer;
   sf::Sound bombSound;
   sf::SoundBuffer itemBuffer;
   sf::Sound itemSound;
+  */
 
   int itemID = 0;
 
