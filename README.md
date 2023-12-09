@@ -17,3 +17,6 @@ Fire Symbol - Unlimited Download. cleanpng.com. (no date) cleanpng.com. Availabl
 BIRD + CAT + FOX + RACCOON SPRITES by PixelFight (no date) itch.io. Available at: https://pixelfight.itch.io/birdcat?download (Accessed: 18 November 2023).
 Kenney • UI Pack (no date) www.kenney.nl. Available at: https://www.kenney.nl/assets/ui-pack. (Accessed: 18 November 2023).
 Kenney (no date) Tiny Dungeon · Kenney, www.kenney.nl. Available at: https://www.kenney.nl/assets/tiny-dungeon (Accessed: 1 December 2023).
+
+
+Sounds are commented out for a last-minute error with OPEN GL. They work but then causing disconnection and windows closing issued due to deadline I could not fix properly. Disconnection and disconnected character freeing up worked in previous commits before added the sounds.
