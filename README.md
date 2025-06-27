@@ -3,6 +3,11 @@
 A local network multiplayer Bomberman clone built with SFML. Supports up to 4 players connected over a local IP network.
 
 ---
+## What is Object-Oriented Programming?
+
+**Object-Oriented Programming (OOP)** is a programming paradigm organizing code into objects with properties and behaviors.
+
+---
 
 ## 🎮 Features
 
@@ -15,7 +20,9 @@ A local network multiplayer Bomberman clone built with SFML. Supports up to 4 pl
   - **TCP** for reliable messages (power-ups, explosions, block destruction)  
   - **UDP** for fast, real-time player movement updates  
 - 🎯 Classic Bomberman mechanics: place bombs, destroy blocks, collect power-ups  
-- 🧠 Simple state machine + basic collision system  
+- 🎛️ **UI Elements:**  
+  - Buttons for power-ups and characters  
+  - Character selection with exclusive choices — once a character is picked by a player, it’s greyed out for others  
 
 ---
 [![Demo Video](https://img.youtube.com/vi/-uFRr81QabU/0.jpg)](https://youtu.be/-uFRr81QabU)
