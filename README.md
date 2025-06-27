@@ -1,22 +1,78 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/P_WtwTBK)
-# Template for SFML networked game
+# 💣 Bomberman Multiplayer (SFML Networking)
 
-This gives you the very basic starting point you'll need for element 1 of your portfolio assignment.
+A local network multiplayer Bomberman clone built with SFML. Supports up to 4 players connected over a local IP network.
 
-YouTube link: https://youtu.be/-uFRr81QabU
+---
 
-Files Just in case https://uweacuk-my.sharepoint.com/:f:/g/personal/monika2_bukovics_live_uwe_ac_uk/EkJft-ujNGtGqopU-72k3cMBfppIk332EsDsISXz-Q_62g?e=Bw4DYj;
+## 🎮 Features
+
+- 🔥 **Up to 4 Players** on one local network  
+- 🏠 **Lobby System**  
+  - Players can join the lobby and wait for others  
+  - Lobby displays if it's full before starting  
+  - Real-time **chat** support in lobby  
+- 🌐 **Networking:**  
+  - **TCP** for reliable messages (power-ups, explosions, block destruction)  
+  - **UDP** for fast, real-time player movement updates  
+- 🎯 Classic Bomberman mechanics: place bombs, destroy blocks, collect power-ups  
+- 🧠 Simple state machine + basic collision system  
+
+---
+[![Demo Video](https://img.youtube.com/vi/-uFRr81QabU/0.jpg)](https://youtu.be/-uFRr81QabU)
 
 
-Assets used
-Lightning Bolt Pixel Art, HD Png Download - vhv (no date) vhv.rs. Available at: https://www.vhv.rs/viewpic/TRmxiwm_lightning-bolt-pixel-art-hd-png-download/ (Accessed: 9 December 2023).
-8-bit / 16-bit Sound Effects (x25) Pack by JDWasabi (no date) itch.io. Available at: https://jdwasabi.itch.io/8-bit-16-bit-sound-effects-pack/download/eyJpZCI6MTk3MTA3LCJleHBpcmVzIjoxNzAyMDg0NjAyfQ%3d%3d.lj62Zejeurm1F%2fM6yFI80Nts1mg%3d (Accessed: 9 December 2023).
-Lesiakower. (2022). "Waiting Times." [Format]. Available at [https://pixabay.com/music/search/8bit/]. (Accessed: 9 December 2023).
-Cursor by The Game Smith (no date) itch.io. Available at: https://smallmak.itch.io/animated-x-cursor/download/eyJleHBpcmVzIjoxNzAyMDg1MzYwLCJpZCI6MTg0MDA2OX0%3d.PZ6zT%2fsmLO%2bBdER44iY2ciK2O94%3d (Accessed: 9 December 2023).
-Fire Symbol - Unlimited Download. cleanpng.com. (no date) cleanpng.com. Available at: https://www.cleanpng.com/png-pixel-art-fire-flame-pixel-art-771196/download-png.html (Accessed: 9 December 2023).
-BIRD + CAT + FOX + RACCOON SPRITES by PixelFight (no date) itch.io. Available at: https://pixelfight.itch.io/birdcat?download (Accessed: 18 November 2023).
-Kenney • UI Pack (no date) www.kenney.nl. Available at: https://www.kenney.nl/assets/ui-pack. (Accessed: 18 November 2023).
-Kenney (no date) Tiny Dungeon · Kenney, www.kenney.nl. Available at: https://www.kenney.nl/assets/tiny-dungeon (Accessed: 1 December 2023).
+## 🛠️ Tech Stack
+
+- **Language:** C++  
+- **Library:** SFML (Simple and Fast Multimedia Library)  
+- **Networking:** SFML TCP and UDP sockets  
+
+---
+
+## 📦 Running Locally
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/MonikaBuk/sfml_networking.git
+
+ ## 📦 Running Locally
+
+1. Build the project using your preferred C++ compiler with **SFML linked**.
+2. The project uses the same IP adress for now for security and testin reasons it is on one pc.
+
+---
+
+## 🔧 How It Works
+
+### 🏠 Lobby
+- A host runs the server, and clients connect using its IP.
+- Lobby allows real-time chat and shows player count.
+
+### 🌐 Networking
+- **UDP** is used for real-time movement to reduce latency.
+- **TCP** is used for reliable events (e.g., destroying blocks, spawning power-ups, bomb logic).
+
+---
+
+## 🚀 Future Improvements
+
+- 🌍 Support for online matchmaking beyond local network  
+- 🎨 Improved UI and animations  
+- 👁️ Spectator mode  
+- 🧩 Dynamic map generation  
+- 📊 In-game score tracking  
+
+---
+
+## 🙋‍♀️ Author
+
+**Monika Buk** – [@MonikaBuk](https://github.com/MonikaBuk)
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License**.
 
 
-Sounds are commented out for a last-minute error with OPEN GL. They work but then causing disconnection and windows closing issued due to deadline I could not fix properly. Disconnection and disconnected character freeing up worked in previous commits before added the sounds.
